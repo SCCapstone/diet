@@ -25,13 +25,6 @@ public class MainActivity extends AppCompatActivity {
         // If no user is logged in, start the new account activity.
         if(ParseUser.getCurrentUser() == null){
             startNewAccountActivity();
-        } else{
-            ParseUser.logOutInBackground(new LogOutCallback() {
-                @Override
-                public void done(ParseException e) {
-                    startNewAccountActivity();
-                }
-            });
         }
     }
 
