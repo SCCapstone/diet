@@ -426,16 +426,20 @@ public class NewAccountActivity extends AppCompatActivity {
      * This class checks if a username is valid and then checks if the username is taken.
      * Once complete, updates usernameErrorStatus.
      *
+     * The username should be passed to the execute() method.
+     *
      * This process must be done in an AsyncTask because querying for a username may take a long
      * time and will interfere the UI thread.
      */
     private class UsernameErrorStatusUpdater extends AsyncTask<String, Void, String>{
 
         private TextView usernameErrorStatus;
+        private ParseQuery<ParseUser> query;
 
         @Override
         protected void onPreExecute(){
             usernameErrorStatus = NewAccountActivity.this.usernameErrorStatus;
+
             usernameErrorStatus.setText("Checking username...");
             usernameErrorStatus.setTextColor(Color.BLACK);
         }
@@ -448,13 +452,18 @@ public class NewAccountActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result){
-            TextView usernameErrorStatus = NewAccountActivity.this.usernameErrorStatus;
-
-            usernameErrorStatus.setText(result);
+           usernameErrorStatus.setText(result);
             if(result.equalsIgnoreCase("OK")){
                 usernameErrorStatus.setTextColor(Color.BLACK);
             } else{
                 usernameErrorStatus.setTextColor(Color.RED);
+            }
+        }
+
+        @Override
+        protected void onCancelled(String result){
+            if(query != null){
+                query.cancel();
             }
         }
 
@@ -475,7 +484,7 @@ public class NewAccountActivity extends AppCompatActivity {
             }
 
             // Next, check if the username is taken
-            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query = ParseUser.getQuery();
             query.whereEqualTo("username", username);
             try {
                 if (query.find().size() > 0) {
