@@ -1,17 +1,58 @@
 package edu.sc.snacktrack;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.parse.LogOutCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final int LOGIN_REQUEST = 1;
+
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // If no user is logged in, start the new account activity.
+        if(ParseUser.getCurrentUser() == null){
+            startNewAccountActivity();
+        } else{
+            ParseUser.logOutInBackground(new LogOutCallback() {
+                @Override
+                public void done(ParseException e) {
+                    startNewAccountActivity();
+                }
+            });
+        }
     }
+
+    private void startNewAccountActivity(){
+        Intent intent = new Intent(this, NewAccountActivity.class);
+        startActivityForResult(intent, LOGIN_REQUEST);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == MainActivity.LOGIN_REQUEST){
+            if(resultCode == RESULT_OK){
+                updateToast("Sign in successful!", Toast.LENGTH_SHORT);
+            } else{
+                startNewAccountActivity();
+            }
+        }
+        else{
+            updateToast("Something's not right", Toast.LENGTH_LONG);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -27,11 +68,48 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id){
+            case R.id.action_logout:
+                logout();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Cancels the current toast and displays a new toast.
+     *
+     * @param text The text to display
+     * @param length The length to display the toast
+     */
+    private void updateToast(String text, int length){
+        if(toast != null){
+            toast.cancel();
+        }
+
+        toast = Toast.makeText(
+                this,
+                text,
+                length
+        );
+        toast.show();
+    }
+
+    /**
+     * Logs out the current user and starts the new account activity.
+     * Just starts the new account activity is no user is logged in
+     */
+    private void logout(){
+        ParseUser.logOutInBackground(new LogOutCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null){
+                    startNewAccountActivity();
+                } else{
+                    updateToast(e.getMessage(), Toast.LENGTH_LONG);
+                }
+            }
+        });
     }
 }

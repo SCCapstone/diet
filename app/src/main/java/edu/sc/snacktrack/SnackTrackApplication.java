@@ -1,6 +1,7 @@
 package edu.sc.snacktrack;
 
 import android.app.Application;
+
 import com.parse.Parse;
 
 public class SnackTrackApplication extends Application{
