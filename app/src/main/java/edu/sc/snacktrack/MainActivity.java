@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == MainActivity.LOGIN_REQUEST){
             if(resultCode == RESULT_OK){
-                updateToast("Sign in successful!", Toast.LENGTH_SHORT);
+                updateToast("Log in successful!", Toast.LENGTH_SHORT);
             } else{
                 startNewAccountActivity();
             }

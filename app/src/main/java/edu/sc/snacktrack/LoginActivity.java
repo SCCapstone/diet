@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                     setResult(RESULT_OK);
                     finish();
                 } else{
-                    updateToast(getErrorMessage(e), Toast.LENGTH_LONG);
+                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
                 }
 
                 setWidgetsEnabled(true);
@@ -116,34 +116,6 @@ public class LoginActivity extends AppCompatActivity {
         logInButton.setEnabled(enabled);
         newAccountLink.setEnabled(enabled);
         forgotPasswordLink.setEnabled(enabled);
-    }
-
-    /**
-     * Extrapolates the error message to display to the user given a ParseException.
-     *
-     * @param badStuff The exception
-     * @return The error message to display
-     */
-    private String getErrorMessage(ParseException badStuff){
-        if(badStuff != null){
-            Throwable cause;
-            String causeMessage;
-            String exceptionMessage;
-
-            cause = badStuff.getCause();
-            causeMessage = (cause == null) ? null : cause.getMessage();
-            exceptionMessage = badStuff.getMessage();
-
-            if(causeMessage != null){
-                return causeMessage;
-            } else if(exceptionMessage != null){
-                return exceptionMessage;
-            } else{
-                return String.format("Unknown error (error code %d)", badStuff.getCode());
-            }
-        } else{
-            return "Unknown error (ParseException is null)";
-        }
     }
 
     /**

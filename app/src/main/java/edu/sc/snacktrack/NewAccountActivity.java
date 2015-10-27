@@ -136,7 +136,7 @@ public class NewAccountActivity extends AppCompatActivity {
                             setResult(RESULT_OK);
                             finish();
                         } else{
-                            updateToast(getErrorMessage(e), Toast.LENGTH_SHORT);
+                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                         }
                         setWidgetsEnabled(true);
                     }
@@ -183,7 +183,7 @@ public class NewAccountActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(usernameErrorStatusUpdater != null){
+                if (usernameErrorStatusUpdater != null) {
                     usernameErrorStatusUpdater.cancel(true);
                 }
 
@@ -277,34 +277,6 @@ public class NewAccountActivity extends AppCompatActivity {
     private void closeSoftKeyboard(View focusedView){
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
-    }
-
-    /**
-     * Extrapolates the error message to display to the user given a ParseException.
-     *
-     * @param badStuff The exception
-     * @return The error message to display
-     */
-    private String getErrorMessage(ParseException badStuff){
-        if(badStuff != null){
-            Throwable cause;
-            String causeMessage;
-            String exceptionMessage;
-
-            cause = badStuff.getCause();
-            causeMessage = (cause == null) ? null : cause.getMessage();
-            exceptionMessage = badStuff.getMessage();
-
-            if(causeMessage != null){
-                return causeMessage;
-            } else if(exceptionMessage != null){
-                return exceptionMessage;
-            } else{
-                return String.format("Unknown error (error code %d)", badStuff.getCode());
-            }
-        } else{
-            return "Unknown error (ParseException is null)";
-        }
     }
 
     /**
@@ -436,6 +408,13 @@ public class NewAccountActivity extends AppCompatActivity {
         private TextView usernameErrorStatus;
         private ParseQuery<ParseUser> query;
 
+        private boolean queryCanceled;
+
+        public UsernameErrorStatusUpdater(){
+            super();
+            this.queryCanceled = false;
+        }
+
         @Override
         protected void onPreExecute(){
             usernameErrorStatus = NewAccountActivity.this.usernameErrorStatus;
@@ -462,6 +441,7 @@ public class NewAccountActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled(String result){
+            queryCanceled = true;
             if(query != null){
                 query.cancel();
             }
@@ -483,19 +463,24 @@ public class NewAccountActivity extends AppCompatActivity {
                 return temp.toString();
             }
 
-            // Next, check if the username is taken
-            query = ParseUser.getQuery();
-            query.whereEqualTo("username", username);
-            try {
-                if (query.find().size() > 0) {
-                    // Username is taken.
-                    return "Username is taken";
-                } else{
-                    // User name is not taken
-                    return "OK";
+            // If the query hasn't already been canceled, start the query.
+            if(!queryCanceled){
+                // Next, check if the username is taken
+                query = ParseUser.getQuery();
+                query.whereEqualTo("username", username);
+                try {
+                    if (query.find().size() > 0) {
+                        // Username is taken.
+                        return "Username is taken";
+                    } else{
+                        // User name is not taken
+                        return "OK";
+                    }
+                } catch(ParseException e){
+                    return "Unable to check username";
                 }
-            } catch(ParseException e){
-                return getErrorMessage(e);
+            } else{
+                return "Unable to check username";
             }
 
             // This line is unreachable.

@@ -45,7 +45,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:textColor="#FF0000"
-            tools:text="isValid?"/>
+            tools:text="isValid?"
+            android:singleLine="true" />
 
         <EditText
             android:layout_width="match_parent"
@@ -77,7 +78,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:textColor="#FF0000"
-            tools:text="isValid?"/>
+            tools:text="isValid?"
+            android:singleLine="true" />
 
         <Button
             android:layout_width="match_parent"
