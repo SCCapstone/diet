@@ -16,4 +16,15 @@
     <string name="welcome_back">Welcome back!</string>
     <string name="forgot_password">Forgot your password?</string>
     <string name="action_logout">Log out</string>
+
+    <string-array name="tests">
+        <item>Test 1</item>
+        <item>Test 2</item>
+        <item>Test 3</item>
+    </string-array>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+
 </resources>
