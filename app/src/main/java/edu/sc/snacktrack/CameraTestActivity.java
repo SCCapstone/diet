@@ -32,9 +32,11 @@ public class CameraTestActivity extends AppCompatActivity {
 
     private ImageView imageView;
 
+    private String newPhotoPath;
     private String currentPhotoPath;
 
     private static final String STATE_CURRENT_PHOTO_PATH = "currentPhotoPath";
+    private static final String STATE_NEW_PHOTO_PATH = "newPhotoPath";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +59,21 @@ public class CameraTestActivity extends AppCompatActivity {
 
         // Restore instance state
         if(savedInstanceState != null){
-            currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH);
-            Bitmap image = loadCurrentPhoto();
-            imageView.setImageBitmap(image);
+            currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, "");
+            newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, "");
+
+            // If there is an image to restore, restore it.
+            if(currentPhotoPath != ""){
+                Bitmap image = loadCurrentPhoto();
+                imageView.setImageBitmap(image);
+            }
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState){
         savedInstanceState.putString(STATE_CURRENT_PHOTO_PATH, currentPhotoPath);
+        savedInstanceState.putString(STATE_NEW_PHOTO_PATH, newPhotoPath);
     }
 
     private void dispatchPictureIntent(){
@@ -93,8 +101,8 @@ public class CameraTestActivity extends AppCompatActivity {
         );
 
         // Save the path to this file
-        currentPhotoPath = imageFile.getAbsolutePath();
-        Log.d(TAG, "New image file path: " + currentPhotoPath);
+        newPhotoPath = imageFile.getAbsolutePath();
+        Log.d(TAG, "New image file path: " + newPhotoPath);
 
         return imageFile;
     }
@@ -104,6 +112,8 @@ public class CameraTestActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 // Image capture successful
                 Log.d(TAG, "Image capture successful.");
+
+                currentPhotoPath = newPhotoPath;
 
                 Bitmap image = loadCurrentPhoto();
 
