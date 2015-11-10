@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 logout();
                 break;
             case R.id.action_new:
-                Intent intent = new Intent(this, CameraTestActivity.class);
+                Intent intent = new Intent(this, NewEntryActivity.class);
                 startActivity(intent);
         }
 

@@ -18,4 +18,17 @@
     <string name="action_logout">Log out</string>
     <string name="upload">Upload</string>
     <string name="uploading">Uploading...</string>
+    <string name="title_activity_new_entry">New Snack</string>
+    <string-array name="meal_types">
+        <item>Breakfast</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+        <item>Snack</item>
+        <item>Drink</item>
+    </string-array>
+    <string name="title_activity_edit_text">EditTextActivity</string>
+    <string name="title_activity_edit_description">Edit Description</string>
+    <string name="action_done">Done</string>
+    <string name="edit_description_hint">Meal description (optional)</string>
+    <string name="description_label">Description</string>
 </resources>
