@@ -37,10 +37,6 @@
             android:label="@string/title_activity_new_account" >
         </activity>
         <activity
-            android:name=".CameraTestActivity"
-            android:label="Camera Test" >
-        </activity>
-        <activity
             android:name=".NewEntryActivity"
             android:label="@string/title_activity_new_entry"
             android:windowSoftInputMode="stateHidden|adjustResize" >

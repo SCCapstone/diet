@@ -3,6 +3,7 @@ package edu.sc.snacktrack;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseObject;
 
 public class SnackTrackApplication extends Application{
 
@@ -14,6 +15,9 @@ public class SnackTrackApplication extends Application{
 
         // Enable local datastore
         Parse.enableLocalDatastore(this);
+
+        // Register ParseObject subclasses
+        ParseObject.registerSubclass(SnackEntry.class);
 
         // Authenticate client with the application ID and client key.
         Parse.initialize(this, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);

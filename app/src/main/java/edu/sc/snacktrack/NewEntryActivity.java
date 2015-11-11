@@ -17,10 +17,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseACL;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseUser;
+import com.parse.ProgressCallback;
+import com.parse.SaveCallback;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -30,9 +39,11 @@ public class NewEntryActivity extends AppCompatActivity {
 
     private Toast toast;
 
-    private TextView description;
+    private TextView descriptionTextView;
     private ImageView imageView;
     private Spinner spinner;
+    private ProgressBar progressBar;
+    private TextView saveLabel;
 
     private String currentPhotoPath;
     private String newPhotoPath;
@@ -46,8 +57,11 @@ public class NewEntryActivity extends AppCompatActivity {
     private static final String STATE_DESCRIPTION_STRING = "descriptionString";
     private static final String STATE_CURRENT_PHOTO_PATH = "currentPhotoPath";
     private static final String STATE_NEW_PHOTO_PATH = "newPhotoPath";
+    private static final String STATE_SAVE_PROGRESS = "saveProgress";
 
     private PhotoPreviewLoader photoPreviewLoader;
+
+    private boolean saving = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +76,12 @@ public class NewEntryActivity extends AppCompatActivity {
         ));
 
         // Set up the description box
-        description = (TextView) findViewById(R.id.descriptionTextView);
-        description.setOnClickListener(new View.OnClickListener() {
+        descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
+        descriptionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(NewEntryActivity.this, EditDescriptionActivity.class);
-                intent.putExtra(EditDescriptionActivity.DESCRIPTION_STRING_KEY, description.getText().toString());
+                intent.putExtra(EditDescriptionActivity.DESCRIPTION_STRING_KEY, descriptionTextView.getText().toString());
                 startActivityForResult(intent, DESCRIPTION_CHANGE_CODE);
             }
         });
@@ -81,9 +95,14 @@ public class NewEntryActivity extends AppCompatActivity {
             }
         });
 
+        // Set up the progress bar
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        saveLabel = (TextView) findViewById(R.id.saveLabel);
+
         // Restore instance state
         if(savedInstanceState != null){
-            description.setText(savedInstanceState.getString(STATE_DESCRIPTION_STRING, ""));
+            descriptionTextView.setText(savedInstanceState.getString(STATE_DESCRIPTION_STRING, ""));
+            progressBar.setProgress(savedInstanceState.getInt(STATE_SAVE_PROGRESS, 0));
 
             this.currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, null);
             this.newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, null);
@@ -181,7 +200,7 @@ public class NewEntryActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 String newText = data.getStringExtra(EditDescriptionActivity.DESCRIPTION_STRING_KEY);
                 if(newText != null){
-                    description.setText(newText);
+                    descriptionTextView.setText(newText);
                 }
             }
         } else if(requestCode == CAMERA_REQUEST_CODE){
@@ -236,6 +255,89 @@ public class NewEntryActivity extends AppCompatActivity {
     }
 
     /**
+     * Attempts to upload this SnackEntry to Parse. If successful, finishes this activity with
+     * result RESULT_OK. Otherwise, displays an error message.
+     */
+    private void saveEntry(){
+
+        new AsyncTask<Void, Integer, ParseException>(){
+
+            private ParseUser owner;
+            private String mealType;
+            private String description;
+            private ParseFile parseFile;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                NewEntryActivity.this.saving = true;
+                setWidgetsEnabled(false);
+
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setIndeterminate(true);
+                saveLabel.setVisibility(View.VISIBLE);
+
+                owner = ParseUser.getCurrentUser();
+                mealType = spinner.getSelectedItem().toString();
+                description = descriptionTextView.getText().toString();
+                parseFile = new ParseFile(new File(currentPhotoPath));
+            }
+
+            @Override
+            protected ParseException doInBackground(Void... params) {
+                SnackEntry snackEntry = new SnackEntry();
+
+                snackEntry.setOwner(owner);
+                snackEntry.setACL(new ParseACL(owner));
+
+                // If the meal type was specified, set the snackEntry's mealType
+                if(mealType != null && !mealType.equals(getResources().getString(R.string.default_spinner_item))){
+                    snackEntry.setTypeOfMeal(mealType);
+                }
+
+                // If the description is not empty, set the snackEntry's description
+                if(description != null && !description.trim().equals("")){
+                    snackEntry.setDescription(description);
+                }
+
+                // Save the image to parse, then save the snackEntry to parse
+                try{
+                    parseFile.save();
+                    snackEntry.setPhoto(parseFile);
+                    snackEntry.save();
+                } catch(ParseException e){
+                    return e;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(ParseException e) {
+                super.onPostExecute(e);
+
+                // If there's no exception, this entry was successfully saved to parse, so we exit
+                // this activity with result RESULT_OK.
+                if(e == null){
+                    setResult(RESULT_OK);
+                    if(toast != null){
+                        toast.cancel();
+                    }
+                    finish();
+                } else{
+                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+
+                    progressBar.setVisibility(View.INVISIBLE);
+                    saveLabel.setVisibility(View.INVISIBLE);
+
+                    NewEntryActivity.this.saving = false;
+                    setWidgetsEnabled(true);
+                }
+            }
+        }.execute();
+    }
+
+    /**
      * Cancels the current toast and displays a new toast.
      *
      * @param text The text to display
@@ -254,13 +356,33 @@ public class NewEntryActivity extends AppCompatActivity {
         toast.show();
     }
 
+    /**
+     * Enables or disables all user input widgets.
+     *
+     * @param enabled true to enable; false to disable
+     */
+    private void setWidgetsEnabled(boolean enabled){
+        imageView.setEnabled(enabled);
+        spinner.setEnabled(enabled);
+        descriptionTextView.setEnabled(enabled);
+    }
+
+    @Override
+    public void onBackPressed(){
+        // Do not interrupt saving
+        if(!saving){
+            super.onBackPressed();
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(STATE_DESCRIPTION_STRING, description.getText().toString());
+        outState.putString(STATE_DESCRIPTION_STRING, descriptionTextView.getText().toString());
         outState.putString(STATE_CURRENT_PHOTO_PATH, currentPhotoPath);
         outState.putString(STATE_NEW_PHOTO_PATH, newPhotoPath);
+        outState.putInt(STATE_SAVE_PROGRESS, progressBar.getProgress());
     }
 
     @Override
@@ -276,6 +398,17 @@ public class NewEntryActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        // Do not interrupt saving.
+        if(saving){
+            return false;
+        }
+
+        switch(id){
+            case R.id.action_done:
+                saveEntry();
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -361,7 +494,6 @@ public class NewEntryActivity extends AppCompatActivity {
         @Override
         protected void onCancelled(){
             super.onCancelled();
-            imageView.setImageResource(R.drawable.ic_photo_camera_black_24dp);
         }
     }
 }
