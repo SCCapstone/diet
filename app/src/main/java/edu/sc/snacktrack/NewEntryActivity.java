@@ -42,8 +42,8 @@ public class NewEntryActivity extends AppCompatActivity {
     private TextView descriptionTextView;
     private ImageView imageView;
     private Spinner spinner;
-    private ProgressBar progressBar;
-    private TextView saveLabel;
+
+    private View progressOverlay;
 
     private String currentPhotoPath;
     private String newPhotoPath;
@@ -57,7 +57,6 @@ public class NewEntryActivity extends AppCompatActivity {
     private static final String STATE_DESCRIPTION_STRING = "descriptionString";
     private static final String STATE_CURRENT_PHOTO_PATH = "currentPhotoPath";
     private static final String STATE_NEW_PHOTO_PATH = "newPhotoPath";
-    private static final String STATE_SAVE_PROGRESS = "saveProgress";
 
     private PhotoPreviewLoader photoPreviewLoader;
 
@@ -95,14 +94,12 @@ public class NewEntryActivity extends AppCompatActivity {
             }
         });
 
-        // Set up the progress bar
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        saveLabel = (TextView) findViewById(R.id.saveLabel);
+        // Set up the progress overlay
+        progressOverlay = findViewById(R.id.progressOverlay);
 
         // Restore instance state
         if(savedInstanceState != null){
             descriptionTextView.setText(savedInstanceState.getString(STATE_DESCRIPTION_STRING, ""));
-            progressBar.setProgress(savedInstanceState.getInt(STATE_SAVE_PROGRESS, 0));
 
             this.currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, null);
             this.newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, null);
@@ -181,7 +178,7 @@ public class NewEntryActivity extends AppCompatActivity {
      * Converts exif attribute to a rotation in degrees.
      *
      * @param exifOrientation The orientation attribute
-     * @return
+     * @return rotation in degrees
      */
     private int exifToDegrees(int exifOrientation){
         switch(exifOrientation){
@@ -255,8 +252,9 @@ public class NewEntryActivity extends AppCompatActivity {
     }
 
     /**
-     * Attempts to upload this SnackEntry to Parse. If successful, finishes this activity with
-     * result RESULT_OK. Otherwise, displays an error message.
+     * Attempts to upload this SnackEntry to Parse. Shows the progress overlay while saving.
+     * If successful, finishes this activity with result RESULT_OK. Otherwise, displays an error
+     * message.
      */
     private void saveEntry(){
 
@@ -273,10 +271,7 @@ public class NewEntryActivity extends AppCompatActivity {
 
                 NewEntryActivity.this.saving = true;
                 setWidgetsEnabled(false);
-
-                progressBar.setVisibility(View.VISIBLE);
-                progressBar.setIndeterminate(true);
-                saveLabel.setVisibility(View.VISIBLE);
+                progressOverlay.setVisibility(View.VISIBLE);
 
                 owner = ParseUser.getCurrentUser();
                 mealType = spinner.getSelectedItem().toString();
@@ -327,8 +322,7 @@ public class NewEntryActivity extends AppCompatActivity {
                 } else{
                     updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
 
-                    progressBar.setVisibility(View.INVISIBLE);
-                    saveLabel.setVisibility(View.INVISIBLE);
+                    progressOverlay.setVisibility(View.GONE);
 
                     NewEntryActivity.this.saving = false;
                     setWidgetsEnabled(true);
@@ -382,7 +376,6 @@ public class NewEntryActivity extends AppCompatActivity {
         outState.putString(STATE_DESCRIPTION_STRING, descriptionTextView.getText().toString());
         outState.putString(STATE_CURRENT_PHOTO_PATH, currentPhotoPath);
         outState.putString(STATE_NEW_PHOTO_PATH, newPhotoPath);
-        outState.putInt(STATE_SAVE_PROGRESS, progressBar.getProgress());
     }
 
     @Override

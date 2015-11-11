@@ -1,14 +1,13 @@
 package edu.sc.snacktrack;
 
 import com.parse.ParseClassName;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 /**
- *
+ * This class represents a single snack entry with a owner, photo, meal type, and description.
+ * This class subclasses ParseObject.
  */
 @ParseClassName("SnackEntry")
 public class SnackEntry extends ParseObject{
