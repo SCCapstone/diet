@@ -16,6 +16,7 @@
     <string name="welcome_back">Welcome back!</string>
     <string name="forgot_password">Forgot your password?</string>
     <string name="action_logout">Log out</string>
+<<<<<<< HEAD
 
     <string-array name="tests">
         <item>Test 1</item>
@@ -27,4 +28,23 @@
     <string name="drawer_close">Close navigation drawer</string>
 
 
+=======
+    <string name="upload">Upload</string>
+    <string name="uploading">Uploading...</string>
+    <string name="title_activity_new_entry">New Snack</string>
+    <string name="default_spinner_item">Select an option</string>
+    <string-array name="meal_types">
+        <item>@string/default_spinner_item</item>
+        <item>A snack</item>
+        <item>A drink</item>
+        <item>Breakfast</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+    </string-array>
+    <string name="title_activity_edit_text">EditTextActivity</string>
+    <string name="title_activity_edit_description">Edit Description</string>
+    <string name="action_done">Done</string>
+    <string name="edit_description_hint">Tap to add a description (optional)</string>
+    <string name="description_label">Description</string>
+>>>>>>> master
 </resources>

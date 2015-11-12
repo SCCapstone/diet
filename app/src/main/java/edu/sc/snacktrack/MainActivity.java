@@ -3,9 +3,13 @@ package edu.sc.snacktrack;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+<<<<<<< HEAD
 import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+=======
+import android.graphics.Camera;
+>>>>>>> master
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -148,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_logout:
                 logout();
                 break;
+            case R.id.action_new:
+                Intent intent = new Intent(this, NewEntryActivity.class);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
