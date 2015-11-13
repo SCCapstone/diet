@@ -1,6 +1,5 @@
 package edu.sc.snacktrack;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,7 +13,15 @@ import com.parse.ParseUser;
 import java.io.File;
 
 /**
- * This Fragment manages a single background task and retains itself across configuration changes.
+ * This Fragment manages saving a single snack entry in the background retains itself across
+ * configuration changes.
+ *
+ * This fragment expects the following arguments (via setArguments()):
+ *   String mealType (key: MEAL_TYPE_KEY)      - The meal type
+ *   String description (key: DESCRIPTION_KEY) - The description
+ *   String photoPath (key: PHOTO_PATH_KEY)    - The file path to the photo.
+ *
+ * The current user is automatically added to the snack entry via getCurrentUser().
  *
  * @author Alex Lockwood
  * (Modified for SnackTrack)
@@ -35,24 +42,23 @@ public class SaveSnackTaskFragment extends Fragment {
 
     private static final String TAG = "SaveSnackDebug";
 
+    /**
+     * The key for the meal type argument. The meal type is a String.
+     */
     public static final String MEAL_TYPE_KEY = "mealType";
+
+    /**
+     * The key for the description argument. The description is a String.
+     */
     public static final String DESCRIPTION_KEY = "description";
+
+    /**
+     * The key for the photo path argument. The photo path is a String.
+     */
     public static final String PHOTO_PATH_KEY = "photoPath";
 
     private TaskCallbacks mCallbacks;
     private TheTask mTask;
-
-    /**
-     * Hold a reference to the parent Activity so we can report the
-     * task's current progress and results. The Android framework
-     * will pass us a reference to the newly created Activity after
-     * each configuration change.
-     */
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-        //mCallbacks = (TaskCallbacks) activity;
-    }
 
     /**
      * This method will only be called once when the retained
@@ -85,18 +91,14 @@ public class SaveSnackTaskFragment extends Fragment {
     }
 
     /**
-     * A dummy task that performs some (dumb) background work and
-     * proxies progress updates and results back to the Activity.
-     *
-     * Note that we need to check if the callbacks are null in each
-     * method in case they are invoked after the Activity's and
-     * Fragment's onDestroy() method have been called.
+     * Attempts to upload this SnackEntry to Parse in the background.
      */
     private class TheTask extends AsyncTask<Void, Integer, ParseException> {
 
         private ParseUser owner;
         private String mealType;
         private String description;
+        private String photoPath;
         private ParseFile parseFile;
 
         @Override
@@ -111,11 +113,9 @@ public class SaveSnackTaskFragment extends Fragment {
             owner = ParseUser.getCurrentUser();
             mealType = args.getString(MEAL_TYPE_KEY, null);
             description = args.getString(DESCRIPTION_KEY, null);
-            String photoPath = args.getString(PHOTO_PATH_KEY, null);
+            photoPath = args.getString(PHOTO_PATH_KEY, null);
             if(photoPath != null){
                 parseFile = new ParseFile(new File(photoPath));
-            } else{
-                parseFile = null;
             }
 
         }
@@ -139,9 +139,13 @@ public class SaveSnackTaskFragment extends Fragment {
 
             // Save the image to parse, then save the snackEntry to parse
             try{
-                parseFile.save();
-                snackEntry.setPhoto(parseFile);
-                snackEntry.save();
+                if(photoPath != null && new File(photoPath).exists()){
+                    parseFile.save();
+                    snackEntry.setPhoto(parseFile);
+                    snackEntry.save();
+                } else{
+                    throw new ParseException(ParseException.OTHER_CAUSE, "File to upload does not exist");
+                }
             } catch(ParseException e){
                 return e;
             }
