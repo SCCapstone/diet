@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,10 +25,7 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
-import com.parse.ProgressCallback;
-import com.parse.SaveCallback;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -57,8 +53,12 @@ public class NewEntryActivity extends AppCompatActivity {
     private static final String STATE_DESCRIPTION_STRING = "descriptionString";
     private static final String STATE_CURRENT_PHOTO_PATH = "currentPhotoPath";
     private static final String STATE_NEW_PHOTO_PATH = "newPhotoPath";
+    private static final String STATE_SAVING = "saving";
+
+    private static final String TASK_FRAGMENT_TAG = "taskfragment";
 
     private PhotoPreviewLoader photoPreviewLoader;
+    private SaveSnackTaskFragment saveSnackTaskFragment;
 
     private boolean saving = false;
 
@@ -103,11 +103,15 @@ public class NewEntryActivity extends AppCompatActivity {
 
             this.currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, null);
             this.newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, null);
+            this.saving = savedInstanceState.getBoolean(STATE_SAVING, false);
 
             if(currentPhotoPath != null){
                 loadPhotoPreview(currentPhotoPath);
             }
         }
+
+        // Restore the task fragment
+        this.saveSnackTaskFragment = (SaveSnackTaskFragment) getSupportFragmentManager().findFragmentByTag(TASK_FRAGMENT_TAG);
 
         // If a photo has not been taken, start the camera app
         if(newPhotoPath == null){
@@ -257,62 +261,38 @@ public class NewEntryActivity extends AppCompatActivity {
      * message.
      */
     private void saveEntry(){
+        saveSnackTaskFragment = new SaveSnackTaskFragment();
+        Bundle args = new Bundle();
+        args.putString(SaveSnackTaskFragment.MEAL_TYPE_KEY, spinner.getSelectedItem().toString());
+        args.putString(SaveSnackTaskFragment.DESCRIPTION_KEY, descriptionTextView.getText().toString());
+        args.putString(SaveSnackTaskFragment.PHOTO_PATH_KEY, currentPhotoPath);
+        saveSnackTaskFragment.setArguments(args);
 
-        new AsyncTask<Void, Integer, ParseException>(){
-
-            private ParseUser owner;
-            private String mealType;
-            private String description;
-            private ParseFile parseFile;
-
+        saveSnackTaskFragment.setCallbacks(new SaveSnackTaskFragment.TaskCallbacks() {
             @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-
+            public void onPreExecute() {
                 NewEntryActivity.this.saving = true;
                 setWidgetsEnabled(false);
                 progressOverlay.setVisibility(View.VISIBLE);
-
-                owner = ParseUser.getCurrentUser();
-                mealType = spinner.getSelectedItem().toString();
-                description = descriptionTextView.getText().toString();
-                parseFile = new ParseFile(new File(currentPhotoPath));
             }
 
             @Override
-            protected ParseException doInBackground(Void... params) {
-                SnackEntry snackEntry = new SnackEntry();
+            public void onProgressUpdate(int percent) {
 
-                snackEntry.setOwner(owner);
-                snackEntry.setACL(new ParseACL(owner));
-
-                // If the meal type was specified, set the snackEntry's mealType
-                if(mealType != null && !mealType.equals(getResources().getString(R.string.default_spinner_item))){
-                    snackEntry.setTypeOfMeal(mealType);
-                }
-
-                // If the description is not empty, set the snackEntry's description
-                if(description != null && !description.trim().equals("")){
-                    snackEntry.setDescription(description);
-                }
-
-                // Save the image to parse, then save the snackEntry to parse
-                try{
-                    parseFile.save();
-                    snackEntry.setPhoto(parseFile);
-                    snackEntry.save();
-                } catch(ParseException e){
-                    return e;
-                }
-                return null;
             }
 
             @Override
-            protected void onPostExecute(ParseException e) {
-                super.onPostExecute(e);
+            public void onCancelled() {
 
+            }
+
+            @Override
+            public void onPostExecute(ParseException e) {
                 // If there's no exception, this entry was successfully saved to parse, so we exit
                 // this activity with result RESULT_OK.
+
+                Log.d(TAG, "onPostExecute()");
+
                 if(e == null){
                     setResult(RESULT_OK);
                     if(toast != null){
@@ -323,12 +303,84 @@ public class NewEntryActivity extends AppCompatActivity {
                     updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
 
                     progressOverlay.setVisibility(View.GONE);
-
                     NewEntryActivity.this.saving = false;
                     setWidgetsEnabled(true);
                 }
             }
-        }.execute();
+        });
+
+        getSupportFragmentManager().beginTransaction().add(saveSnackTaskFragment, TASK_FRAGMENT_TAG).commit();
+//        new AsyncTask<Void, Integer, ParseException>(){
+//
+//            private ParseUser owner;
+//            private String mealType;
+//            private String description;
+//            private ParseFile parseFile;
+//
+//            @Override
+//            protected void onPreExecute() {
+//                super.onPreExecute();
+//
+//                NewEntryActivity.this.saving = true;
+//                setWidgetsEnabled(false);
+//                //progressOverlay.setVisibility(View.VISIBLE);
+//
+//                owner = ParseUser.getCurrentUser();
+//                mealType = spinner.getSelectedItem().toString();
+//                description = descriptionTextView.getText().toString();
+//                parseFile = new ParseFile(new File(currentPhotoPath));
+//            }
+//
+//            @Override
+//            protected ParseException doInBackground(Void... params) {
+//                SnackEntry snackEntry = new SnackEntry();
+//
+//                snackEntry.setOwner(owner);
+//                snackEntry.setACL(new ParseACL(owner));
+//
+//                // If the meal type was specified, set the snackEntry's mealType
+//                if(mealType != null && !mealType.equals(getResources().getString(R.string.default_spinner_item))){
+//                    snackEntry.setTypeOfMeal(mealType);
+//                }
+//
+//                // If the description is not empty, set the snackEntry's description
+//                if(description != null && !description.trim().equals("")){
+//                    snackEntry.setDescription(description);
+//                }
+//
+//                // Save the image to parse, then save the snackEntry to parse
+//                try{
+//                    parseFile.save();
+//                    snackEntry.setPhoto(parseFile);
+//                    snackEntry.save();
+//                } catch(ParseException e){
+//                    return e;
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(ParseException e) {
+//                super.onPostExecute(e);
+//
+//                // If there's no exception, this entry was successfully saved to parse, so we exit
+//                // this activity with result RESULT_OK.
+//                if(e == null){
+//                    setResult(RESULT_OK);
+//                    if(toast != null){
+//                        toast.cancel();
+//                    }
+//                    finish();
+//                } else{
+//                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+//
+//                    //progressOverlay.setVisibility(View.GONE);
+//
+//                    NewEntryActivity.this.saving = false;
+//                    setWidgetsEnabled(true);
+//                }
+//            }
+//        }.execute();
     }
 
     /**
@@ -376,6 +428,7 @@ public class NewEntryActivity extends AppCompatActivity {
         outState.putString(STATE_DESCRIPTION_STRING, descriptionTextView.getText().toString());
         outState.putString(STATE_CURRENT_PHOTO_PATH, currentPhotoPath);
         outState.putString(STATE_NEW_PHOTO_PATH, newPhotoPath);
+        outState.putBoolean(STATE_SAVING, saving);
     }
 
     @Override
