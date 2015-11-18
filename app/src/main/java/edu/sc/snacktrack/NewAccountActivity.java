@@ -39,7 +39,8 @@ public class NewAccountActivity extends AppCompatActivity {
     private TextView passwordErrorStatus;
 
     private Button signUpButton;
-    private TextView existingAccountLink;
+    //private TextView existingAccountLink;
+    private Button existingAccountButton;
 
     private Toast toast;
 
@@ -58,7 +59,8 @@ public class NewAccountActivity extends AppCompatActivity {
         usernameErrorStatus = (TextView) findViewById(R.id.usernameErrorStatus);
         passwordErrorStatus = (TextView) findViewById(R.id.passwordErrorStatus);
         signUpButton = (Button) findViewById(R.id.signUpButton);
-        existingAccountLink = (TextView) findViewById(R.id.exisitingAccountLink);
+        //existingAccountLink = (TextView) findViewById(R.id.exisitingAccountLink);
+        existingAccountButton = (Button) findViewById(R.id.existingAccountButton);
 
         // When the root view gains focus, we should hide the soft keyboard.
         rootView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -74,7 +76,7 @@ public class NewAccountActivity extends AppCompatActivity {
         setTextWatchers();
 
         // The existing account link should start the login activity.
-        existingAccountLink.setOnClickListener(new View.OnClickListener() {
+        existingAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startLoginActivity();
@@ -241,7 +243,8 @@ public class NewAccountActivity extends AppCompatActivity {
         passwordET.setEnabled(enabled);
         passwordConfirmET.setEnabled(enabled);
         signUpButton.setEnabled(enabled);
-        existingAccountLink.setEnabled(enabled);
+        //existingAccountLink.setEnabled(enabled);
+        existingAccountButton.setEnabled(enabled);
     }
 
     @Override

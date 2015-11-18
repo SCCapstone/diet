@@ -90,17 +90,28 @@
             android:text="@string/signup"
             android:layout_marginTop="10dp" />
 
+<!--
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/exisiting_account"
-            android:id="@+id/exisitingAccountLink"
+            android:text="@string/existing_account"
+            android:id="@+id/existingAccountLink"
             android:layout_below="@+id/signUpButton"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:textSize="7pt"
             android:clickable="true"
             android:focusableInTouchMode="true"/>
+-->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/existingAccountButton"
+            android:layout_below="@+id/signUpButton"
+            android:layout_centerHorizontal="true"
+            android:text="@string/existing_account"
+            android:layout_marginTop="10dp"
+            android:singleLine="true" />
     </RelativeLayout>
 
 </ScrollView>
