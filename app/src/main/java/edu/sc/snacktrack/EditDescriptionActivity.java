@@ -30,6 +30,9 @@ public class EditDescriptionActivity extends AppCompatActivity {
         String currentText = intent.getStringExtra(DESCRIPTION_STRING_KEY);
         if(currentText != null) {
             editText.setText(currentText);
+
+            // Move the cursor to the end.
+            editText.setSelection(currentText.length());
         }
 
         // Restore instance state
