@@ -1,7 +1,9 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg">
+    <!-- TODO: Decide which background to use/which color font will be easy to read -->
 
     <!-- The progress overlay is only to be visible when data is being saved to parse-->
     <include layout="@layout/progress_overlay" />
