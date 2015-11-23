@@ -22,7 +22,8 @@ public class testFragment extends Fragment {
         TextView tv = (TextView) v.findViewById(R.id.tv_content);
 
         tv.setText(tests[position]);
-        getActivity().getActionBar().setTitle(tests[position]);
+        // TODO: Figure out why below line returns null pointer exception
+        //getActivity().getActionBar().setTitle(tests[position]);
 
         return v;
     }
