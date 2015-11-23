@@ -8,6 +8,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- Parse -->
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+
     <application
         android:name=".SnackTrackApplication"
         android:allowBackup="true"
@@ -25,11 +31,21 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login">
+            android:label="@string/title_activity_login" >
         </activity>
         <activity
             android:name=".NewAccountActivity"
             android:label="@string/title_activity_new_account" >
+        </activity>
+        <activity
+            android:name=".NewEntryActivity"
+            android:label="@string/title_activity_new_entry"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
+        </activity>
+        <activity
+            android:name=".EditDescriptionActivity"
+            android:label="@string/title_activity_edit_description"
+            android:windowSoftInputMode="stateVisible|adjustResize">
         </activity>
     </application>
 

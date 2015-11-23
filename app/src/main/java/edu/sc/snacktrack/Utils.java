@@ -1,5 +1,9 @@
 package edu.sc.snacktrack;
 
+import android.content.Context;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
 import static com.parse.ParseException.*;
 import com.parse.ParseException;
 
@@ -83,5 +87,18 @@ public class Utils {
         } else{
             return "No error";
         }
+    }
+
+    /**
+     * Magic to close the soft keyboard.
+     *
+     * See http://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+     *
+     * @param context The context.
+     * @param focusedView The focused view.
+     */
+    public static void closeSoftKeyboard(Context context, View focusedView){
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
     }
 }

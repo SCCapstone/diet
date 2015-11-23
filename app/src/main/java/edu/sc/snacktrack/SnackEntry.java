@@ -1,45 +1,51 @@
 package edu.sc.snacktrack;
 
+import com.parse.ParseClassName;
 import com.parse.ParseFile;
-
-import java.util.Date;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 /**
- * Created by dowdw on 11/9/2015.
+ * This class represents a single snack entry with a owner, photo, meal type, and description.
+ * This class subclasses ParseObject.
  */
-public class SnackEntry {
-    private String name;
-    private String photo;
-    private Date date;
+@ParseClassName("SnackEntry")
+public class SnackEntry extends ParseObject{
 
-//    public SnackEntry(String name, String photo){// ,Date date){
-//        super();
-//        this.name = name;
-//        this.photo = photo;
-//        //this.date = date;
-//    }
+    private static final String OWNER_KEY = "owner";
+    private static final String MEAL_TYPE_KEY = "mealType";
+    private static final String DESCRIPTION_KEY = "description";
+    private static final String PHOTO_KEY = "photo";
 
-    public String getName(){
-        return name;
+    public void setOwner(ParseUser owner){
+        put(OWNER_KEY, owner);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public ParseUser getOwner(){
+        return getParseUser(OWNER_KEY);
     }
 
-    public String getPhoto(){
-        return  photo;
+    public void setTypeOfMeal(String mealType){
+        put(MEAL_TYPE_KEY, mealType);
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public String getMealType(){
+        return getString(MEAL_TYPE_KEY);
     }
 
-    public Date getDate(){
-        return date;
+    public void setDescription(String description){
+        put(DESCRIPTION_KEY, description);
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public String getDescription(){
+        return getString(DESCRIPTION_KEY);
+    }
+
+    public void setPhoto(final ParseFile imageFile){
+        put(PHOTO_KEY, imageFile);
+    }
+
+    public ParseFile getPhoto(){
+        return getParseFile(PHOTO_KEY);
     }
 }

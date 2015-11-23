@@ -2,6 +2,7 @@ package edu.sc.snacktrack;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Camera;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -187,6 +188,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_logout:
                 logout();
                 break;
+            case R.id.action_new:
+                Intent intent = new Intent(this, NewEntryActivity.class);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
