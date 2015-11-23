@@ -96,22 +96,26 @@ public class MainActivity extends AppCompatActivity {
             mySnackList = new ArrayList<SnackEntry>();
             try {
                 // Locate the class table named "TestObject" in Parse.com
-                ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-                        "SnackEntry");
+                ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
+                query.whereEqualTo("owner", ParseUser.getCurrentUser());
+
+               // ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
+                 //       "SnackEntry");
                 // Locate the column named "createdAt" in Parse.com and order list
                 // by descending
                 query.orderByDescending("createdAt"); //_created_at
-                ob = query.find();
-                for (ParseObject snack : ob) {
-                    // Locate images in flag column
-                    ParseFile image = (ParseFile) snack.get("photo");
-
-                    SnackEntry snackEntry = new SnackEntry();
-                    snackEntry.setDate(snack.getCreatedAt());
-                    snackEntry.setName((String) snack.get("mealType"));
-                    snackEntry.setPhoto(image.getUrl());
-                    mySnackList.add(snackEntry);
-                }
+                mySnackList = query.find();
+//                ob = query.find();
+//                for (ParseObject snack : ob) {
+//                    // Locate images in flag column
+//                    ParseFile image = (ParseFile) snack.get("photo");
+//
+//                    SnackEntry snackEntry = new SnackEntry();
+//                    snackEntry.setDescription(snackEntry.getDescription());
+//                    snackEntry.setTypeOfMeal((String) snack.get("mealType"));
+//                    snackEntry.setPhoto(image);
+//                    mySnackList.add(snackEntry);
+//                }
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();

@@ -68,9 +68,9 @@ public class CustomAdapter extends BaseAdapter {
         }
         // Set the results into TextViews
        // holder.name.setText(mySnackList.get(position).getName());
-        holder.date.setText(mySnackList.get(position).getDate().toString().substring(0,10));
+        holder.date.setText(mySnackList.get(position).getCreatedAt().toString().substring(0,10));
        // Set the results into ImageView
-        imageLoader.DisplayImage(mySnackList.get(position).getPhoto(),
+        imageLoader.DisplayImage(mySnackList.get(position).getPhoto().getUrl(),
                 holder.photo);
         // Listen for ListView Item Click
         view.setOnClickListener(new View.OnClickListener() {
