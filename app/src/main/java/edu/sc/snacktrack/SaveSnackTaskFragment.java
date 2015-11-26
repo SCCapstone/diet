@@ -149,7 +149,7 @@ public class SaveSnackTaskFragment extends Fragment {
 
                     // Attempt to rename the cache file to point to the parse file.
                     if(!cacheFile.renameTo(fileCache.getFile(parseFile.getUrl()))){
-                        Log.e(TAG, "Failed to rename cache file.");
+                        Log.e(TAG, "Failed to rename cache file to point to url of parse file.");
                     }
 
                     snackEntry.setPhoto(parseFile);

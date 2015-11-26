@@ -41,8 +41,8 @@ public class NewEntryActivity extends AppCompatActivity{
 
     private View progressOverlay;
 
-    private String currentPhotoPath;
-    private String newPhotoPath;
+    private File currentImageFile;
+    private File newImageFile;
 
     private static final int DESCRIPTION_CHANGE_CODE = 1;
     private static final int CAMERA_REQUEST_CODE = 2;
@@ -101,14 +101,20 @@ public class NewEntryActivity extends AppCompatActivity{
 
         // Restore instance state
         if(savedInstanceState != null){
+            String currentPhotoPath, newPhotoPath;
+
             descriptionTextView.setText(savedInstanceState.getString(STATE_DESCRIPTION_STRING, ""));
 
-            this.currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, null);
-            this.newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, null);
             this.saving = savedInstanceState.getBoolean(STATE_SAVING, false);
 
-            if(currentPhotoPath != null){
-                loadPhotoPreview(currentPhotoPath);
+            currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, null);
+            newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, null);
+
+            currentImageFile = currentPhotoPath == null ? null : new File(currentPhotoPath);
+            newImageFile = newPhotoPath == null ? null : new File(newPhotoPath);
+
+            if(currentImageFile != null){
+                loadPhotoPreview(currentImageFile);
             }
         }
 
@@ -129,7 +135,7 @@ public class NewEntryActivity extends AppCompatActivity{
         this.fileCache = new FileCache(this);
 
         // If a photo has not been taken, start the camera app.
-        if(newPhotoPath == null){
+        if(newImageFile == null){
             dispatchPictureIntent();
         }
     }
@@ -141,7 +147,7 @@ public class NewEntryActivity extends AppCompatActivity{
     private void dispatchPictureIntent(){
         try {
             File imageFile = fileCache.createTempFile("SnackPhoto", ".jpg");
-            this.newPhotoPath = imageFile.getAbsolutePath();
+            this.newImageFile = imageFile;
 
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
@@ -191,26 +197,29 @@ public class NewEntryActivity extends AppCompatActivity{
             if(resultCode == RESULT_OK){
                 //Image capture successful
 
-                this.currentPhotoPath = this.newPhotoPath;
-                loadPhotoPreview(currentPhotoPath);
+                currentImageFile = newImageFile;
+
+                Log.d(TAG, "Calling loadPhotoPreview with file: " + currentImageFile);
+
+                loadPhotoPreview(currentImageFile);
             } else if(resultCode == RESULT_CANCELED){
                 // Image capture canceled
 
                 // If the user never took a photo, leave this activity.
-                if(currentPhotoPath == null){
+                if(currentImageFile == null){
                     setResult(RESULT_CANCELED);
                     finish();
                 }
 
-                if(newPhotoPath != null) {
-                    if (new File(newPhotoPath).delete()) {
+                if(newImageFile != null) {
+                    if (newImageFile.delete()) {
                         Log.d(TAG, "Unused image file deleted.");
                     } else {
                         Log.d(TAG, "Could not delete unused image file.");
                     }
                 }
 
-                newPhotoPath = null;
+                newImageFile = null;
             } else{
                 updateToast("Image capture failed.", Toast.LENGTH_SHORT);
                 // Image capture failed.
@@ -222,15 +231,15 @@ public class NewEntryActivity extends AppCompatActivity{
      * Asynchronously loads a scaled-down preview of an image and displays it in imageView.
      * The preview is scaled based on PREVIEW_WIDTH and PREVIEW_HEIGHT
      *
-     * @param photoPath Path to the image to preview
+     * @param imageFile Image file to preview
      */
-    private void loadPhotoPreview(String photoPath){
+    private void loadPhotoPreview(File imageFile){
 
-        if(new File(photoPath).exists()){
+        if(imageFile.exists()){
             if(photoPreviewLoader != null){
                 photoPreviewLoader.cancel(true);
             }
-            photoPreviewLoader = new PhotoPreviewLoader(photoPath);
+            photoPreviewLoader = new PhotoPreviewLoader(imageFile);
             photoPreviewLoader.execute();
         } else{
             updateToast("Unable to load preview image.", Toast.LENGTH_SHORT);
@@ -247,7 +256,7 @@ public class NewEntryActivity extends AppCompatActivity{
         Bundle args = new Bundle();
         args.putString(SaveSnackTaskFragment.MEAL_TYPE_KEY, spinner.getSelectedItem().toString());
         args.putString(SaveSnackTaskFragment.DESCRIPTION_KEY, descriptionTextView.getText().toString());
-        args.putString(SaveSnackTaskFragment.PHOTO_PATH_KEY, currentPhotoPath);
+        args.putString(SaveSnackTaskFragment.PHOTO_PATH_KEY, currentImageFile.getAbsolutePath());
         saveSnackTaskFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().add(saveSnackTaskFragment, TASK_FRAGMENT_TAG).commit();
     }
@@ -295,8 +304,12 @@ public class NewEntryActivity extends AppCompatActivity{
         super.onSaveInstanceState(outState);
 
         outState.putString(STATE_DESCRIPTION_STRING, descriptionTextView.getText().toString());
-        outState.putString(STATE_CURRENT_PHOTO_PATH, currentPhotoPath);
-        outState.putString(STATE_NEW_PHOTO_PATH, newPhotoPath);
+        if(currentImageFile != null){
+            outState.putString(STATE_CURRENT_PHOTO_PATH, currentImageFile.getAbsolutePath());
+        }
+        if(newImageFile != null){
+            outState.putString(STATE_NEW_PHOTO_PATH, newImageFile.getAbsolutePath());
+        }
         outState.putBoolean(STATE_SAVING, saving);
     }
 
@@ -385,12 +398,12 @@ public class NewEntryActivity extends AppCompatActivity{
      * Asynchronously loads a scaled-down preview of an image and displays it in imageView.
      * The preview is scaled based on PREVIEW_WIDTH and PREVIEW_HEIGHT
      */
-    private class PhotoPreviewLoader extends AsyncTask<String, Void, Bitmap>{
+    private class PhotoPreviewLoader extends AsyncTask<File, Void, Bitmap>{
 
-        private String photoPath;
+        private File imageFile;
 
-        public PhotoPreviewLoader(String photoPath){
-            this.photoPath = photoPath;
+        public PhotoPreviewLoader(File imageFile){
+            this.imageFile = new File(imageFile.getAbsolutePath());
         }
 
         @Override
@@ -400,14 +413,14 @@ public class NewEntryActivity extends AppCompatActivity{
             imageView.setImageBitmap(null);
         }
 
-        protected Bitmap doInBackground(String... params){
+        protected Bitmap doInBackground(File... params){
             final int targetWidth = PREVIEW_WIDTH;
             final int targetHeight = PREVIEW_HEIGHT;
 
             // Get the width and height of the full-sized image
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(photoPath, options);
+            BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
             int originalWidth = options.outWidth;
             int originalHeight = options.outHeight;
 
@@ -416,12 +429,18 @@ public class NewEntryActivity extends AppCompatActivity{
 
             options.inJustDecodeBounds = false;
             options.inSampleSize = scaleSampleSize;
-            Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+
+
+            if(bitmap == null){
+                Log.d(TAG, "Resulting bitmap is null after decoding file " + imageFile);
+                return null;
+            }
 
             // Check the image's EXIF data and rotate the preview if necessary.
             ExifInterface exif;
             try{
-                exif = new ExifInterface(photoPath);
+                exif = new ExifInterface(imageFile.getAbsolutePath());
             } catch(IOException e){
                 return null;
             }
