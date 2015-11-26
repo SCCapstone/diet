@@ -62,6 +62,8 @@ public class NewEntryActivity extends AppCompatActivity{
 
     private boolean saving = false;
 
+    private FileCache fileCache;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +125,9 @@ public class NewEntryActivity extends AppCompatActivity{
             saveSnackTaskFragment.setCallbacks(new SaveSnackTaskCallbacks());
         }
 
+        // Initialize the file cache
+        this.fileCache = new FileCache(this);
+
         // If a photo has not been taken, start the camera app.
         if(newPhotoPath == null){
             dispatchPictureIntent();
@@ -135,7 +140,7 @@ public class NewEntryActivity extends AppCompatActivity{
      */
     private void dispatchPictureIntent(){
         try {
-            File imageFile = createImageFile();
+            File imageFile = fileCache.createTempFile("SnackPhoto", ".jpg");
             this.newPhotoPath = imageFile.getAbsolutePath();
 
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -153,39 +158,6 @@ public class NewEntryActivity extends AppCompatActivity{
             setResult(RESULT_CANCELED);
             finish();
         }
-    }
-
-    /**
-     * Attempts to creates a new, empty image file.
-     *
-     * @return The empty image file
-     * @throws IOException
-     */
-    private File createImageFile() throws IOException{
-
-        String imageFilePrefix = "SnackPhoto";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-        // If the storage directory does not exist, attempt to make it.
-        if(storageDir != null){
-            if(!storageDir.exists()){
-                if(!storageDir.mkdirs()){
-                    throw new IOException("Could not create storage directory " + storageDir.getAbsolutePath());
-                }
-            }
-        } else{
-            throw new IOException("Could not create storage directory");
-        }
-
-        File imageFile = File.createTempFile(
-                imageFilePrefix,  /* prefix */
-                ".jpg",           /* suffix */
-                storageDir        /* directory */
-        );
-
-        Log.d(TAG, "New image file path: " + imageFile.getAbsolutePath());
-
-        return imageFile;
     }
 
     /**
