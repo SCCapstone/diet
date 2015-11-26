@@ -4,6 +4,8 @@ package edu.sc.snacktrack;
  * Created by dowdw on 11/9/2015.
  */
 import java.io.File;
+import java.io.IOException;
+
 import android.content.Context;
 
 public class FileCache {
@@ -29,6 +31,30 @@ public class FileCache {
         File f = new File(cacheDir, filename);
         return f;
 
+    }
+
+    /**
+     * Creates an empty "temporary" file in the cache directory. This file should eventually be
+     * renamed or deleted.
+     *
+     * @param suffix The suffix of the file name
+     * @param prefix Typically the file extension (.png, .jpg, etc.)
+     * @return The temporary file
+     * @throws IOException
+     */
+    public File createTempFile(String suffix, String prefix) throws IOException{
+        return File.createTempFile(suffix, prefix, cacheDir);
+    }
+
+    /**
+     * Creates an empty "temporary" file with the name "temp" in the cache directory. This file
+     * should eventually be renamed or deleted.
+     *
+     * @return The temporary file
+     * @throws IOException
+     */
+    public File createTempFile() throws IOException{
+        return this.createTempFile("temp", "");
     }
 
     public void clear() {
