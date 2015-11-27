@@ -182,9 +182,15 @@ public class NewEntryActivity extends AppCompatActivity{
             if(resultCode == RESULT_OK){
                 //Image capture successful
 
-                currentImageFile = newImageFile;
+                if(currentImageFile != null) {
+                    if (currentImageFile.delete()) {
+                        Log.d(TAG, "Deleted old photo after retake.");
+                    } else {
+                        Log.d(TAG, "Could not delete old photo after retake.");
+                    }
+                }
 
-                Log.d(TAG, "Calling loadPhotoPreview with file: " + currentImageFile);
+                currentImageFile = newImageFile;
 
                 loadPhotoPreview(currentImageFile);
             } else if(resultCode == RESULT_CANCELED){
@@ -204,7 +210,7 @@ public class NewEntryActivity extends AppCompatActivity{
                     }
                 }
 
-                newImageFile = null;
+                newImageFile = currentImageFile;
             } else{
                 updateToast("Image capture failed.", Toast.LENGTH_SHORT);
                 // Image capture failed.
