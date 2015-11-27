@@ -166,21 +166,6 @@ public class NewEntryActivity extends AppCompatActivity{
         }
     }
 
-    /**
-     * Converts exif attribute to a rotation in degrees.
-     *
-     * @param exifOrientation The orientation attribute
-     * @return rotation in degrees
-     */
-    private int exifToDegrees(int exifOrientation){
-        switch(exifOrientation){
-            case ExifInterface.ORIENTATION_ROTATE_90: return 90;
-            case ExifInterface.ORIENTATION_ROTATE_180: return 180;
-            case ExifInterface.ORIENTATION_ROTATE_270: return 270;
-            default: return 0;
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -398,7 +383,7 @@ public class NewEntryActivity extends AppCompatActivity{
      * Asynchronously loads a scaled-down preview of an image and displays it in imageView.
      * The preview is scaled based on PREVIEW_WIDTH and PREVIEW_HEIGHT
      */
-    private class PhotoPreviewLoader extends AsyncTask<File, Void, Bitmap>{
+    private class PhotoPreviewLoader extends AsyncTask<Void, Void, Bitmap>{
 
         private File imageFile;
 
@@ -413,7 +398,7 @@ public class NewEntryActivity extends AppCompatActivity{
             imageView.setImageBitmap(null);
         }
 
-        protected Bitmap doInBackground(File... params){
+        protected Bitmap doInBackground(Void... params){
             final int targetWidth = PREVIEW_WIDTH;
             final int targetHeight = PREVIEW_HEIGHT;
 
@@ -438,23 +423,19 @@ public class NewEntryActivity extends AppCompatActivity{
             }
 
             // Check the image's EXIF data and rotate the preview if necessary.
-            ExifInterface exif;
-            try{
-                exif = new ExifInterface(imageFile.getAbsolutePath());
-            } catch(IOException e){
-                return null;
-            }
-
-            int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            int rotationDeg = exifToDegrees(rotation);
             Matrix matrix = new Matrix();
+            int rotationDeg;
+            try{
+                rotationDeg = Utils.getExifRotation(imageFile);
+            } catch(IOException e){
+                rotationDeg = 0;
+            }
             matrix.preRotate(rotationDeg);
 
             // Return a bitmap with the correct rotation applied.
             return Bitmap.createBitmap(
                     bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true
             );
-
         }
 
         @Override

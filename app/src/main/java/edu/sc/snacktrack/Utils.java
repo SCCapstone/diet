@@ -1,12 +1,15 @@
 package edu.sc.snacktrack;
 
 import android.content.Context;
+import android.media.ExifInterface;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import static com.parse.ParseException.*;
 import com.parse.ParseException;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -87,6 +90,40 @@ public class Utils {
         } else{
             return "No error";
         }
+    }
+
+    /**
+     * Extracts the EXIF rotation tag of an image file.
+     *
+     * @param filePath Path to the image file
+     * @return Rotation in degrees
+     * @throws IOException
+     */
+    public static int getExifRotation(String filePath) throws IOException{
+        ExifInterface exif = new ExifInterface(filePath);
+
+        int exifOrientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+        );
+
+        switch(exifOrientation){
+            case ExifInterface.ORIENTATION_ROTATE_90:  return 90;
+            case ExifInterface.ORIENTATION_ROTATE_180: return 180;
+            case ExifInterface.ORIENTATION_ROTATE_270: return 270;
+            default: return 0;
+        }
+    }
+
+    /**
+     * Extracts the EXIF rotation tag of an image file.
+     *
+     * @param file The image file
+     * @return Rotation in degrees
+     * @throws IOException
+     */
+    public static int getExifRotation(File file) throws IOException{
+        return getExifRotation(file.getAbsolutePath());
     }
 
     /**
