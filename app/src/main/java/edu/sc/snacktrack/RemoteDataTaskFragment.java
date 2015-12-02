@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Fragment manages retrieving data from Parse retains itself across configuration changes.
+ * This Fragment manages retrieving data from Parse and retains itself across configuration changes.
  *
  * @author Alex Lockwood
  * (Modified for SnackTrack)
@@ -100,12 +100,7 @@ public class RemoteDataTaskFragment extends Fragment {
     }
 
     /**
-     * A dummy task that performs some (dumb) background work and
-     * proxies progress updates and results back to the Activity.
-     *
-     * Note that we need to check if the callbacks are null in each
-     * method in case they are invoked after the Activity's and
-     * Fragment's onDestroy() method have been called.
+     * The async task to execute.
      */
     private class RemoteDataTask extends AsyncTask<Void, Integer, List<SnackEntry>> {
 
