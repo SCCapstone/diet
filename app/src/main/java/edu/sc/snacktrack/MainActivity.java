@@ -1,15 +1,12 @@
 package edu.sc.snacktrack;
 
-import android.app.ProgressDialog;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
-import android.graphics.Camera;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,46 +14,29 @@ import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.ParseQuery;
 
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.ListView;
-
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RemoteDataTaskFragment.RDTTaskCallbacks{
 
-    public static final int LOGIN_REQUEST = 1;
+    private static final int LOGIN_REQUEST = 1;
+    private static final int NEW_ENTRY_REQUEST = 2;
+
+    private static final String REMOTE_DATA_TASK_FRAGMENT_TAG = "remoteDataTaskFragment";
+
     private Toast toast;
 
     private List<SnackEntry> mySnacks = new ArrayList<SnackEntry>();
 
-    ListView listview;
-    List<ParseObject> ob;
-    ProgressDialog mProgressDialog;
-    CustomAdapter adapter;
+    private ListView listview;
+    private CustomAdapter adapter;
     private List<SnackEntry> mySnackList = null;
 
+    private RemoteDataTaskFragment remoteDataTaskFragment;
 
-//    ListView listview;
-//    List<ParseObject> ob;
-//    ProgressDialog mProgressDialog;
-//    ArrayAdapter<String> adapter;
-
-
+    private View progressOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,92 +47,60 @@ public class MainActivity extends AppCompatActivity {
         if(ParseUser.getCurrentUser() == null){
             startNewAccountActivity();
         }
-        new RemoteDataTask().execute();
-     //   populateList();
-//        registerClickCallback();
 
+        // Set up the progress overlay
+        progressOverlay = findViewById(R.id.progressOverlay);
+        ((TextView) progressOverlay.findViewById(R.id.progressMessage)).setText(
+                "Accessing SnackTrack Database..."
+        );
+
+        FragmentManager fm = getSupportFragmentManager();
+        remoteDataTaskFragment = (RemoteDataTaskFragment) fm.findFragmentByTag(REMOTE_DATA_TASK_FRAGMENT_TAG);
+
+        // If the Fragment is non-null, then it is currently being
+        // retained across a configuration change.
+        if (remoteDataTaskFragment == null) {
+            remoteDataTaskFragment = new RemoteDataTaskFragment();
+            fm.beginTransaction().add(remoteDataTaskFragment, REMOTE_DATA_TASK_FRAGMENT_TAG).commit();
+        } else{
+            remoteDataTaskFragment.restart();
+        }
+
+        // If remote data access is in progress, show the progress overlay
+        if(remoteDataTaskFragment.isRunning()){
+            progressOverlay.setVisibility(View.VISIBLE);
+            //setWidgetsEnabled(false);
+        }
+    }
+
+    @Override
+    public void onRDTPreExecute() {
+        progressOverlay.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onRDTProgressUpdate(int percent) {
 
     }
 
-    // RemoteDataTask AsyncTask
-    private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(MainActivity.this);
-            // Set progressdialog title
-            mProgressDialog.setTitle("Accessing SnackTrack Database.");
-            // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
-            mProgressDialog.show();
-        }
+    @Override
+    public void onRDTCancelled() {
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            // Create the array
-            mySnackList = new ArrayList<SnackEntry>();
-            try {
-                // Locate the class table named "TestObject" in Parse.com
-                ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
-                query.whereEqualTo("owner", ParseUser.getCurrentUser());
-
-               // ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-                 //       "SnackEntry");
-                // Locate the column named "createdAt" in Parse.com and order list
-                // by descending
-                query.orderByDescending("createdAt"); //_created_at
-                mySnackList = query.find();
-//                ob = query.find();
-//                for (ParseObject snack : ob) {
-//                    // Locate images in flag column
-//                    ParseFile image = (ParseFile) snack.get("photo");
-//
-//                    SnackEntry snackEntry = new SnackEntry();
-//                    snackEntry.setDescription(snackEntry.getDescription());
-//                    snackEntry.setTypeOfMeal((String) snack.get("mealType"));
-//                    snackEntry.setPhoto(image);
-//                    mySnackList.add(snackEntry);
-//                }
-            } catch (ParseException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            // Locate the listview in listview_main.xml
-            listview = (ListView) findViewById(R.id.SnackList);
-            // Pass the results into ListViewAdapter.java
-            adapter = new CustomAdapter(MainActivity.this,
-                    mySnackList);
-            // Binds the Adapter to the ListView
-            listview.setAdapter(adapter);
-            // Close the progressdialog
-            mProgressDialog.dismiss();
-        }
     }
-//private void registerClickCallback(){
-//    ListView list = (ListView) findViewById(R.id.SnackList);
-//list.setOnItemClickListener(new AdaptervView.OnItemClickListener() {
-//    @override
-//    public void onItemClick(AdapterView<?> parent, View viewClicked, int position, long id) {
-//        TextView textView = (TextView) viewClicked;
-//        String message = "You clicked # " + position + " " + textView.getText().toString();
-//        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-//    }
-//});
-//}
-    private void populateList(){
-        String[] myItems = {"Bill","Bob","Joyce", "Gail"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.snack_entry,myItems);
 
-        ListView list = (ListView) findViewById(R.id.SnackList);
-        list.setAdapter(adapter);
+    @Override
+    public void onRDTPostExecute(List<SnackEntry> snackList) {
+        this.mySnackList = snackList;
+
+        // Locate the listview in listview_main.xml
+        listview = (ListView) findViewById(R.id.SnackList);
+        // Pass the results into ListViewAdapter.java
+        adapter = new CustomAdapter(MainActivity.this,
+                mySnackList);
+        // Binds the Adapter to the ListView
+        listview.setAdapter(adapter);
+
+        progressOverlay.setVisibility(View.GONE);
     }
 
     private void startNewAccountActivity(){
@@ -161,15 +109,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode == MainActivity.LOGIN_REQUEST){
-            if(resultCode == RESULT_OK){
-                updateToast("Log in successful!", Toast.LENGTH_SHORT);
-            } else{
-                startNewAccountActivity();
-            }
-        }
-        else{
-            updateToast("Something's not right", Toast.LENGTH_LONG);
+        switch(requestCode){
+            case LOGIN_REQUEST:
+                if(resultCode == RESULT_OK){
+                    updateToast("Log in successful!", Toast.LENGTH_SHORT);
+                } else{
+                    startNewAccountActivity();
+                }
+                break;
+            case NEW_ENTRY_REQUEST:
+                if(resultCode == RESULT_OK){
+                    remoteDataTaskFragment.restart();
+                }
+                break;
+            default:
+                updateToast("Something's not right", Toast.LENGTH_LONG);
         }
     }
 
@@ -194,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_new:
                 Intent intent = new Intent(this, NewEntryActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, NEW_ENTRY_REQUEST);
         }
 
         return super.onOptionsItemSelected(item);
