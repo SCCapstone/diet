@@ -114,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
                 } else{
                     startNewAccountActivity();
                 }
+
+                remoteDataTaskFragment.restart();
                 break;
             case NEW_ENTRY_REQUEST:
                 if(resultCode == RESULT_OK){
