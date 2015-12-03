@@ -28,8 +28,6 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
 
     private Toast toast;
 
-    private List<SnackEntry> mySnacks = new ArrayList<SnackEntry>();
-
     private ListView listview;
     private CustomAdapter adapter;
     private List<SnackEntry> mySnackList = null;
