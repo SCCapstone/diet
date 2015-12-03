@@ -23,6 +23,8 @@ import android.os.Handler;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 public class ImageLoader {
@@ -45,6 +47,7 @@ public class ImageLoader {
     public void DisplayImage(String url, ImageView imageView) {
         imageViews.put(imageView, url);
         Bitmap bitmap = memoryCache.get(url);
+
         if (bitmap != null)
             imageView.setImageBitmap(bitmap);
         else {
@@ -58,10 +61,11 @@ public class ImageLoader {
         executorService.submit(new PhotosLoader(p));
     }
 
-    private Bitmap getBitmap(String url) {
+    private Bitmap getBitmap(String url, @Nullable final Integer scaleWidth,
+                             @Nullable final Integer scaleHeight) {
         File f = fileCache.getFile(url);
 
-        Bitmap b = decodeFile(f);
+        Bitmap b = decodeFile(f, scaleWidth, scaleHeight);
         if (b != null)
             return b;
 
@@ -79,7 +83,7 @@ public class ImageLoader {
             Utils.CopyStream(is, os);
             os.close();
             conn.disconnect();
-            bitmap = decodeFile(f);
+            bitmap = decodeFile(f, scaleWidth, scaleHeight);
             return bitmap;
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -90,7 +94,8 @@ public class ImageLoader {
     }
 
     // Decodes image and scales it to reduce memory consumption
-    private Bitmap decodeFile(File f) {
+    private Bitmap decodeFile(File f, @Nullable final Integer SCALE_WIDTH,
+                              @Nullable final Integer SCALE_HEIGHT) {
         try {
             // Decode image size
             BitmapFactory.Options o = new BitmapFactory.Options();
@@ -100,7 +105,33 @@ public class ImageLoader {
             stream1.close();
 
             // Find the correct scale value. It should be the power of 2.
-            final int REQUIRED_SIZE = 70;
+            final int REQUIRED_SIZE;
+            final int DEFAULT_REQUIRED_SIZE = 100;
+            final boolean SCALE_WIDTH_VALID = SCALE_WIDTH != null && SCALE_WIDTH > 0;
+            final boolean SCALE_HEIGHT_VALID = SCALE_HEIGHT != null && SCALE_HEIGHT > 0;
+
+            if(!SCALE_WIDTH_VALID && !SCALE_HEIGHT_VALID){
+                // Case 1: Both the width and height are invalid
+                // Use the default required size.
+
+                REQUIRED_SIZE = DEFAULT_REQUIRED_SIZE;
+            } else if(!SCALE_WIDTH_VALID && SCALE_HEIGHT_VALID){
+                // Case 2: Only the height is valid.
+                // Use the height as the required size.
+
+                REQUIRED_SIZE = SCALE_HEIGHT;
+            } else if(SCALE_WIDTH_VALID && !SCALE_HEIGHT_VALID){
+                // Case 3: Only the width is valid.
+                // Use the width as the required size.
+
+                REQUIRED_SIZE = SCALE_WIDTH;
+            } else{
+                // Case 4: Both the width and height are valid.
+                // Use the largest of the two as the required size.
+
+                REQUIRED_SIZE = Math.max(SCALE_WIDTH, SCALE_HEIGHT);
+            }
+
             int width_tmp = o.outWidth, height_tmp = o.outHeight;
             int scale = 1;
             while (true) {
@@ -161,7 +192,9 @@ public class ImageLoader {
             try {
                 if (imageViewReused(photoToLoad))
                     return;
-                Bitmap bmp = getBitmap(photoToLoad.url);
+
+                ViewGroup.LayoutParams imageViewLayoutParams = photoToLoad.imageView.getLayoutParams();
+                Bitmap bmp = getBitmap(photoToLoad.url, imageViewLayoutParams.width, imageViewLayoutParams.height);
                 memoryCache.put(photoToLoad.url, bmp);
                 if (imageViewReused(photoToLoad))
                     return;
