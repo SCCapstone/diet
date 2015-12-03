@@ -18,6 +18,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.graphics.Matrix;
 import android.os.Handler;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -117,7 +118,19 @@ public class ImageLoader {
             FileInputStream stream2 = new FileInputStream(f);
             Bitmap bitmap = BitmapFactory.decodeStream(stream2, null, o2);
             stream2.close();
-            return bitmap;
+
+            // Rotate the bitmap based on the image file's EXIF data
+            // This is a quick fix and likely not the most efficient solution, as two bitmaps must
+            // be simultaneously loaded into memory.
+            int rotation = Utils.getExifRotation(f);
+            Matrix matrix = new Matrix();
+            matrix.preRotate(rotation);
+
+            // Return a bitmap with the correct rotation applied.
+            return Bitmap.createBitmap(
+                    bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true
+            );
+
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
             e.printStackTrace();
