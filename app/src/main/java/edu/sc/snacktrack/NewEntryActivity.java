@@ -84,6 +84,7 @@ public class NewEntryActivity extends AppCompatActivity{
                 Intent intent = new Intent(NewEntryActivity.this, EditDescriptionActivity.class);
                 intent.putExtra(EditDescriptionActivity.DESCRIPTION_STRING_KEY, descriptionTextView.getText().toString());
                 startActivityForResult(intent, DESCRIPTION_CHANGE_CODE);
+                overridePendingTransition(R.animator.animation, R.animator.animation2);
             }
         });
 
@@ -153,6 +154,7 @@ public class NewEntryActivity extends AppCompatActivity{
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
 
             startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+            overridePendingTransition(R.animator.animation, R.animator.animation2);
         } catch (IOException e) {
             Toast.makeText(
                     this,
@@ -163,6 +165,7 @@ public class NewEntryActivity extends AppCompatActivity{
 
             setResult(RESULT_CANCELED);
             finish();
+            overridePendingTransition(R.animator.animation, R.animator.animation2);
         }
     }
 
@@ -200,6 +203,7 @@ public class NewEntryActivity extends AppCompatActivity{
                 if(currentImageFile == null){
                     setResult(RESULT_CANCELED);
                     finish();
+                    overridePendingTransition(R.animator.animation, R.animator.animation2);
                 }
 
                 if(newImageFile != null) {
@@ -375,6 +379,7 @@ public class NewEntryActivity extends AppCompatActivity{
                     toast.cancel();
                 }
                 finish();
+                overridePendingTransition(R.animator.animation, R.animator.animation2);
             } else{
                 updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
 

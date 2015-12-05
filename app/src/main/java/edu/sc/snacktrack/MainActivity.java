@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
     private void startNewAccountActivity(){
         Intent intent = new Intent(this, NewAccountActivity.class);
         startActivityForResult(intent, LOGIN_REQUEST);
+        overridePendingTransition(R.animator.animation, R.animator.animation2);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
             case R.id.action_new:
                 Intent intent = new Intent(this, NewEntryActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.animator.animation, R.animator.animation2);
         }
 
         return super.onOptionsItemSelected(item);

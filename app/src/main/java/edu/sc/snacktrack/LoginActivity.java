@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 setResult(RESULT_CANCELED);
                 finish();
+                overridePendingTransition(R.animator.animation, R.animator.animation2);
             }
         });
 
@@ -96,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Sign in was successful
                     setResult(RESULT_OK);
                     finish();
+                    overridePendingTransition(R.animator.animation, R.animator.animation2);
                 } else{
                     updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
                 }
@@ -172,5 +174,6 @@ public class LoginActivity extends AppCompatActivity {
         // activity.
         setResult(RESULT_CANCELED);
         finish();
+        overridePendingTransition(R.animator.animation, R.animator.animation2);
     }
 }
