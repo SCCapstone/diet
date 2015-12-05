@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 public class ImageLoader {
@@ -52,7 +53,8 @@ public class ImageLoader {
             imageView.setImageBitmap(bitmap);
         else {
             queuePhoto(url, imageView);
-            imageView.setImageResource(stub_id);
+            //imageView.setImageResource(stub_id);
+            imageView.setImageBitmap(null);
         }
     }
 
@@ -226,10 +228,17 @@ public class ImageLoader {
         public void run() {
             if (imageViewReused(photoToLoad))
                 return;
-            if (bitmap != null)
+            if (bitmap != null) {
                 photoToLoad.imageView.setImageBitmap(bitmap);
-            else
-                photoToLoad.imageView.setImageResource(stub_id);
+                photoToLoad.imageView.startAnimation(
+                        AnimationUtils.loadAnimation(photoToLoad.imageView.getContext(), R.anim.fadein)
+                );
+            }
+            else {
+                //photoToLoad.imageView.setImageResource(stub_id);
+                photoToLoad.imageView.setImageBitmap(null);
+            }
+
         }
     }
 
