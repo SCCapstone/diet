@@ -6,9 +6,32 @@
     android:background="@drawable/bg">
 
     <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/content_frame"
+        tools:context=".MainActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <ListView
+                    android:id="@+id/SnackList"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentTop="true" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <include layout="@layout/progress_overlay"/>
 
     </FrameLayout>
 

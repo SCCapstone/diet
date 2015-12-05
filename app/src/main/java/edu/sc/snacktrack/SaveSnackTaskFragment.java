@@ -60,6 +60,8 @@ public class SaveSnackTaskFragment extends Fragment {
     private TaskCallbacks mCallbacks;
     private TheTask mTask;
 
+    private FileCache fileCache;
+
     /**
      * This method will only be called once when the retained
      * Fragment is first created.
@@ -70,6 +72,8 @@ public class SaveSnackTaskFragment extends Fragment {
 
         // Retain this fragment across configuration changes.
         setRetainInstance(true);
+
+        fileCache = new FileCache(this.getContext());
 
         // Create and execute the background task.
         mTask = new TheTask();
@@ -98,7 +102,7 @@ public class SaveSnackTaskFragment extends Fragment {
         private ParseUser owner;
         private String mealType;
         private String description;
-        private String photoPath;
+        private File cacheFile;
         private ParseFile parseFile;
 
         @Override
@@ -113,10 +117,11 @@ public class SaveSnackTaskFragment extends Fragment {
             owner = ParseUser.getCurrentUser();
             mealType = args.getString(MEAL_TYPE_KEY, null);
             description = args.getString(DESCRIPTION_KEY, null);
-            photoPath = args.getString(PHOTO_PATH_KEY, null);
-            if(photoPath != null){
-                parseFile = new ParseFile(new File(photoPath));
-            }
+
+            String filePath;
+            filePath = args.getString(PHOTO_PATH_KEY, null);
+            cacheFile = filePath == null ? null : new File(filePath);
+            parseFile = filePath == null ? null : new ParseFile(cacheFile);
 
         }
 
@@ -139,8 +144,14 @@ public class SaveSnackTaskFragment extends Fragment {
 
             // Save the image to parse, then save the snackEntry to parse
             try{
-                if(photoPath != null && new File(photoPath).exists()){
+                if(cacheFile != null && cacheFile.exists()){
                     parseFile.save();
+
+                    // Attempt to rename the cache file to point to the parse file.
+                    if(!cacheFile.renameTo(fileCache.getFile(parseFile.getUrl()))){
+                        Log.e(TAG, "Failed to rename cache file to point to url of parse file.");
+                    }
+
                     snackEntry.setPhoto(parseFile);
                     snackEntry.save();
                 } else{

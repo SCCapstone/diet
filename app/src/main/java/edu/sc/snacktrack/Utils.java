@@ -1,17 +1,38 @@
 package edu.sc.snacktrack;
 
 import android.content.Context;
+import android.media.ExifInterface;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import static com.parse.ParseException.*;
 import com.parse.ParseException;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * Utilities class for SnackTrack.
  */
 public class Utils {
-
+    public static void CopyStream(InputStream is, OutputStream os)
+    {
+        final int buffer_size=1024;
+        try
+        {
+            byte[] bytes=new byte[buffer_size];
+            for(;;)
+            {
+                int count=is.read(bytes, 0, buffer_size);
+                if(count==-1)
+                    break;
+                os.write(bytes, 0, count);
+            }
+        }
+        catch(Exception ex){}
+    }
     /**
      * This class should not be instantiated.
      */
@@ -69,6 +90,40 @@ public class Utils {
         } else{
             return "No error";
         }
+    }
+
+    /**
+     * Extracts the EXIF rotation tag of an image file.
+     *
+     * @param filePath Path to the image file
+     * @return Rotation in degrees
+     * @throws IOException
+     */
+    public static int getExifRotation(String filePath) throws IOException{
+        ExifInterface exif = new ExifInterface(filePath);
+
+        int exifOrientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+        );
+
+        switch(exifOrientation){
+            case ExifInterface.ORIENTATION_ROTATE_90:  return 90;
+            case ExifInterface.ORIENTATION_ROTATE_180: return 180;
+            case ExifInterface.ORIENTATION_ROTATE_270: return 270;
+            default: return 0;
+        }
+    }
+
+    /**
+     * Extracts the EXIF rotation tag of an image file.
+     *
+     * @param file The image file
+     * @return Rotation in degrees
+     * @throws IOException
+     */
+    public static int getExifRotation(File file) throws IOException{
+        return getExifRotation(file.getAbsolutePath());
     }
 
     /**
