@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -126,6 +128,20 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
             progressOverlay.setVisibility(View.VISIBLE);
             //setWidgetsEnabled(false);
         }
+    }
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState){
+        super.onPostCreate(savedInstanceState);
+
+        // Synchronize the state of the drawer toggle.
+        // This causes the drawer icon to appear and animate when the drawer opens/closes.
+        mDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mDrawerToggle.syncState();
+            }
+        });
     }
 
     @Override
