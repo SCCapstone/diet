@@ -165,6 +165,7 @@ public class NewAccountActivity extends AppCompatActivity {
     private void startLoginActivity(){
         Intent intent = new Intent(this, LoginActivity.class);
         startActivityForResult(intent, EXISTING_ACCOUNT_LOGIN_REQUEST);
+        overridePendingTransition(R.animator.animation, R.animator.animation2);
     }
 
     /**
