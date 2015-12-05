@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
 
     private Toast toast;
 
+    private static final String TAG = "MainActivity";
+
     DrawerLayout mDrawerLayout;
     ListView mDrawerList;
     ActionBarDrawerToggle mDrawerToggle;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
 
         // If no user is logged in, start the new account activity.
         if(ParseUser.getCurrentUser() == null){
+            Log.d(TAG, "No user is logged in, starting new account activity.");
             startNewAccountActivity();
         }
 
@@ -182,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         switch(requestCode){
             case LOGIN_REQUEST:
+
                 if(resultCode == RESULT_OK){
                     updateToast("Log in successful!", Toast.LENGTH_SHORT);
                 } else{
@@ -225,32 +229,19 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        if(mDrawerToggle.onOptionsItemSelected(item)) {
+        if(mDrawerToggle.onOptionsItemSelected(item)){
             return true;
-        }
-
-        else {
-            int id = item.getItemId();
-
-            switch (id) {
-                case R.id.action_logout:
-                    logout();
-                    break;
-                case R.id.action_new:
-                    Intent intent = new Intent(this, NewEntryActivity.class);
-                    startActivity(intent);
-            }
         }
 
         int id = item.getItemId();
 
-        switch(id){
+        switch (id) {
             case R.id.action_logout:
                 logout();
                 break;
             case R.id.action_new:
                 Intent intent = new Intent(this, NewEntryActivity.class);
-                startActivityForResult(intent, NEW_ENTRY_REQUEST);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
