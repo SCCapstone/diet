@@ -91,18 +91,18 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String[] tests = getResources().getStringArray(R.array.tests);
-                mTitle = tests[position];
-                testFragment tFragment = new testFragment();
-
-                Bundle data = new Bundle();
-                data.putInt("position", position);
-                tFragment.setArguments(data);
-
-                android.app.FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction ft = fragmentManager.beginTransaction();
-                ft.replace(R.id.content_frame, tFragment);
-                ft.commit();
+//                String[] tests = getResources().getStringArray(R.array.tests);
+//                mTitle = tests[position];
+//                testFragment tFragment = new testFragment();
+//
+//                Bundle data = new Bundle();
+//                data.putInt("position", position);
+//                tFragment.setArguments(data);
+//
+//                android.app.FragmentManager fragmentManager = getFragmentManager();
+//                FragmentTransaction ft = fragmentManager.beginTransaction();
+//                ft.replace(R.id.content_frame, tFragment);
+//                ft.commit();
 
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
