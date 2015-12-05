@@ -32,48 +32,62 @@
                 android:scaleType="centerCrop"
                 android:layout_marginBottom="20dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/mealTypeWrapper"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="What is this?"
-                android:id="@+id/mealTypeLabel"
+                android:orientation="vertical"
                 android:layout_below="@+id/imageView"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_marginBottom="30dp" />
+                android:background="#55ffffff"
+                android:padding="10dp">
 
-            <Spinner
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/meal_type_spinner"
-                android:layout_alignBaseline="@id/mealTypeLabel"
-                android:layout_toRightOf="@id/mealTypeLabel"
-                android:layout_toEndOf="@id/mealTypeLabel" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="What is this?"
+                    android:id="@+id/mealTypeLabel" />
 
-            <TextView
-                android:layout_width="wrap_content"
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/meal_type_spinner" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/descriptionWrapper"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/description_label"
-                android:id="@+id/descriptionLabel"
-                android:layout_below="@+id/mealTypeLabel"
+                android:orientation="vertical"
+                android:layout_below="@+id/mealTypeWrapper"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"
+                android:background="#55ffffff"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/description_label"
+                    android:id="@+id/descriptionLabel" />
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:hint="@string/edit_description_hint"
-                android:id="@+id/descriptionTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:scrollbars="vertical"
-                android:layout_below="@+id/descriptionLabel"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:hint="@string/edit_description_hint"
+                    android:id="@+id/descriptionTextView"
+                    android:scrollbars="vertical"
+                    android:minHeight="100dp"
+                    android:textColor="#000000"/>
+
+            </LinearLayout>
 
         </RelativeLayout>
 
