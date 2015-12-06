@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_logout).setVisible(!drawerOpen);
+//        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+//        menu.findItem(R.id.action_logout).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
                 break;
             case R.id.action_new:
                 Intent intent = new Intent(this, NewEntryActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, NEW_ENTRY_REQUEST);
                 overridePendingTransition(R.animator.animation, R.animator.animation2);
         }
 
