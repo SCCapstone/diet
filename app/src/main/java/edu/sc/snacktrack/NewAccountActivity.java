@@ -95,7 +95,7 @@ public class NewAccountActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        public void onActivityResult(int requestCode, int resultCode, Intent data){
         // If the user logged in an existing account, finish this activity.
         if(requestCode == EXISTING_ACCOUNT_LOGIN_REQUEST){
             if(resultCode == RESULT_OK && ParseUser.getCurrentUser() != null){

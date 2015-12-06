@@ -45,7 +45,13 @@
         <activity
             android:name=".EditDescriptionActivity"
             android:label="@string/title_activity_edit_description"
-            android:windowSoftInputMode="stateVisible|adjustResize">
+            android:windowSoftInputMode="stateVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name=".WelcomeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_welcome"
+            android:theme="@style/FullscreenTheme" >
         </activity>
     </application>
 

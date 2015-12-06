@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         // If no user is logged in, start the new account activity.
         if(ParseUser.getCurrentUser() == null){
             Log.d(TAG, "No user is logged in, starting new account activity.");
+            startWelcomeActivity();
             startNewAccountActivity();
         }
 
@@ -180,6 +181,12 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
     private void startNewAccountActivity(){
         Intent intent = new Intent(this, NewAccountActivity.class);
         startActivityForResult(intent, LOGIN_REQUEST);
+        overridePendingTransition(R.animator.animation, R.animator.animation2);
+    }
+
+    private void startWelcomeActivity(){
+        Intent intent = new Intent(this, WelcomeActivity.class);
+        startActivity(intent);
         overridePendingTransition(R.animator.animation, R.animator.animation2);
     }
 

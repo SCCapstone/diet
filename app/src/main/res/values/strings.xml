@@ -51,4 +51,8 @@
     <string name="action_done">Done</string>
     <string name="edit_description_hint">Tap to add a description (optional)</string>
     <string name="description_label">Description</string>
+
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">WELCOME TO \nSNACKTRACK</string>
 </resources>
