@@ -39,6 +39,13 @@
         <item>Lunch</item>
         <item>Dinner</item>
     </string-array>
+    <string-array name="meal_location">
+        <item>@string/default_spinner_item</item>
+        <item>Home</item>
+        <item>Fast Food</item>
+        <item>Restaurant</item>
+        <item>Friend\'s house</item>
+    </string-array>
     <string name="title_activity_edit_text">EditTextActivity</string>
     <string name="title_activity_edit_description">Edit Description</string>
     <string name="action_done">Done</string>

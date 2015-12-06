@@ -57,7 +57,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/description_label"
                 android:id="@+id/descriptionLabel"
-                android:layout_below="@+id/mealTypeLabel"
+                android:layout_below="@+id/meal_location_spinner"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
@@ -99,6 +99,16 @@
                 android:layout_alignLeft="@+id/progressBar"
                 android:layout_alignStart="@+id/progressBar"
                 android:visibility="invisible" />
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/meal_location_spinner"
+                android:layout_below="@+id/meal_type_spinner"
+                android:layout_alignLeft="@+id/meal_type_spinner"
+                android:layout_alignStart="@+id/meal_type_spinner"
+                android:entries="@array/meal_location"
+                />
 
 
         </RelativeLayout>
