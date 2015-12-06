@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
                 break;
             case R.id.action_new:
                 Intent intent = new Intent(this, NewEntryActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, NEW_ENTRY_REQUEST);
                 overridePendingTransition(R.animator.animation, R.animator.animation2);
         }
 
