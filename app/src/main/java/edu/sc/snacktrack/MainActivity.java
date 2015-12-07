@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
     }
 
     @Override
-    public void onRDTPostExecute(List<SnackEntry> snackList) {
+    public void onRDTPostExecute(final List<SnackEntry> snackList) {
         this.mySnackList = snackList;
 
         // Locate the listview in listview_main.xml
@@ -173,6 +173,18 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
                 mySnackList);
         // Binds the Adapter to the ListView
         listview.setAdapter(adapter);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SnackEntry entry = snackList.get(position);
+
+                Log.d(TAG, "onItemClick, position " + position);
+                Log.d(TAG, "Snack detail coming up...");
+                Log.d(TAG, "Description: " + entry.getDescription());
+                Log.d(TAG, "Meal type: " + entry.getMealType());
+            }
+        });
 
         progressOverlay.setVisibility(View.GONE);
     }
