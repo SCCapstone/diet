@@ -1,6 +1,8 @@
 package edu.sc.snacktrack;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -38,6 +40,7 @@ public class NewEntryActivity extends AppCompatActivity{
     private TextView descriptionTextView;
     private ImageView imageView;
     private Spinner spinner;
+    private Spinner mealLocationSpinner;
 
     private View progressOverlay;
 
@@ -70,6 +73,17 @@ public class NewEntryActivity extends AppCompatActivity{
         setContentView(R.layout.activity_new_entry);
 
         spinner = (Spinner) findViewById(R.id.meal_type_spinner);
+        mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
+        String location = mealLocationSpinner.getSelectedItem().toString();
+/*
+        SharedPreferences sharedPref = NewEntryActivity().getPreferences(Context.MODE_PRIVATE);
+        int defaultValue = getResources().getInteger(R.string.saved_high_score_default);
+        long highScore = sharedPref.getInt(getString()R.string.saved_high_score), defaultValue);
+*/
+        if(location.equals("Fast food"))
+        {
+            //fastfood++;
+        }
 
         // Set up the spinner
         spinner.setAdapter(ArrayAdapter.createFromResource(
@@ -84,6 +98,7 @@ public class NewEntryActivity extends AppCompatActivity{
                 Intent intent = new Intent(NewEntryActivity.this, EditDescriptionActivity.class);
                 intent.putExtra(EditDescriptionActivity.DESCRIPTION_STRING_KEY, descriptionTextView.getText().toString());
                 startActivityForResult(intent, DESCRIPTION_CHANGE_CODE);
+                overridePendingTransition(R.animator.animation, R.animator.animation2);
             }
         });
 
@@ -153,6 +168,7 @@ public class NewEntryActivity extends AppCompatActivity{
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
 
             startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+            overridePendingTransition(R.animator.animation, R.animator.animation2);
         } catch (IOException e) {
             Toast.makeText(
                     this,
@@ -163,6 +179,7 @@ public class NewEntryActivity extends AppCompatActivity{
 
             setResult(RESULT_CANCELED);
             finish();
+            overridePendingTransition(R.animator.animation, R.animator.animation2);
         }
     }
 
@@ -200,6 +217,7 @@ public class NewEntryActivity extends AppCompatActivity{
                 if(currentImageFile == null){
                     setResult(RESULT_CANCELED);
                     finish();
+                    overridePendingTransition(R.animator.animation, R.animator.animation2);
                 }
 
                 if(newImageFile != null) {
@@ -375,6 +393,7 @@ public class NewEntryActivity extends AppCompatActivity{
                     toast.cancel();
                 }
                 finish();
+                overridePendingTransition(R.animator.animation, R.animator.animation2);
             } else{
                 updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
 

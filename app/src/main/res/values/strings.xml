@@ -39,9 +39,20 @@
         <item>Lunch</item>
         <item>Dinner</item>
     </string-array>
+    <string-array name="meal_location">
+        <item>@string/default_spinner_item</item>
+        <item>Home</item>
+        <item>Fast Food</item>
+        <item>Restaurant</item>
+        <item>Friend\'s house</item>
+    </string-array>
     <string name="title_activity_edit_text">EditTextActivity</string>
     <string name="title_activity_edit_description">Edit Description</string>
     <string name="action_done">Done</string>
     <string name="edit_description_hint">Tap to add a description (optional)</string>
     <string name="description_label">Description</string>
+    <string name="title_activity_main">SnackTrack</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">WELCOME TO \nSNACKTRACK</string>
 </resources>
