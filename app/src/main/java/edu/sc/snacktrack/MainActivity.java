@@ -179,10 +179,11 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SnackEntry entry = snackList.get(position);
 
-                Log.d(TAG, "onItemClick, position " + position);
-                Log.d(TAG, "Snack detail coming up...");
-                Log.d(TAG, "Description: " + entry.getDescription());
-                Log.d(TAG, "Meal type: " + entry.getMealType());
+                Intent intent = new Intent(MainActivity.this, SnackDetails.class);
+                intent.putExtra(SnackDetails.DESCRIPTION_KEY, entry.getDescription());
+                intent.putExtra(SnackDetails.MEAL_TYPE_KEY, entry.getMealType());
+                intent.putExtra(SnackDetails.PHOTO_URL_KEY, entry.getPhoto().getUrl());
+                startActivity(intent);
             }
         });
 
