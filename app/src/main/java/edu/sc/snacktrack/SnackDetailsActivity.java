@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
-public class SnackDetails extends AppCompatActivity {
+public class SnackDetailsActivity extends AppCompatActivity {
 
     public static final String DESCRIPTION_KEY = "description";
     public static final String MEAL_TYPE_KEY = "mealType";

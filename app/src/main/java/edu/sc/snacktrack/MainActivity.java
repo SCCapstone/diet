@@ -1,12 +1,10 @@
 package edu.sc.snacktrack;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -179,10 +177,10 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SnackEntry entry = snackList.get(position);
 
-                Intent intent = new Intent(MainActivity.this, SnackDetails.class);
-                intent.putExtra(SnackDetails.DESCRIPTION_KEY, entry.getDescription());
-                intent.putExtra(SnackDetails.MEAL_TYPE_KEY, entry.getMealType());
-                intent.putExtra(SnackDetails.PHOTO_URL_KEY, entry.getPhoto().getUrl());
+                Intent intent = new Intent(MainActivity.this, SnackDetailsActivity.class);
+                intent.putExtra(SnackDetailsActivity.DESCRIPTION_KEY, entry.getDescription());
+                intent.putExtra(SnackDetailsActivity.MEAL_TYPE_KEY, entry.getMealType());
+                intent.putExtra(SnackDetailsActivity.PHOTO_URL_KEY, entry.getPhoto().getUrl());
                 startActivity(intent);
             }
         });

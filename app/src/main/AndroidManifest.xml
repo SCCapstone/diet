@@ -59,7 +59,7 @@
             android:theme="@style/FullscreenTheme" >
         </activity>
         <activity
-            android:name=".SnackDetails"
+            android:name=".SnackDetailsActivity"
             android:label="@string/title_activity_snack_details" >
         </activity>
     </application>
