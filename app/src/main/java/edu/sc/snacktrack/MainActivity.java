@@ -54,10 +54,10 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // If no user is logged in, start the new account activity.
+        // If no user is logged in, start the login activity.
         if(ParseUser.getCurrentUser() == null){
             Log.d(TAG, "No user is logged in, starting new account activity.");
-            startNewAccountActivity();
+            startLoginActivity();
         }
 
         mTitle = (String) getTitle();
@@ -188,8 +188,8 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         progressOverlay.setVisibility(View.GONE);
     }
 
-    private void startNewAccountActivity(){
-        Intent intent = new Intent(this, NewAccountActivity.class);
+    private void startLoginActivity(){
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivityForResult(intent, LOGIN_REQUEST);
         overridePendingTransition(R.animator.animation, R.animator.animation2);
     }
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
                 if(resultCode == RESULT_OK){
                     updateToast("Log in successful!", Toast.LENGTH_SHORT);
                 } else{
-                    startNewAccountActivity();
+                    startLoginActivity();
                 }
 
                 remoteDataTaskFragment.restart();
@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
             @Override
             public void done(ParseException e) {
                 if(e == null){
-                    startNewAccountActivity();
+                    startLoginActivity();
                 } else{
                     updateToast(e.getMessage(), Toast.LENGTH_LONG);
                 }

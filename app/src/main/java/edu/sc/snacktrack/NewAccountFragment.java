@@ -1,18 +1,19 @@
 package edu.sc.snacktrack;
 
-import android.content.Context;
-import android.content.Intent;
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,11 +24,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-public class NewAccountActivity extends AppCompatActivity {
+public class NewAccountFragment extends Fragment {
 
     private static final String TAG = "NewAccountDebug";
-
-    public static final int EXISTING_ACCOUNT_LOGIN_REQUEST = 1;
 
     private View rootView;
 
@@ -39,35 +38,34 @@ public class NewAccountActivity extends AppCompatActivity {
     private TextView passwordErrorStatus;
 
     private Button signUpButton;
-    //private TextView existingAccountLink;
+
     private Button existingAccountButton;
 
     private Toast toast;
 
     private UsernameErrorStatusUpdater usernameErrorStatusUpdater;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_account);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_new_account, container, false);
 
         // Initialize view fields
-        rootView = findViewById(R.id.newAccountRootView);
-        usernameET = (EditText) findViewById(R.id.usernameEditText);
-        passwordET = (EditText) findViewById(R.id.passwordEditText);
-        passwordConfirmET = (EditText) findViewById(R.id.passwordConfirmEditText);
-        usernameErrorStatus = (TextView) findViewById(R.id.usernameErrorStatus);
-        passwordErrorStatus = (TextView) findViewById(R.id.passwordErrorStatus);
-        signUpButton = (Button) findViewById(R.id.signUpButton);
-        //existingAccountLink = (TextView) findViewById(R.id.exisitingAccountLink);
-        existingAccountButton = (Button) findViewById(R.id.existingAccountButton);
+        rootView = view.findViewById(R.id.newAccountRootView);
+        usernameET = (EditText) view.findViewById(R.id.usernameEditText);
+        passwordET = (EditText) view.findViewById(R.id.passwordEditText);
+        passwordConfirmET = (EditText) view.findViewById(R.id.passwordConfirmEditText);
+        usernameErrorStatus = (TextView) view.findViewById(R.id.usernameErrorStatus);
+        passwordErrorStatus = (TextView) view.findViewById(R.id.passwordErrorStatus);
+        signUpButton = (Button) view.findViewById(R.id.signUpButton);
+        existingAccountButton = (Button) view.findViewById(R.id.existingAccountButton);
 
         // When the root view gains focus, we should hide the soft keyboard.
         rootView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    closeSoftKeyboard(v);
+                    Utils.closeSoftKeyboard(getContext(), v);
                 }
             }
         });
@@ -79,7 +77,7 @@ public class NewAccountActivity extends AppCompatActivity {
         existingAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startLoginActivity();
+                ((LoginActivity) getActivity()).existingAccountMode();
             }
         });
 
@@ -88,23 +86,12 @@ public class NewAccountActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                closeSoftKeyboard(v);
+                Utils.closeSoftKeyboard(getContext(), v);
                 attemptSignup();
             }
         });
-    }
 
-    @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data){
-        // If the user logged in an existing account, finish this activity.
-        if(requestCode == EXISTING_ACCOUNT_LOGIN_REQUEST){
-            if(resultCode == RESULT_OK && ParseUser.getCurrentUser() != null){
-                setResult(RESULT_OK);
-                finish();
-            }
-        } else{
-            updateToast("Something's not right", Toast.LENGTH_LONG);
-        }
+        return view;
     }
 
     /**
@@ -135,8 +122,10 @@ public class NewAccountActivity extends AppCompatActivity {
                     public void done(ParseException e) {
                         if(e == null){
                             // Sign up was successful
-                            setResult(RESULT_OK);
-                            finish();
+                            Activity activity = getActivity();
+
+                            activity.setResult(Activity.RESULT_OK);
+                            activity.finish();
                         } else{
                             updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                         }
@@ -160,12 +149,17 @@ public class NewAccountActivity extends AppCompatActivity {
     }
 
     /**
-     * Starts the login activity for an existing account.
+     * Enables or disables all user input widgets.
+     *
+     * @param enabled true to enable; false to disable
      */
-    private void startLoginActivity(){
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivityForResult(intent, EXISTING_ACCOUNT_LOGIN_REQUEST);
-        overridePendingTransition(R.animator.animation, R.animator.animation2);
+    private void setWidgetsEnabled(boolean enabled){
+        usernameET.setEnabled(enabled);
+        passwordET.setEnabled(enabled);
+        passwordConfirmET.setEnabled(enabled);
+        signUpButton.setEnabled(enabled);
+        //existingAccountLink.setEnabled(enabled);
+        existingAccountButton.setEnabled(enabled);
     }
 
     /**
@@ -232,55 +226,6 @@ public class NewAccountActivity extends AppCompatActivity {
                 updatePasswordErrorStatus(password, passwordConfirm);
             }
         });
-    }
-
-    /**
-     * Enables or disables all user input widgets.
-     *
-     * @param enabled true to enable; false to disable
-     */
-    private void setWidgetsEnabled(boolean enabled){
-        usernameET.setEnabled(enabled);
-        passwordET.setEnabled(enabled);
-        passwordConfirmET.setEnabled(enabled);
-        signUpButton.setEnabled(enabled);
-        //existingAccountLink.setEnabled(enabled);
-        existingAccountButton.setEnabled(enabled);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_new_account, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed(){
-        // The default behavior here is to go back to the previous activity.
-        // We override this behavior as the user must be logged in to continue.
-    }
-
-    /**
-     * Magic to close the soft keyboard.
-     *
-     * See http://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
-     *
-     * @param focusedView The focused view
-     */
-    private void closeSoftKeyboard(View focusedView){
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
     }
 
     /**
@@ -391,7 +336,7 @@ public class NewAccountActivity extends AppCompatActivity {
             toast.cancel();
         }
         toast = Toast.makeText(
-                this,
+                getContext(),
                 text,
                 length
         );
@@ -407,7 +352,7 @@ public class NewAccountActivity extends AppCompatActivity {
      * This process must be done in an AsyncTask because querying for a username may take a long
      * time and will interfere the UI thread.
      */
-    private class UsernameErrorStatusUpdater extends AsyncTask<String, Void, String>{
+    private class UsernameErrorStatusUpdater extends AsyncTask<String, Void, String> {
 
         private TextView usernameErrorStatus;
         private ParseQuery<ParseUser> query;
@@ -421,7 +366,7 @@ public class NewAccountActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute(){
-            usernameErrorStatus = NewAccountActivity.this.usernameErrorStatus;
+            usernameErrorStatus = NewAccountFragment.this.usernameErrorStatus;
 
             usernameErrorStatus.setText("Checking username...");
             usernameErrorStatus.setTextColor(Color.BLACK);
@@ -435,7 +380,7 @@ public class NewAccountActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result){
-           usernameErrorStatus.setText(result);
+            usernameErrorStatus.setText(result);
             if(result.equalsIgnoreCase("OK")){
                 usernameErrorStatus.setTextColor(Color.BLACK);
             } else{
@@ -490,4 +435,5 @@ public class NewAccountActivity extends AppCompatActivity {
             // This line is unreachable.
         }
     }
+
 }

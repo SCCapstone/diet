@@ -39,10 +39,6 @@
             android:label="@string/title_activity_login" >
         </activity>
         <activity
-            android:name=".NewAccountActivity"
-            android:label="@string/title_activity_new_account" >
-        </activity>
-        <activity
             android:name=".NewEntryActivity"
             android:label="@string/title_activity_new_entry"
             android:windowSoftInputMode="stateHidden|adjustResize" >
