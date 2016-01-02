@@ -194,12 +194,6 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         overridePendingTransition(R.animator.animation, R.animator.animation2);
     }
 
-    private void startWelcomeActivity(){
-        Intent intent = new Intent(this, WelcomeActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.animator.animation, R.animator.animation2);
-    }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         switch(requestCode){
             case LOGIN_REQUEST:
