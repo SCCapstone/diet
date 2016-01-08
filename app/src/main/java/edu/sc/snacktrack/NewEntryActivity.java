@@ -1,15 +1,11 @@
 package edu.sc.snacktrack;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,10 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.ParseACL;
 import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,24 +32,23 @@ public class NewEntryActivity extends AppCompatActivity{
 
     private TextView descriptionTextView;
     private ImageView imageView;
-    private Spinner spinner;
+    private Spinner mealTypeSpinner;
     private Spinner mealLocationSpinner;
 
     private View progressOverlay;
 
-    private File currentImageFile;
-    private File newImageFile;
+   private File currentImageFile;
 
     private static final int DESCRIPTION_CHANGE_CODE = 1;
-    private static final int CAMERA_REQUEST_CODE = 2;
+//    private static final int CAMERA_REQUEST_CODE = 2;
 
     private static final int PREVIEW_WIDTH = 100;
     private static final int PREVIEW_HEIGHT = 100;
 
     private static final String STATE_DESCRIPTION_STRING = "descriptionString";
-    private static final String STATE_CURRENT_PHOTO_PATH = "currentPhotoPath";
-    private static final String STATE_NEW_PHOTO_PATH = "newPhotoPath";
     private static final String STATE_SAVING = "saving";
+
+    public static final String PHOTO_FILE_KEY = "photo";
 
     private static final String TASK_FRAGMENT_TAG = "taskFragment";
 
@@ -65,28 +57,16 @@ public class NewEntryActivity extends AppCompatActivity{
 
     private boolean saving = false;
 
-    private FileCache fileCache;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_entry);
 
-        spinner = (Spinner) findViewById(R.id.meal_type_spinner);
+        mealTypeSpinner = (Spinner) findViewById(R.id.meal_type_spinner);
         mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
-        String location = mealLocationSpinner.getSelectedItem().toString();
-/*
-        SharedPreferences sharedPref = NewEntryActivity().getPreferences(Context.MODE_PRIVATE);
-        int defaultValue = getResources().getInteger(R.string.saved_high_score_default);
-        long highScore = sharedPref.getInt(getString()R.string.saved_high_score), defaultValue);
-*/
-        if(location.equals("Fast food"))
-        {
-            //fastfood++;
-        }
 
-        // Set up the spinner
-        spinner.setAdapter(ArrayAdapter.createFromResource(
+        // Set up the meal type spinner
+        mealTypeSpinner.setAdapter(ArrayAdapter.createFromResource(
                 this, R.array.meal_types, android.R.layout.simple_spinner_dropdown_item
         ));
 
@@ -104,33 +84,37 @@ public class NewEntryActivity extends AppCompatActivity{
 
         // Set up the image view
         imageView = (ImageView) findViewById(R.id.imageView);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dispatchPictureIntent();
-            }
-        });
+
+//        Old implementation for retaking a photo by tapping on the image view.
+//        imageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dispatchPictureIntent();
+//            }
+//        });
 
         // Set up the progress overlay
         progressOverlay = findViewById(R.id.progressOverlay);
 
         // Restore instance state
         if(savedInstanceState != null){
-            String currentPhotoPath, newPhotoPath;
+//            String currentPhotoPath, newPhotoPath;
 
             descriptionTextView.setText(savedInstanceState.getString(STATE_DESCRIPTION_STRING, ""));
 
             this.saving = savedInstanceState.getBoolean(STATE_SAVING, false);
 
-            currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, null);
-            newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, null);
+//            currentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH, null);
+//            newPhotoPath = savedInstanceState.getString(STATE_NEW_PHOTO_PATH, null);
 
-            currentImageFile = currentPhotoPath == null ? null : new File(currentPhotoPath);
-            newImageFile = newPhotoPath == null ? null : new File(newPhotoPath);
+//            currentImageFile = currentPhotoPath == null ? null : new File(currentPhotoPath);
+//            newImageFile = newPhotoPath == null ? null : new File(newPhotoPath);
+        }
 
-            if(currentImageFile != null){
-                loadPhotoPreview(currentImageFile);
-            }
+        // Get the snack photo and display the preview
+        currentImageFile = (File) getIntent().getSerializableExtra(PHOTO_FILE_KEY);
+        if(currentImageFile != null){
+            loadPhotoPreview(currentImageFile);
         }
 
         // If saving is in progress, show the progress overlay and disable widgets.
@@ -146,42 +130,43 @@ public class NewEntryActivity extends AppCompatActivity{
             saveSnackTaskFragment.setCallbacks(new SaveSnackTaskCallbacks());
         }
 
-        // Initialize the file cache
-        this.fileCache = new FileCache(this);
+//        // Initialize the file cache
+//        this.fileCache = new FileCache(this);
+//
+//        // If a photo has not been taken, start the camera app.
+//        if(newImageFile == null){
+//            dispatchPictureIntent();
+//        }
 
-        // If a photo has not been taken, start the camera app.
-        if(newImageFile == null){
-            dispatchPictureIntent();
-        }
     }
 
-    /**
-     * Dispatches the picture intent. If an IOException occurs, sets result to RESULT_CANCELED
-     * and finishes this activity.
-     */
-    private void dispatchPictureIntent(){
-        try {
-            File imageFile = fileCache.createTempFile("SnackPhoto", ".jpg");
-            this.newImageFile = imageFile;
-
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
-
-            startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-            overridePendingTransition(R.animator.animation, R.animator.animation2);
-        } catch (IOException e) {
-            Toast.makeText(
-                    this,
-                    "Error accessing SD Card.\nCheck that the SD card is mounted.",
-                    Toast.LENGTH_LONG
-            ).show();
-            Log.e(TAG, e.getMessage());
-
-            setResult(RESULT_CANCELED);
-            finish();
-            overridePendingTransition(R.animator.animation, R.animator.animation2);
-        }
-    }
+//    /**
+//     * Dispatches the picture intent. If an IOException occurs, sets result to RESULT_CANCELED
+//     * and finishes this activity.
+//     */
+//    private void dispatchPictureIntent(){
+//        try {
+//            File imageFile = fileCache.createTempFile("SnackPhoto", ".jpg");
+//            this.newImageFile = imageFile;
+//
+//            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
+//
+//            startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+//            overridePendingTransition(R.animator.animation, R.animator.animation2);
+//        } catch (IOException e) {
+//            Toast.makeText(
+//                    this,
+//                    "Error accessing SD Card.\nCheck that the SD card is mounted.",
+//                    Toast.LENGTH_LONG
+//            ).show();
+//            Log.e(TAG, e.getMessage());
+//
+//            setResult(RESULT_CANCELED);
+//            finish();
+//            overridePendingTransition(R.animator.animation, R.animator.animation2);
+//        }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -194,46 +179,49 @@ public class NewEntryActivity extends AppCompatActivity{
                     descriptionTextView.setText(newText);
                 }
             }
-        } else if(requestCode == CAMERA_REQUEST_CODE){
-
-            if(resultCode == RESULT_OK){
-                //Image capture successful
-
-                if(currentImageFile != null) {
-                    if (currentImageFile.delete()) {
-                        Log.d(TAG, "Deleted old photo after retake.");
-                    } else {
-                        Log.d(TAG, "Could not delete old photo after retake.");
-                    }
-                }
-
-                currentImageFile = newImageFile;
-
-                loadPhotoPreview(currentImageFile);
-            } else if(resultCode == RESULT_CANCELED){
-                // Image capture canceled
-
-                // If the user never took a photo, leave this activity.
-                if(currentImageFile == null){
-                    setResult(RESULT_CANCELED);
-                    finish();
-                    overridePendingTransition(R.animator.animation, R.animator.animation2);
-                }
-
-                if(newImageFile != null) {
-                    if (newImageFile.delete()) {
-                        Log.d(TAG, "Unused image file deleted.");
-                    } else {
-                        Log.d(TAG, "Could not delete unused image file.");
-                    }
-                }
-
-                newImageFile = currentImageFile;
-            } else{
-                updateToast("Image capture failed.", Toast.LENGTH_SHORT);
-                // Image capture failed.
-            }
         }
+
+//        This (hacky) case is no longer needed since the camera intent is now handled in MainActivity
+//        else if(requestCode == CAMERA_REQUEST_CODE){
+//
+//            if(resultCode == RESULT_OK){
+//                //Image capture successful
+//
+//                if(currentImageFile != null) {
+//                    if (currentImageFile.delete()) {
+//                        Log.d(TAG, "Deleted old photo after retake.");
+//                    } else {
+//                        Log.d(TAG, "Could not delete old photo after retake.");
+//                    }
+//                }
+//
+//                currentImageFile = newImageFile;
+//
+//                loadPhotoPreview(currentImageFile);
+//            } else if(resultCode == RESULT_CANCELED){
+//                // Image capture canceled
+//
+//                // If the user never took a photo, leave this activity.
+//                if(currentImageFile == null){
+//                    setResult(RESULT_CANCELED);
+//                    finish();
+//                    overridePendingTransition(R.animator.animation, R.animator.animation2);
+//                }
+//
+//                if(newImageFile != null) {
+//                    if (newImageFile.delete()) {
+//                        Log.d(TAG, "Unused image file deleted.");
+//                    } else {
+//                        Log.d(TAG, "Could not delete unused image file.");
+//                    }
+//                }
+//
+//                newImageFile = currentImageFile;
+//            } else{
+//                updateToast("Image capture failed.", Toast.LENGTH_SHORT);
+//                // Image capture failed.
+//            }
+//        }
     }
 
     /**
@@ -263,7 +251,7 @@ public class NewEntryActivity extends AppCompatActivity{
         saveSnackTaskFragment = new SaveSnackTaskFragment();
         saveSnackTaskFragment.setCallbacks(new SaveSnackTaskCallbacks());
         Bundle args = new Bundle();
-        args.putString(SaveSnackTaskFragment.MEAL_TYPE_KEY, spinner.getSelectedItem().toString());
+        args.putString(SaveSnackTaskFragment.MEAL_TYPE_KEY, mealTypeSpinner.getSelectedItem().toString());
         args.putString(SaveSnackTaskFragment.DESCRIPTION_KEY, descriptionTextView.getText().toString());
         args.putString(SaveSnackTaskFragment.PHOTO_PATH_KEY, currentImageFile.getAbsolutePath());
         saveSnackTaskFragment.setArguments(args);
@@ -296,7 +284,7 @@ public class NewEntryActivity extends AppCompatActivity{
      */
     private void setWidgetsEnabled(boolean enabled){
         imageView.setEnabled(enabled);
-        spinner.setEnabled(enabled);
+        mealTypeSpinner.setEnabled(enabled);
         descriptionTextView.setEnabled(enabled);
     }
 
@@ -313,12 +301,12 @@ public class NewEntryActivity extends AppCompatActivity{
         super.onSaveInstanceState(outState);
 
         outState.putString(STATE_DESCRIPTION_STRING, descriptionTextView.getText().toString());
-        if(currentImageFile != null){
-            outState.putString(STATE_CURRENT_PHOTO_PATH, currentImageFile.getAbsolutePath());
-        }
-        if(newImageFile != null){
-            outState.putString(STATE_NEW_PHOTO_PATH, newImageFile.getAbsolutePath());
-        }
+//        if(currentImageFile != null){
+//            outState.putString(STATE_CURRENT_PHOTO_PATH, currentImageFile.getAbsolutePath());
+//        }
+//        if(newImageFile != null){
+//            outState.putString(STATE_NEW_PHOTO_PATH, newImageFile.getAbsolutePath());
+//        }
         outState.putBoolean(STATE_SAVING, saving);
     }
 

@@ -1,8 +1,10 @@
 package edu.sc.snacktrack;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,14 +23,19 @@ import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RemoteDataTaskFragment.RDTTaskCallbacks{
 
     private static final int LOGIN_REQUEST = 1;
     private static final int NEW_ENTRY_REQUEST = 2;
+    private static final int CAMERA_REQUEST = 3;
 
     private static final String REMOTE_DATA_TASK_FRAGMENT_TAG = "remoteDataTaskFragment";
+
+    private static final String STATE_NEW_IMAGE_FILE = "newImageFile";
 
     private Toast toast;
 
@@ -49,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
 
     private View progressOverlay;
 
+    private FileCache fileCache;
+
+    private File newImageFile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +69,11 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         if(ParseUser.getCurrentUser() == null){
             Log.d(TAG, "No user is logged in, starting new account activity.");
             startLoginActivity();
+        }
+
+        // Restore instance state
+        if(savedInstanceState != null){
+            newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
         }
 
         mTitle = (String) getTitle();
@@ -127,8 +143,11 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         // If remote data access is in progress, show the progress overlay
         if(remoteDataTaskFragment.isRunning()){
             progressOverlay.setVisibility(View.VISIBLE);
-            //setWidgetsEnabled(false);
+//            setWidgetsEnabled(false);
         }
+
+        // Initialize the file cache
+        fileCache = new FileCache(this);
     }
 
     @Override
@@ -143,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
                 mDrawerToggle.syncState();
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_NEW_IMAGE_FILE, newImageFile);
     }
 
     @Override
@@ -194,6 +219,25 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
         overridePendingTransition(R.animator.animation, R.animator.animation2);
     }
 
+    /**
+     * Dispatches the picture intent.
+     */
+    private void dispatchPictureIntent(){
+        try {
+            File imageFile = fileCache.createTempFile("SnackPhoto", ".jpg");
+            this.newImageFile = imageFile;
+
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
+
+            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+            overridePendingTransition(R.animator.animation, R.animator.animation2);
+        } catch (IOException e) {
+            updateToast("Error accessing SD Card\nCheck that the SD card is mounted.", Toast.LENGTH_LONG);
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         switch(requestCode){
             case LOGIN_REQUEST:
@@ -209,6 +253,22 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
             case NEW_ENTRY_REQUEST:
                 if(resultCode == RESULT_OK){
                     remoteDataTaskFragment.restart();
+                }
+                break;
+            case CAMERA_REQUEST:
+                if(resultCode == RESULT_OK){
+                    Intent intent = new Intent(this, NewEntryActivity.class);
+                    intent.putExtra(NewEntryActivity.PHOTO_FILE_KEY, newImageFile);
+                    startActivityForResult(intent, NEW_ENTRY_REQUEST);
+                } else{
+                    // Attempt to delete the empty image file
+                    if(newImageFile != null){
+                        if(newImageFile.delete()){
+                            Log.d(TAG, "Unused image file successfully deleted.");
+                        } else{
+                            Log.d(TAG, "Unable to delete unused image file.");
+                        }
+                    }
                 }
                 break;
             default:
@@ -252,9 +312,11 @@ public class MainActivity extends AppCompatActivity implements RemoteDataTaskFra
                 logout();
                 break;
             case R.id.action_new:
-                Intent intent = new Intent(this, NewEntryActivity.class);
-                startActivityForResult(intent, NEW_ENTRY_REQUEST);
-                overridePendingTransition(R.animator.animation, R.animator.animation2);
+//                Intent intent = new Intent(this, NewEntryActivity.class);
+//                startActivityForResult(intent, NEW_ENTRY_REQUEST);
+//                overridePendingTransition(R.animator.animation, R.animator.animation2);
+
+                dispatchPictureIntent();
         }
 
         return super.onOptionsItemSelected(item);
