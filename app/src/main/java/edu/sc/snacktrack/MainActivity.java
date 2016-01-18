@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity{
     private static final int CAMERA_REQUEST = 3;
 
     private static final String STATE_NEW_IMAGE_FILE = "newImageFile";
+    private static final String STATE_CURRENT_TITLE = "currentTitle";
+    private static final String STATE_MTITLE = "mTitle";
 
     private static final String CURRENT_FRAGMENT_TAG = "mainActivityCurrentFragment";
 
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity{
 
         } else{
             newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
+            mTitle = savedInstanceState.getCharSequence(STATE_MTITLE, getTitle());
+            getSupportActionBar().setTitle(savedInstanceState.getCharSequence(STATE_CURRENT_TITLE, getTitle()));
         }
     }
 
@@ -152,6 +156,7 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public void setTitle(CharSequence title) {
+        super.setTitle(title);
         mTitle = title;
         getSupportActionBar().setTitle(title);
     }
@@ -174,6 +179,8 @@ public class MainActivity extends AppCompatActivity{
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(STATE_NEW_IMAGE_FILE, newImageFile);
+        outState.putCharSequence(STATE_CURRENT_TITLE, getSupportActionBar().getTitle());
+        outState.putCharSequence(STATE_MTITLE, mTitle);
     }
 
     private void startLoginActivity(){
