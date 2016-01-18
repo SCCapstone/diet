@@ -1,6 +1,5 @@
 package edu.sc.snacktrack;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,6 +21,8 @@ import java.util.List;
  */
 public class RemoteDataTaskFragment extends Fragment {
 
+    private static final String TAG = "RemoteDataTaskFragment";
+
     /**
      * Callback interface through which the fragment will report the
      * task's progress and results back to the Activity.
@@ -36,22 +37,20 @@ public class RemoteDataTaskFragment extends Fragment {
     private RDTTaskCallbacks mCallbacks;
     private RemoteDataTask mTask;
 
-    /**
-     * Hold a reference to the parent Activity so we can report the
-     * task's current progress and results. The Android framework
-     * will pass us a reference to the newly created Activity after
-     * each configuration change.
-     */
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if(context instanceof RDTTaskCallbacks){
-            mCallbacks = (RDTTaskCallbacks) context;
-        } else{
-            mCallbacks = null;
-        }
-    }
+//    /**
+//     * Hold a reference to the parent Activity so we can report the
+//     * task's current progress and results. The Android framework
+//     * will pass us a reference to the newly created Activity after
+//     * each configuration change.
+//     */
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//
+//        if(context instanceof RDTTaskCallbacks){
+//            mCallbacks = (RDTTaskCallbacks) context;
+//        }
+//    }
 
     /**
      * This method will only be called once when the retained
@@ -97,6 +96,10 @@ public class RemoteDataTaskFragment extends Fragment {
 
     public boolean isRunning(){
         return mTask != null && !(mTask.getStatus() == AsyncTask.Status.RUNNING);
+    }
+
+    public void setCallbacks(RDTTaskCallbacks callbacks){
+        this.mCallbacks = callbacks;
     }
 
     /**
