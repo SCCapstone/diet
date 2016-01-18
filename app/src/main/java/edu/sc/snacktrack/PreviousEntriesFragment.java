@@ -101,23 +101,26 @@ public class PreviousEntriesFragment extends Fragment implements RemoteDataTaskF
 
         mySnackList = snackList;
 
-        // Locate the listview in listview_main.xml
+        // Locate the listview
         listview = (ListView) getView().findViewById(R.id.SnackList);
         // Pass the results into ListViewAdapter.java
         adapter = new CustomAdapter(getContext(), mySnackList);
         // Binds the Adapter to the ListView
         listview.setAdapter(adapter);
 
+        // Whenever an entry is clicked, show the details of that entry.
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            SnackEntry entry = snackList.get(position);
-//
-//                            Intent intent = new Intent(MainActivity.this, SnackDetailsActivity.class);
-//                            intent.putExtra(SnackDetailsActivity.DESCRIPTION_KEY, entry.getDescription());
-//                            intent.putExtra(SnackDetailsActivity.MEAL_TYPE_KEY, entry.getMealType());
-//                            intent.putExtra(SnackDetailsActivity.PHOTO_URL_KEY, entry.getPhoto().getUrl());
-//                            startActivity(intent);
+                String objectId = mySnackList.get(position).getObjectId();
+                Bundle arguments = new Bundle();
+                arguments.putString(SnackDetailsFragment.OBJECT_ID_KEY, objectId);
+                SnackDetailsFragment snackDetailsFragment = new SnackDetailsFragment();
+                snackDetailsFragment.setArguments(arguments);
+                getFragmentManager().beginTransaction()
+                        .add(R.id.content_frame, snackDetailsFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 

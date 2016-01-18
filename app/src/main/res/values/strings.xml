@@ -29,6 +29,7 @@
 
     <string name="upload">Upload</string>
     <string name="uploading">Uploading...</string>
+    <string name="loading">Loading...</string>
     <string name="title_activity_new_entry">New Snack</string>
     <string name="default_spinner_item">Select an option</string>
     <string-array name="meal_types">
