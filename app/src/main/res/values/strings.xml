@@ -17,8 +17,8 @@
     <string name="forgot_password">Forgot your password?</string>
     <string name="action_logout">Log out</string>
 
-    <string-array name="tests">
-        <item>Test 1</item>
+    <string-array name="main_drawer_items">
+        <item>My Snacks</item>
         <item>Test 2</item>
         <item>Test 3</item>
     </string-array>

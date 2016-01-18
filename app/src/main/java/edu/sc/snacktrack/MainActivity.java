@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -33,22 +34,21 @@ public class MainActivity extends AppCompatActivity{
 
     private static final String STATE_NEW_IMAGE_FILE = "newImageFile";
 
-    private static final String PREVIOUS_ENTRIES_FRAG_TAG = "previousEntriesFragment";
+    private static final String CURRENT_FRAGMENT_TAG = "mainActivityCurrentFragment";
 
     private Toast toast;
 
     private static final String TAG = "MainActivity";
 
-    DrawerLayout mDrawerLayout;
-    ListView mDrawerList;
-    ActionBarDrawerToggle mDrawerToggle;
-    String mTitle = "";
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private CharSequence mTitle = "";
+    private String[] drawerItems;
 
     private FileCache fileCache;
 
     private File newImageFile;
-
-    private PreviousEntriesFragment previousEntriesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,26 +62,11 @@ public class MainActivity extends AppCompatActivity{
             startLoginActivity();
         }
 
-        // Restore instance state
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if(savedInstanceState == null){
-            // If the activity is not being restored from an instance state, then there is no
-            // fragment in view, so we must add one.
-            previousEntriesFragment = new PreviousEntriesFragment();
-            fragmentManager.beginTransaction()
-                    .add(R.id.content_frame, previousEntriesFragment, PREVIOUS_ENTRIES_FRAG_TAG)
-                    .commit();
-
-        } else{
-            newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
-            previousEntriesFragment = (PreviousEntriesFragment)
-                    fragmentManager.findFragmentByTag(PREVIOUS_ENTRIES_FRAG_TAG);
-        }
-
         // BEGIN DRAWER STUFF
-        mTitle = (String) getTitle();
+        mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
+        drawerItems = getResources().getStringArray(R.array.main_drawer_items);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -98,7 +83,7 @@ public class MainActivity extends AppCompatActivity{
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(), R.layout.drawer_list_item, getResources().getStringArray(R.array.tests));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(), R.layout.drawer_list_item, drawerItems);
 
         mDrawerList.setAdapter(adapter);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -108,26 +93,67 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//                String[] tests = getResources().getStringArray(R.array.tests);
-//                mTitle = tests[position];
-//                testFragment tFragment = new testFragment();
-//
-//                Bundle data = new Bundle();
-//                data.putInt("position", position);
-//                tFragment.setArguments(data);
-//
-//                android.app.FragmentManager fragmentManager = getFragmentManager();
-//                FragmentTransaction ft = fragmentManager.beginTransaction();
-//                ft.replace(R.id.content_frame, tFragment);
-//                ft.commit();
-
-                mDrawerLayout.closeDrawer(mDrawerList);
+                displayView(position);
             }
         });
         // END DRAWER STUFF
 
         // Initialize the file cache
         fileCache = new FileCache(this);
+
+        // Restore instance state
+        if(savedInstanceState == null){
+            // If the activity is not being restored from an instance state, then there is no
+            // fragment in view, so we must add one.
+            displayView(0);
+
+        } else{
+            newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
+        }
+    }
+
+    /**
+     * Displays a fragment based on a position selected from the navigation drawer.
+     *
+     * @param position The position on the navigation drawer
+     */
+    private void displayView(int position){
+
+        Fragment fragment = null;
+        switch(position){
+            case 0:
+                fragment = new PreviousEntriesFragment();
+                break;
+
+            default:
+                fragment = new TestFragment();
+                Bundle data = new Bundle();
+                data.putInt("position", position);
+                fragment.setArguments(data);
+                break;
+        }
+
+        if(fragment != null){
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction()
+                    .replace(R.id.content_frame, fragment, CURRENT_FRAGMENT_TAG)
+                    .commit();
+
+            // update selected item and title, then close the drawer
+            mDrawerList.setItemChecked(position, true);
+            mDrawerList.setSelection(position);
+            setTitle(drawerItems[position]);
+
+        } else{
+            updateToast("Something went wrong with the drawer :/", Toast.LENGTH_LONG);
+        }
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
@@ -176,23 +202,35 @@ public class MainActivity extends AppCompatActivity{
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
+
         switch(requestCode){
             case LOGIN_REQUEST:
 
                 if(resultCode == RESULT_OK){
                     updateToast("Log in successful!", Toast.LENGTH_SHORT);
-                    previousEntriesFragment.getRemoteDataTaskFragment().restart();
+
+                    Fragment currentFragment = getSupportFragmentManager()
+                            .findFragmentByTag(CURRENT_FRAGMENT_TAG);
+                    if(currentFragment instanceof PreviousEntriesFragment){
+                        ((PreviousEntriesFragment) currentFragment)
+                                .getRemoteDataTaskFragment()
+                                .restart();
+                    }
+
                 } else{
                     startLoginActivity();
                 }
 
-//                remoteDataTaskFragment.restart();
                 break;
             case NEW_ENTRY_REQUEST:
                 if(resultCode == RESULT_OK){
-//                    remoteDataTaskFragment.restart();
-
-                    previousEntriesFragment.getRemoteDataTaskFragment().restart();
+                    Fragment currentFragment = getSupportFragmentManager()
+                            .findFragmentByTag(CURRENT_FRAGMENT_TAG);
+                    if(currentFragment instanceof PreviousEntriesFragment){
+                        ((PreviousEntriesFragment) currentFragment)
+                                .getRemoteDataTaskFragment()
+                                .restart();
+                    }
                 }
                 break;
             case CAMERA_REQUEST:
