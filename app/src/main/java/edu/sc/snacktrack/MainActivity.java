@@ -124,9 +124,14 @@ public class MainActivity extends AppCompatActivity{
     private void displayView(int position){
 
         Fragment fragment = null;
+
         switch(position){
             case 0:
                 fragment = new PreviousEntriesFragment();
+                break;
+
+            case 2:
+                fragment = new SettingsFragment();
                 break;
 
             default:

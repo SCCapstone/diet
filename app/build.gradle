@@ -24,6 +24,7 @@ dependencies {
     // Parse
     // compile files('C:/Users/dowdw/AndroidStudioProjects/diet/Parse-1.4.1.jar')
     compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:preference-v7:23.0.0'
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.parse:parse-android:1.+'
     compile 'com.android.support:support-v4:23.1.0'
