@@ -35,6 +35,15 @@ public class MemoryCache {
         Log.i(TAG, "MemoryCache will use up to " + limit / 1024. / 1024. + "MB");
     }
 
+    public long getLimit(){
+        return limit;
+    }
+
+
+    public long getSize(){
+        return size;
+    }
+
     public Bitmap get(String id) {
         try {
             if (!cache.containsKey(id))
