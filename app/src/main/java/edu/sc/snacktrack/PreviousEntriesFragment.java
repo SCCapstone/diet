@@ -126,4 +126,12 @@ public class PreviousEntriesFragment extends Fragment implements RemoteDataTaskF
 
         progressOverlay.setVisibility(View.GONE);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Tell the adapter to release its allocated memory.
+        adapter.releaseMemory();
+    }
 }

@@ -97,4 +97,9 @@ public class CustomAdapter extends BaseAdapter {
 //        });
         return view;
     }
+
+    public void releaseMemory(){
+        imageLoader.releaseMemory();
+    }
+
 }

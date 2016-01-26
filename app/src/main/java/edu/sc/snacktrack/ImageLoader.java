@@ -242,7 +242,27 @@ public class ImageLoader {
         }
     }
 
-    public void clearCache() {
+    /**
+     * Releases the memory allocated to this ImageLoader.
+     */
+    public void releaseMemory(){
+        memoryCache.clear();
+    }
+
+    /**
+     * Deletes all files in this ImageLoader's cache.
+     */
+    public void clearFileCache(){
+        fileCache.clear();
+    }
+
+    /**
+     * Calls releaseMemory() and clearFileCache().
+     *
+     * That is, releases the memory allocated to this ImageLoader and deletes all files in
+     * its cache.
+     */
+    public void clearEverything() {
         memoryCache.clear();
         fileCache.clear();
     }

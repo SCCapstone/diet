@@ -76,10 +76,14 @@ public class MemoryCache {
 
     public void clear() {
         try {
+            for(Bitmap bitmap : cache.values()){
+                bitmap.recycle();
+            }
+
             cache.clear();
             size = 0;
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
+            Log.e(TAG, ex.toString());
         }
     }
 
