@@ -65,4 +65,5 @@
     <string name="change_font_size_text">Change Font Size</string>
     <string name="settings_group_1">Account Settings</string>
     <string name="settings_group_2">Other Settings</string>
+    <string name="new_password_text">Enter new password:</string>
 </resources>
