@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+//import com.jayway.android.robotium.solo.Solo;
 
 import com.parse.LogOutCallback;
 import com.parse.ParseException;

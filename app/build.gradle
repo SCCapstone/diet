@@ -28,3 +28,7 @@ dependencies {
     compile 'com.parse:parse-android:1.+'
     compile 'com.android.support:support-v4:23.1.0'
 }
+
+dependencies{
+    androidTestCompile fileTree(dir: 'libs', include: ['robotium-solo-5.5.3.jar'])
+}
