@@ -6,11 +6,11 @@
     android:background="#111">
 
     <TextView
-        android:id="@+id/password_dialog"
+        android:id="@+id/email_dialog"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_gravity="center_vertical"
-        android:text="@string/new_password_text"
+        android:text="@string/new_email_text"
         android:textColor="#fff"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -20,7 +20,7 @@
         android:paddingRight="20dp" />
 
     <EditText
-        android:id="@+id/new_password"
+        android:id="@+id/new_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
@@ -31,15 +31,15 @@
         android:paddingRight="20dp"
         android:paddingBottom="20dp"
         android:textColor="#FFF"
-        android:hint="@string/password_edittext"
+        android:hint="@string/email_edittext"
         android:textColorHint="#FFF" />
 
     <Button
-        android:id="@+id/new_password_button"
+        android:id="@+id/new_email_button"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:background="#111"
-        android:text="@string/password_submit"
+        android:text="@string/email_submit"
         android:textColor="#FFF"
         android:textSize="25sp"
         android:backgroundTint="#303030" />
