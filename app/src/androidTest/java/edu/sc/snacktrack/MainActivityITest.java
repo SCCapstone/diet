@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.support.v4.widget.DrawerLayout;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.UiThreadTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -51,11 +52,13 @@ public class MainActivityITest extends ActivityInstrumentationTestCase2<MainActi
         assertNotNull(fl);
     }
 
-//    @SmallTest
-//    public void testSetTitle(){
-//        getActivity().setTitle("testing123");
-//        getSupportActionBar().
-//    }
+    @SmallTest
+    @UiThreadTest
+    public void testSetTitle(){
+
+        ma.setTitle("testing123");
+        assertEquals("testing123", ma.getTitle());
+    }
 //    @SmallTest
 //    public void testActionBarExists(){
 //        assertNotNull(ma.getActionBar());

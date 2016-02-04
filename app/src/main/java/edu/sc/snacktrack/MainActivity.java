@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity{
         super.setTitle(title);
         mTitle = title;
         getSupportActionBar().setTitle(title);
+
     }
 
     @Override
