@@ -41,7 +41,8 @@
         <activity
             android:name=".NewEntryActivity"
             android:label="@string/title_activity_new_entry"
-            android:windowSoftInputMode="stateHidden|adjustResize" >
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:parentActivityName=".MainActivity">
         </activity>
         <activity
             android:name=".EditDescriptionActivity"
