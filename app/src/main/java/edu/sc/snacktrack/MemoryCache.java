@@ -35,6 +35,15 @@ public class MemoryCache {
         Log.i(TAG, "MemoryCache will use up to " + limit / 1024. / 1024. + "MB");
     }
 
+    public long getLimit(){
+        return limit;
+    }
+
+
+    public long getSize(){
+        return size;
+    }
+
     public Bitmap get(String id) {
         try {
             if (!cache.containsKey(id))
@@ -76,10 +85,14 @@ public class MemoryCache {
 
     public void clear() {
         try {
+            for(Bitmap bitmap : cache.values()){
+                bitmap.recycle();
+            }
+
             cache.clear();
             size = 0;
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
+            Log.e(TAG, ex.toString());
         }
     }
 
