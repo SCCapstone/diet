@@ -19,12 +19,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -113,6 +115,22 @@ public class MainActivity extends AppCompatActivity{
             newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
             mTitle = savedInstanceState.getCharSequence(STATE_MTITLE, getTitle());
             getSupportActionBar().setTitle(savedInstanceState.getCharSequence(STATE_CURRENT_TITLE, getTitle()));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(SnackList.getInstance().size() == 0){
+            SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
+                @Override
+                public void done(List<SnackEntry> objects, ParseException e) {
+                    if(e != null){
+                        updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                    }
+                }
+            });
         }
     }
 
@@ -217,17 +235,16 @@ public class MainActivity extends AppCompatActivity{
 
         switch(requestCode){
             case LOGIN_REQUEST:
-
+                SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
+                    @Override
+                    public void done(List<SnackEntry> objects, ParseException e) {
+                        if(e != null){
+                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                        }
+                    }
+                });
                 if(resultCode == RESULT_OK){
                     updateToast("Log in successful!", Toast.LENGTH_SHORT);
-
-                    Fragment currentFragment = getSupportFragmentManager()
-                            .findFragmentByTag(CURRENT_FRAGMENT_TAG);
-                    if(currentFragment instanceof PreviousEntriesFragment){
-                        ((PreviousEntriesFragment) currentFragment)
-                                .getRemoteDataTaskFragment()
-                                .restart();
-                    }
 
                 } else{
                     startLoginActivity();
@@ -235,15 +252,7 @@ public class MainActivity extends AppCompatActivity{
 
                 break;
             case NEW_ENTRY_REQUEST:
-                if(resultCode == RESULT_OK){
-                    Fragment currentFragment = getSupportFragmentManager()
-                            .findFragmentByTag(CURRENT_FRAGMENT_TAG);
-                    if(currentFragment instanceof PreviousEntriesFragment){
-                        ((PreviousEntriesFragment) currentFragment)
-                                .getRemoteDataTaskFragment()
-                                .restart();
-                    }
-                }
+
                 break;
             case CAMERA_REQUEST:
                 if(resultCode == RESULT_OK){
