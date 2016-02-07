@@ -57,6 +57,18 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">WELCOME TO \nSNACKTRACK</string>
     <string name="title_activity_snack_details">Snack Details</string>
-    <string name="password_text"><u>Change Password</u></string>
-    <string name="password_edit">Click here to change password</string>
+
+    <!-- Settings strings -->
+    <string name="password_text">Change Password</string>
+    <string name="change_password_text">Change Account Password</string>
+    <string name="change_email_text">Change Account Email</string>
+    <string name="change_font_size_text">Change Font Size</string>
+    <string name="settings_group_1">Account Settings</string>
+    <string name="settings_group_2">Other Settings</string>
+    <string name="new_password_text">Enter new password:</string>
+    <string name="password_edittext">New password</string>
+    <string name="password_submit">SUBMIT</string>
+    <string name="new_email_text">Enter new email:</string>
+    <string name="email_edittext">Click here</string>
+    <string name="email_submit">SUBMIT</string>
 </resources>

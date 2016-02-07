@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#111">
+
+<!--
+    <TextView
+        android:id="@+id/email_dialog"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_vertical"
+        android:text="@string/new_email_text"
+        android:textColor="#fff"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp" />
+-->
+
+    <EditText
+        android:id="@+id/new_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="20dp"
+        android:textColor="#FFF"
+
+        android:textColorHint="#FFF" />
+
+    <Button
+        android:id="@+id/new_email_button"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="#111"
+        android:text="@string/email_submit"
+        android:textColor="#FFF"
+        android:textSize="25sp"
+        android:backgroundTint="#303030" />
+
+</LinearLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <group android:id="@+id/group1" android:title="@string/settings_group_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <item
+            android:id="@+id/change_pass"
+            android:title="@string/change_password_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <item
+            android:id="@+id/change_email"
+            android:title="@string/change_email_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </group>
+    <group android:id="@+id/group2" android:title="@string/settings_group_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <item
+            android:id="@+id/change_font"
+            android:title="@string/change_font_size_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </group>
+
+</menu>
