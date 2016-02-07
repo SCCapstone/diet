@@ -24,6 +24,9 @@ public class ChangeEmailDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_email_dialog, container);
+
+        getDialog().setTitle("Change Email");
+
         emailText = (EditText) view.findViewById(R.id.new_email);
         submitButton = (Button) view.findViewById(R.id.new_email_button);
 
