@@ -66,8 +66,10 @@
     <string name="settings_group_1">Account Settings</string>
     <string name="settings_group_2">Other Settings</string>
     <string name="new_password_text">Enter new password:</string>
+    <string name="new_password_tip">(Password cannot be blank)</string>
     <string name="password_edittext">New password</string>
     <string name="password_submit">SUBMIT</string>
+    <string name="password_cancel">CANCEL</string>
     <string name="new_email_text">Enter new email:</string>
     <string name="email_edittext">Click here</string>
     <string name="email_submit">SUBMIT</string>

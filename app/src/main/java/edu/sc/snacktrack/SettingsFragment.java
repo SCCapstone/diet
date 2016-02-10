@@ -30,24 +30,23 @@ public class SettingsFragment extends Fragment {
                 transaction.addToBackStack(null);
 
                 DialogFragment changePasswordDialog = new ChangePasswordDialog();
-                //changePasswordDialog.setStyle(DialogFragment.STYLE_NORMAL,0);
                 changePasswordDialog.show(transaction, "dialog");
             }
         });
 
-        emailButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
-
-                if(previousFrag != null)
-                    transaction.remove(previousFrag);
-                transaction.addToBackStack(null);
-
-                DialogFragment changeEmailDialog = new ChangeEmailDialog();
-                changeEmailDialog.show(transaction, "dialog");
-            }
-        });
+//        emailButton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//                Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
+//
+//                if(previousFrag != null)
+//                    transaction.remove(previousFrag);
+//                transaction.addToBackStack(null);
+//
+//                DialogFragment changeEmailDialog = new ChangeEmailDialog();
+//                changeEmailDialog.show(transaction, "dialog");
+//            }
+//        });
 
         return view;
     }
