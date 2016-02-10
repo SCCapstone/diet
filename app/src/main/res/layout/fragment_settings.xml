@@ -73,6 +73,27 @@
             android:layout_below="@id/email_change"
             android:background="#006600"/>
 
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="75dp"
+            android:id="@+id/my_dietitian"
+            android:hint="@string/my_dietitian_text"
+            android:textColorHint="#FFFF"
+            android:background="#111"
+            android:textSize="25sp"
+            android:gravity="left|center_vertical"
+            android:layout_below="@id/separator_3"
+            android:textColor="#FFFF"
+            android:paddingLeft="20dp"
+            android:clickable="true" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:id="@+id/separator_4"
+            android:layout_below="@id/my_dietitian"
+            android:background="#006600"/>
+
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="25dp"
@@ -82,7 +103,7 @@
             android:longClickable="false"
             android:textSize="15sp"
             android:textColor="#FFFF"
-            android:layout_below="@id/separator_3"
+            android:layout_below="@id/separator_4"
             android:gravity="left|center_vertical"
             android:paddingLeft="10dp"
             android:textStyle="bold"
@@ -92,7 +113,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:id="@+id/separator_4"
+            android:id="@+id/separator_5"
             android:layout_below="@id/group_2"
             android:background="#006600"/>
 

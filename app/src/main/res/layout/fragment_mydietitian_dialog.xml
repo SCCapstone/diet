@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="#FF000000">
+
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#111">
+
+    <TextView
+        android:id="@+id/dietitian_search_text"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_vertical"
+        android:text="@string/search_text"
+        android:textColor="#fff"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp" />
+
+    <EditText
+        android:id="@+id/dietitian_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:hint="@string/search_edittext"
+        android:inputType="textNoSuggestions"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:layout_below="@id/dietitian_search_text"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:textColor="#FFF"
+        android:textColorHint="#A0A0A0" />
+
+    <Button
+        android:id="@+id/my_search_submit"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/dietitian_edit_text"
+        android:background="#111"
+        android:text="@string/dietitian_search_submit"
+        android:textSize="20sp"
+        android:backgroundTint="#303030"
+        android:layout_alignParentRight="true"
+        android:paddingRight="15dp" />
+
+    <Button
+        android:id="@+id/search_cancel"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/dietitian_edit_text"
+        android:background="#111"
+        android:text="@string/dietitian_search_cancel"
+        android:textColor="#FF6666"
+        android:textSize="20sp"
+        android:backgroundTint="#303030"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="15dp" />
+
+</RelativeLayout>
+
+</FrameLayout>
