@@ -3,6 +3,7 @@ package edu.sc.snacktrack;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,6 +14,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import java.util.List;
 
 /**
  * Created by spitzfor on 2/10/2016.
@@ -81,7 +89,7 @@ public class MyDietitianDialog extends DialogFragment {
                 if(searchSubmitButton.isEnabled() == true)
                 {
                     Utils.closeSoftKeyboard(getContext(), v);
-                    //Create method to search Parse usernames
+                    dietitianSearch(searchEditText.getText().toString());
                     dismiss();
                 }
             }
@@ -97,5 +105,34 @@ public class MyDietitianDialog extends DialogFragment {
         });
 
         return view;
+    }
+
+    private void dietitianSearch(String user) {
+
+        ParseQuery<ParseUser> query = ParseQuery.getQuery("_User");
+        query.whereEqualTo("username", user);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                if(e == null) {
+                    //query successful
+                    if (objects.isEmpty() != true)
+                    {
+                        ParseUser test = objects.get(0);
+                        Log.e("User found",test.getObjectId().toString());
+                    }
+
+                    else
+                    {
+                        Log.e("USER NOT FOUND", "USER WAS NOT FOUND");
+                    }
+
+                }
+
+                else {
+                    Log.e("SEARCH ERROR", "ERROR IN SEARCHING");
+                }
+            }
+        });
     }
 }
