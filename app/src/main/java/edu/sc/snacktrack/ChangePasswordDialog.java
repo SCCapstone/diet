@@ -2,6 +2,7 @@ package edu.sc.snacktrack;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,9 +26,16 @@ public class ChangePasswordDialog extends DialogFragment {
     private EditText passwordText;
     private Button submitButton;
     private Button cancelButton;
+    public Context cont;
 
     public ChangePasswordDialog() {
         //Empty constructor required
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        cont = context;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package edu.sc.snacktrack;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -14,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -30,9 +32,16 @@ public class MyDietitianDialog extends DialogFragment {
     private EditText searchEditText;
     private Button searchSubmitButton;
     private Button searchCancelButton;
+    public Context cont;
 
     public MyDietitianDialog() {
         //Empty constructor required
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        cont = context;
     }
 
     @Override
@@ -90,6 +99,9 @@ public class MyDietitianDialog extends DialogFragment {
                 {
                     Utils.closeSoftKeyboard(getContext(), v);
                     dietitianSearch(searchEditText.getText().toString());
+                    //MyDietitianListener activity = (MyDietitianListener) getActivity().getApplicationContext();
+                    //activity.onFinishEditDialog(searchEditText.getText().toString());
+
                     dismiss();
                 }
             }
@@ -107,6 +119,10 @@ public class MyDietitianDialog extends DialogFragment {
         return view;
     }
 
+//    public interface MyDietitianListener {
+//        void onFinishEditDialog(String inputText);
+//    }
+
     private void dietitianSearch(String user) {
 
         ParseQuery<ParseUser> query = ParseQuery.getQuery("_User");
@@ -116,15 +132,14 @@ public class MyDietitianDialog extends DialogFragment {
             public void done(List<ParseUser> objects, ParseException e) {
                 if(e == null) {
                     //query successful
-                    if (objects.isEmpty() != true)
-                    {
+                    if (objects.isEmpty() != true) {
                         ParseUser test = objects.get(0);
-                        Log.e("User found",test.getObjectId().toString());
+                        Toast.makeText(cont, "User objectID: " + test.getObjectId(),Toast.LENGTH_LONG).show();
                     }
 
                     else
                     {
-                        Log.e("USER NOT FOUND", "USER WAS NOT FOUND");
+                        Toast.makeText(cont, "User not found",Toast.LENGTH_LONG).show();
                     }
 
                 }

@@ -1,5 +1,6 @@
 package edu.sc.snacktrack;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,16 @@ import android.widget.Button;
  */
 public class SettingsFragment extends Fragment {
 
+//    @Override
+//    public void onFinishEditDialog(String user) {
+//        Toast.makeText(getContext(), "Hello, " + user, Toast.LENGTH_SHORT).show();
+//    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -24,7 +35,7 @@ public class SettingsFragment extends Fragment {
 
         passwordButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
 
                 if(previousFrag != null)
@@ -34,11 +45,12 @@ public class SettingsFragment extends Fragment {
                 DialogFragment changePasswordDialog = new ChangePasswordDialog();
                 changePasswordDialog.show(transaction, "dialog");
             }
+
         });
 
         emailButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
 
                 if(previousFrag != null)
@@ -52,10 +64,10 @@ public class SettingsFragment extends Fragment {
 
         myDietitianButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
 
-                if(previousFrag != null)
+                if (previousFrag != null)
                     transaction.remove(previousFrag);
                 transaction.addToBackStack(null);
 

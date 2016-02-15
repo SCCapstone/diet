@@ -1,5 +1,6 @@
 package edu.sc.snacktrack;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -15,9 +16,16 @@ public class ChangeEmailDialog extends DialogFragment {
 
     private EditText emailText;
     private Button submitButton;
+    public Context cont;
 
     public ChangeEmailDialog() {
         //Empty constructor required
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        cont = context;
     }
 
     @Override
