@@ -21,6 +21,7 @@
         <item>My Snacks</item>
         <item>Test 2</item>
         <item>Settings</item>
+        <item>Chat</item>
     </string-array>
 
     <string name="drawer_open">Open navigation drawer</string>
@@ -59,4 +60,12 @@
     <string name="title_activity_snack_details">Snack Details</string>
     <string name="password_text"><u>Change Password</u></string>
     <string name="password_edit">Click here to change password</string>
+
+    <!-- Chat strings -->
+    <string name="chat_to">to:&#160;</string>
+    <string name="chat_from">from:&#160;</string>
+    <string name="chat_send">Send</string>
+    <string name="chat_message_hint">Enter message</string>
+    <string name="chat_enter_user_hint">Enter username</string>
+    <string name="chat">Chat</string>
 </resources>

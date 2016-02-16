@@ -2,4 +2,6 @@
 
     <color name="black_overlay">#66000000</color>
 
+    <color name="chat_current_user">#A0006400</color>
+    <color name="chat_other_user">#A0FFFFFF</color>
 </resources>
