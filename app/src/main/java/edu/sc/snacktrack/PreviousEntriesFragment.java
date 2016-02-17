@@ -65,7 +65,7 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
                 SnackDetailsFragment snackDetailsFragment = new SnackDetailsFragment();
                 snackDetailsFragment.setArguments(arguments);
                 getFragmentManager().beginTransaction()
-                        .add(R.id.content_frame, snackDetailsFragment)
+                        .replace(R.id.content_frame, snackDetailsFragment)
                         .addToBackStack(null)
                         .commit();
             }

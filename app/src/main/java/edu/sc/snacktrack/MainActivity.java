@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity{
 
     private File newImageFile;
 
+    private static final String ARGUMENT_PRODUCT_ID = "product_id";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,10 +68,17 @@ public class MainActivity extends AppCompatActivity{
             startLoginActivity();
         }
 
+        // Ensure current user's SnackList is displayed first
+        SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+
         // BEGIN DRAWER STUFF
         mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
+
+        /**
+         * condition if currentUser is client or dietitian
+         */
         drawerItems = getResources().getStringArray(R.array.main_drawer_items);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -146,7 +155,32 @@ public class MainActivity extends AppCompatActivity{
         switch(position){
             case 0:
                 fragment = new PreviousEntriesFragment();
+                SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                SnackList.getInstance().refresh(null);
                 break;
+
+            case 1:
+                fragment = new DisplayClientsFragment();
+                ClientList.getInstance().refresh(null);
+                break;
+//            case 1:
+//                fragment = new PreviousEntriesFragment();
+//                ParseUser test = ParseUser.createWithoutData(ParseUser.class, "q8lnk5mYDp");
+//                test.fetchInBackground(new GetCallback<ParseUser>() {
+//                    @Override
+//                    public void done(ParseUser object, ParseException e) {
+//                        if(e == null)
+//                        {
+//                            SnackList.getInstance().setUser(object);
+//                            SnackList.getInstance().refresh(null);
+////                            if(SnackList.getInstance().getUser() != ParseUser.getCurrentUser())
+////                            {
+////
+////                            }
+//                        }
+//                    }
+//                });
+//                break;
 
             case 2:
                 fragment = new SettingsFragment();
@@ -235,15 +269,25 @@ public class MainActivity extends AppCompatActivity{
 
         switch(requestCode){
             case LOGIN_REQUEST:
-                SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
-                    @Override
-                    public void done(List<SnackEntry> objects, ParseException e) {
-                        if(e != null){
-                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                        }
-                    }
-                });
                 if(resultCode == RESULT_OK){
+                    ClientList.getInstance().refresh(new FindCallback<ParseUser>() {
+                        @Override
+                        public void done(List<ParseUser> objects, ParseException e) {
+                            if(e != null) {
+                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                            }
+                        }
+                    });
+
+                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                    SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
+                        @Override
+                        public void done(List<SnackEntry> objects, ParseException e) {
+                            if(e != null){
+                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                            }
+                        }
+                    });
                     updateToast("Log in successful!", Toast.LENGTH_SHORT);
 
                 } else{
@@ -351,6 +395,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void done(ParseException e) {
                 if(e == null){
+                    displayView(0);
                     startLoginActivity();
                 } else{
                     updateToast(e.getMessage(), Toast.LENGTH_LONG);

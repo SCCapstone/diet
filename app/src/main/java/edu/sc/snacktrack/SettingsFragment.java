@@ -30,7 +30,7 @@ public class SettingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         Button passwordButton = (Button) view.findViewById(R.id.password_change);
-        Button emailButton = (Button) view.findViewById(R.id.email_change);
+        //Button emailButton = (Button) view.findViewById(R.id.email_change);
         Button myDietitianButton = (Button) view.findViewById(R.id.my_dietitian);
 
         passwordButton.setOnClickListener(new View.OnClickListener() {
@@ -48,19 +48,19 @@ public class SettingsFragment extends Fragment {
 
         });
 
-        emailButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
-
-                if(previousFrag != null)
-                    transaction.remove(previousFrag);
-                transaction.addToBackStack(null);
-
-                DialogFragment changeEmailDialog = new ChangeEmailDialog();
-                changeEmailDialog.show(transaction, "dialog");
-            }
-        });
+//        emailButton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+//                Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
+//
+//                if(previousFrag != null)
+//                    transaction.remove(previousFrag);
+//                transaction.addToBackStack(null);
+//
+//                DialogFragment changeEmailDialog = new ChangeEmailDialog();
+//                changeEmailDialog.show(transaction, "dialog");
+//            }
+//        });
 
         myDietitianButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

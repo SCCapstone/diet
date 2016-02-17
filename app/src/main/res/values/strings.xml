@@ -19,7 +19,7 @@
 
     <string-array name="main_drawer_items">
         <item>My Snacks</item>
-        <item>Test 2</item>
+        <item>My Clients</item>
         <item>Settings</item>
     </string-array>
 
@@ -62,7 +62,7 @@
     <string name="password_text">Change Password</string>
     <string name="change_password_text">Change Account Password</string>
     <string name="change_email_text">Change Account Email</string>
-    <string name="my_dietitian_text">My Dietitian</string>
+    <string name="my_dietitian_text">Add/Change Dietitian</string>
     <string name="change_font_size_text">Change Font Size</string>
     <string name="settings_group_1">Account Settings</string>
     <string name="settings_group_2">Other Settings</string>

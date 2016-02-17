@@ -1,11 +1,14 @@
 package edu.sc.snacktrack;
 
+/**
+ * Created by spitzfor on 2/16/2016.
+ */
+
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -14,21 +17,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This singleton class holds and manages a local list snack entries.
+ * This singleton class holds and manages a local dietitian's list of clients.
  */
-public class SnackList{
+public class ClientList {
 
-    private static final String TAG = "SnackList";
-
-    /**
-     * The current instance of the SnackList
-     */
-    private static SnackList instance;
+    private static final String TAG = "ClientList";
 
     /**
-     * The local list of snack entries.
+     * The current instance of the ClientList
      */
-    private ArrayList<SnackEntry> snacks;
+    private static ClientList instance;
+
+    /**
+     * The local list of ParseUsers.
+     */
+    private ArrayList<ParseUser> clients;
 
     /**
      * The list of update listeners.
@@ -36,7 +39,7 @@ public class SnackList{
     private ArrayList<UpdateListener> updateListeners;
 
     /**
-     * The designated ParseUser from whom owns the foreign SnackList
+     * The designated ParseUser from whom owns the foreign ClientList
      */
     private ParseUser targetUser;
 
@@ -50,22 +53,20 @@ public class SnackList{
         /**
          * Called for each registered UpdateListener when an update completes.
          */
-        void onSnackListUpdateComplete();
+        void onClientListUpdateComplete();
 
         /**
-         * Called for each registered UpdateListener when an update starts. Only called for
-         * typically long-running tasks, such as saving a dirty SnackEntry or refreshing the
-         * SnackList.
+         * *************************************************************************
          */
-        void onSnackListUpdateStart();
+        void onClientListUpdateStart();
     }
 
     /**
      * Private constructor to prevent multiple instances. Use getInstance() to get the current
-     * instance of SnackList.
+     * instance of ClientList.
      */
-    private SnackList(){
-        snacks = new ArrayList<>();
+    private ClientList(){
+        clients = new ArrayList<>();
         updateListeners = new ArrayList<>();
     }
 
@@ -74,43 +75,39 @@ public class SnackList{
      *
      * @return The SnackList instance
      */
-    public static SnackList getInstance(){
+    public static ClientList getInstance(){
         if(instance == null){
-            instance = new SnackList();
+            instance = new ClientList();
         }
         return instance;
     }
 
     /**
-     * Gets a SnackEntry at a specified position.
+     * Gets a ParseUser (client) at a specified position.
      *
      * @param position The position.
-     * @return The SnackEntry
+     * @return The ParseUser (client)
      */
-    public SnackEntry get(int position){
-        return snacks.get(position);
+    public ParseUser get(int position){
+        return clients.get(position);
     }
 
     /**
-     * Returns the size of the SnackList.
+     * Returns the size of the ClientList.
      *
      * @return The size
      */
     public int size(){
-        return snacks.size();
+        return clients.size();
     }
 
     /**
-     * Sets a new target user to be used when refreshing a SnackList
+     * Sets a new target user to be used when refreshing a ClientList
      */
     public ParseUser setUser(ParseUser user) {
         targetUser = user;
         return targetUser;
     }
-
-//    public ParseUser getUser() {
-//        return targetUser;
-//    }
 
     /**
      * Registers an update listener.
@@ -140,7 +137,7 @@ public class SnackList{
      */
     private void notifyUpdateStart(){
         for(UpdateListener listener : updateListeners){
-            listener.onSnackListUpdateStart();
+            listener.onClientListUpdateStart();
         }
     }
 
@@ -149,24 +146,24 @@ public class SnackList{
      */
     private void notifyUpdateComplete(){
         for(UpdateListener listener : updateListeners){
-            listener.onSnackListUpdateComplete();
+            listener.onClientListUpdateComplete();
         }
     }
 
     /**
-     * Saves a SnackEntry to Parse and adds it to the SnackList.
+     * Saves a ParseUser to Parse and adds it to the ClientList.
      *
-     * @param entry The SnackEntry to add
+     * @param entry The ParseUser (client) to add
      * @param callback Optional. The callback to invoke after completion.
      */
-    public void addSnack(final SnackEntry entry, @Nullable final SaveCallback callback){
+    public void addClient(final ParseUser entry, @Nullable final SaveCallback callback){
         if(entry.isDirty()){
             notifyUpdateStart();
             entry.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if(e == null){
-                        snacks.add(0, entry);
+                        clients.add(0, entry);
                     }
                     notifyUpdateComplete();
 
@@ -175,8 +172,8 @@ public class SnackList{
                     }
                 }
             });
-        } else if(!snacks.contains(entry)){
-            snacks.add(0, entry);
+        } else if(!clients.contains(entry)){
+            clients.add(0, entry);
             notifyUpdateComplete();
             if(callback != null){
                 callback.done(null);
@@ -185,54 +182,28 @@ public class SnackList{
     }
 
     /**
-     * Saves a SnackEntry and its photo to Parse and adds the SnackEntry to the SnackList.
-     *
-     * @param entry The SnackEntry to add
-     * @param photo The SnackEntry's photo
-     * @param callback Optional. The callback to invoke after completion.
-     */
-    public void addSnack(final SnackEntry entry, final ParseFile photo, @Nullable final SaveCallback callback){
-        if(photo.isDirty()){
-            notifyUpdateStart();
-            photo.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        entry.setPhoto(photo);
-                        addSnack(entry, callback);
-                    }
-                }
-            });
-        } else {
-            entry.setPhoto(photo);
-            addSnack(entry, callback);
-        }
-    }
-
-    /**
-     * Refreshes the SnackList. That is, queries Parse for the current user's SnackEntrys and
-     * repopulates the SnackList with the result. If the query fails, the SnackList remains
+     * Refreshes the ClientList. That is, queries Parse for the current user's ParseUsers (clients) and
+     * repopulates the ClientList with the result. If the query fails, the ClientList remains
      * unchanged.
      *
      * @param callback Optional. The callback to invoke after completion.
      */
-    public void refresh(@Nullable final FindCallback<SnackEntry> callback){
+    public void refresh(@Nullable final FindCallback<ParseUser> callback){
         Log.d(TAG, "Refresh start");
         notifyUpdateStart();
 
-        ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
-        query.orderByDescending("createdAt");
-        query.whereEqualTo("owner", targetUser);
-        query.findInBackground(new FindCallback<SnackEntry>() {
+        ParseQuery<ParseUser> query = ParseQuery.getQuery("_User");
+        query.whereEqualTo("myDietitian", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<ParseUser>() {
             @Override
-            public void done(List<SnackEntry> refreshedSnacks, ParseException e) {
+            public void done(List<ParseUser> refreshedClients, ParseException e) {
                 if (e == null) {
-                    snacks.clear();
-                    snacks.addAll(refreshedSnacks);
+                    clients.clear();
+                    clients.addAll(refreshedClients);
                 }
 
                 if (callback != null) {
-                    callback.done(refreshedSnacks, e);
+                    callback.done(refreshedClients, e);
                 }
                 notifyUpdateComplete();
             }
