@@ -11,7 +11,6 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,14 +101,6 @@ public class ClientList {
     }
 
     /**
-     * Sets a new target user to be used when refreshing a ClientList
-     */
-    public ParseUser setUser(ParseUser user) {
-        targetUser = user;
-        return targetUser;
-    }
-
-    /**
      * Registers an update listener.
      *
      * @param listener The listener to register
@@ -147,37 +138,6 @@ public class ClientList {
     private void notifyUpdateComplete(){
         for(UpdateListener listener : updateListeners){
             listener.onClientListUpdateComplete();
-        }
-    }
-
-    /**
-     * Saves a ParseUser to Parse and adds it to the ClientList.
-     *
-     * @param entry The ParseUser (client) to add
-     * @param callback Optional. The callback to invoke after completion.
-     */
-    public void addClient(final ParseUser entry, @Nullable final SaveCallback callback){
-        if(entry.isDirty()){
-            notifyUpdateStart();
-            entry.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if(e == null){
-                        clients.add(0, entry);
-                    }
-                    notifyUpdateComplete();
-
-                    if(callback != null){
-                        callback.done(e);
-                    }
-                }
-            });
-        } else if(!clients.contains(entry)){
-            clients.add(0, entry);
-            notifyUpdateComplete();
-            if(callback != null){
-                callback.done(null);
-            }
         }
     }
 

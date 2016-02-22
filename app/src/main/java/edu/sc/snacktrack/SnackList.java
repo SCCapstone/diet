@@ -108,9 +108,9 @@ public class SnackList{
         return targetUser;
     }
 
-//    public ParseUser getUser() {
-//        return targetUser;
-//    }
+    public ParseUser getUser() {
+        return targetUser;
+    }
 
     /**
      * Registers an update listener.

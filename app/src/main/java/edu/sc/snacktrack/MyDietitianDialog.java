@@ -154,6 +154,7 @@ public class MyDietitianDialog extends DialogFragment {
                 {
                     entryACL.setReadAccess(targetUser, true);
                     entryACL.setWriteAccess(targetUser, false);
+                    entryACL.setReadAccess(ParseUser.getCurrentUser(),true);
                     entryACL.setWriteAccess(ParseUser.getCurrentUser(),true);
 
                     for(ParseObject entry : refreshedSnacks)
