@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void setAlarms() {
 
-        AlarmManager amTest = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        AlarmManager amTest = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 
         //Breakfast period reminder
         Calendar breakfastTime = Calendar.getInstance();
@@ -398,18 +398,26 @@ public class MainActivity extends AppCompatActivity{
         //Testing reminder
         Calendar testing = Calendar.getInstance();
         testing.setTimeInMillis(System.currentTimeMillis());
-        testing.set(Calendar.HOUR_OF_DAY, 2);
-        testing.set(Calendar.MINUTE, 54);
-        testing.set(Calendar.AM_PM, Calendar.PM);
+        Log.i("Testing", "Initial time set: " + testing.getTimeInMillis());
+        testing.set(Calendar.HOUR_OF_DAY, 15);
+        testing.set(Calendar.MINUTE, 25);
+        testing.set(Calendar.SECOND, 00);
+        //testing.set(Calendar.AM_PM, Calendar.PM);
+        Log.i("Testing", "Time set to go off: " + testing.getTimeInMillis());
+//        long trigTime = testing.getTimeInMillis();
+//        Toast.makeText(this, "testing time set is: " + trigTime + "\ncurrent time is: " + Calendar.getInstance().getTimeInMillis(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "testing date set is: " + testing.getTimeZone() + "\ncurrent zone is: " + Calendar.getInstance().getTimeZone(), Toast.LENGTH_LONG).show();
+
 
         Intent intent = new Intent(this, ReminderReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(this,0,intent,0);
+        PendingIntent sender = PendingIntent.getBroadcast(this,0,intent,PendingIntent.FLAG_CANCEL_CURRENT);
 
         //Test alarm
-        amTest.setInexactRepeating(AlarmManager.RTC_WAKEUP, testing.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, sender);
+        amTest.setRepeating(AlarmManager.RTC_WAKEUP, testing.getTimeInMillis(), AlarmManager.INTERVAL_DAY, sender);
+//        amTest.setInexactRepeating(AlarmManager.RTC_WAKEUP, trigTime, AlarmManager.INTERVAL_DAY, sender);
 
-        AlarmManager am1 = (AlarmManager) getSystemService(ALARM_SERVICE);
-        am1.set(AlarmManager.RTC_WAKEUP, breakfastTime.getTimeInMillis(), sender);
+        //AlarmManager am1 = (AlarmManager) getSystemService(ALARM_SERVICE);
+        //am1.set(AlarmManager.RTC_WAKEUP, breakfastTime.getTimeInMillis(), sender);
     }
 
 

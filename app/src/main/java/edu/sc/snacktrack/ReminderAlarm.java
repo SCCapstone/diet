@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
+
+import java.util.Calendar;
 
 /**
  * Created by spitzfor on 2/23/2016.
@@ -26,6 +29,7 @@ public class ReminderAlarm extends Activity {
                 finish();
             }
         });
+        Log.i("Testing", "Time alarm went off: " + Calendar.getInstance().getTimeInMillis());
 
         AlertDialog aDiag = builder.create();
         aDiag.show();
