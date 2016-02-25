@@ -1,5 +1,8 @@
 package edu.sc.snacktrack;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
@@ -51,6 +55,8 @@ public class MainActivity extends AppCompatActivity{
     private String[] drawerItems;
     private Boolean disableEntryFlag = false;
 
+    private static final String ALARM_ACTION_NAME = "edu.sc.snacktrack.broadcast.ALARM";
+
     private FileCache fileCache;
 
     private File newImageFile;
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        //////////////////////setAlarms();
         setContentView(R.layout.activity_main);
 
         // If no user is logged in, start the login activity.
@@ -166,24 +172,6 @@ public class MainActivity extends AppCompatActivity{
                 fragment = new DisplayClientsFragment();
                 ClientList.getInstance().refresh(null);
                 break;
-//            case 1:
-//                fragment = new PreviousEntriesFragment();
-//                ParseUser test = ParseUser.createWithoutData(ParseUser.class, "q8lnk5mYDp");
-//                test.fetchInBackground(new GetCallback<ParseUser>() {
-//                    @Override
-//                    public void done(ParseUser object, ParseException e) {
-//                        if(e == null)
-//                        {
-//                            SnackList.getInstance().setUser(object);
-//                            SnackList.getInstance().refresh(null);
-////                            if(SnackList.getInstance().getUser() != ParseUser.getCurrentUser())
-////                            {
-////
-////                            }
-//                        }
-//                    }
-//                });
-//                break;
 
             case 2:
                 fragment = new SettingsFragment();
@@ -276,7 +264,7 @@ public class MainActivity extends AppCompatActivity{
                     ClientList.getInstance().refresh(new FindCallback<ParseUser>() {
                         @Override
                         public void done(List<ParseUser> objects, ParseException e) {
-                            if(e != null) {
+                            if (e != null) {
                                 updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
                             }
                         }
@@ -291,6 +279,14 @@ public class MainActivity extends AppCompatActivity{
                             }
                         }
                     });
+
+                    //Start AlarmManager if successful login
+                    setAlarms();
+
+
+
+                    //if time is between
+
                     updateToast("Log in successful!", Toast.LENGTH_SHORT);
 
                 } else{
@@ -378,6 +374,42 @@ public class MainActivity extends AppCompatActivity{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAlarms() {
+
+        AlarmManager amTest = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+
+        //Breakfast period reminder
+        Calendar breakfastTime = Calendar.getInstance();
+        breakfastTime.set(Calendar.HOUR_OF_DAY, 10);
+        breakfastTime.set(Calendar.MINUTE, 30);
+
+        //Lunch period reminder
+        Calendar lunchTime = Calendar.getInstance();
+        lunchTime.set(Calendar.HOUR_OF_DAY, 15);
+        lunchTime.set(Calendar.MINUTE, 30);
+
+        //Dinner period reminder
+        Calendar dinnerTime = Calendar.getInstance();
+        dinnerTime.set(Calendar.HOUR_OF_DAY, 21);
+        dinnerTime.set(Calendar.MINUTE, 30);
+
+        //Testing reminder
+        Calendar testing = Calendar.getInstance();
+        testing.setTimeInMillis(System.currentTimeMillis());
+        testing.set(Calendar.HOUR_OF_DAY, 2);
+        testing.set(Calendar.MINUTE, 54);
+        testing.set(Calendar.AM_PM, Calendar.PM);
+
+        Intent intent = new Intent(this, ReminderReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(this,0,intent,0);
+
+        //Test alarm
+        amTest.setInexactRepeating(AlarmManager.RTC_WAKEUP, testing.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, sender);
+
+        AlarmManager am1 = (AlarmManager) getSystemService(ALARM_SERVICE);
+        am1.set(AlarmManager.RTC_WAKEUP, breakfastTime.getTimeInMillis(), sender);
     }
 
 
