@@ -1,10 +1,14 @@
 package edu.sc.snacktrack;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.util.Calendar;
 
@@ -17,7 +21,15 @@ public class ReminderAlarm extends Activity {
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //this.getParent().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+
+        Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(400);
+
+        Window win = getWindow();
+        win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+
+        win.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Hey you!");
