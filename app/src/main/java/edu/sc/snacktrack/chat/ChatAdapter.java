@@ -3,7 +3,6 @@ package edu.sc.snacktrack.chat;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,12 +32,12 @@ public class ChatAdapter extends BaseAdapter {
 
     private int layoutResourceId;
 
-    private ArrayList<ChatAdapterItem> items;
+    private ArrayList<ChatItem> items;
 
     private Context context;
 
     public ChatAdapter(Context context) {
-        this.layoutResourceId = R.layout.message;
+        this.layoutResourceId = R.layout.chat_item;
         this.context = context;
         this.items = new ArrayList<>();
     }
@@ -49,7 +48,7 @@ public class ChatAdapter extends BaseAdapter {
     }
 
     @Override
-    public ChatAdapterItem getItem(int position) {
+    public ChatItem getItem(int position) {
         return items.get(position);
     }
 
@@ -58,12 +57,12 @@ public class ChatAdapter extends BaseAdapter {
         return position;
     }
 
-    public void remove(ChatAdapterItem item){
+    public void remove(ChatItem item){
         items.remove(item);
     }
 
     public boolean containsByMessageId(String messageId){
-        for(ChatAdapterItem item : items){
+        for(ChatItem item : items){
             if(item.getMessageId().equals(messageId)){
                 return true;
             }
@@ -73,7 +72,7 @@ public class ChatAdapter extends BaseAdapter {
     }
 
     public void addMessage(final Message message){
-        final ChatAdapterItem item = new ChatAdapterItem();
+        final ChatItem item = new ChatItem();
         message.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -88,7 +87,7 @@ public class ChatAdapter extends BaseAdapter {
         });
     }
 
-    public void add(ChatAdapterItem item){
+    public void add(ChatItem item){
         items.add(item);
     }
 
@@ -97,9 +96,9 @@ public class ChatAdapter extends BaseAdapter {
     }
 
     public void sortMessages(){
-        Collections.sort(items, new Comparator<ChatAdapterItem>() {
+        Collections.sort(items, new Comparator<ChatItem>() {
             @Override
-            public int compare(ChatAdapterItem lhs, ChatAdapterItem rhs) {
+            public int compare(ChatItem lhs, ChatItem rhs) {
                 Long time1 = lhs.getCreatedTime();
                 Long time2 = rhs.getCreatedTime();
                 return time1.compareTo(time2);
@@ -108,8 +107,8 @@ public class ChatAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public ChatAdapterItem[] getAllItems(){
-        ChatAdapterItem[] messages = new ChatAdapterItem[getCount()];
+    public ChatItem[] getAllItems(){
+        ChatItem[] messages = new ChatItem[getCount()];
 
         for(int i = 0; i < messages.length; ++i){
             messages[i] = this.items.get(i);
@@ -118,8 +117,8 @@ public class ChatAdapter extends BaseAdapter {
         return messages;
     }
 
-    public void addAll(ChatAdapterItem[] items){
-        for(ChatAdapterItem item : items){
+    public void addAll(ChatItem[] items){
+        for(ChatItem item : items){
             this.items.add(item);
         }
 
@@ -130,12 +129,27 @@ public class ChatAdapter extends BaseAdapter {
      *
      * @return The last item if the list is not empty. null otherwise
      */
-    public ChatAdapterItem getLast(){
+    public ChatItem getLast(){
         if(items.size() > 0){
             return items.get(items.size()-1);
         } else{
             return null;
         }
+    }
+
+    /**
+     * Gets the last item from the other user
+     * @return The last item from the other user if there is one. null otherwise.
+     */
+    public ChatItem getLastFromOther(){
+        for(int i = items.size() - 1; i >= 0; --i){
+            ChatItem currentItem = items.get(i);
+            if(currentItem.getToUsername().equals(ParseUser.getCurrentUser().getUsername())){
+                return currentItem;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -144,7 +158,7 @@ public class ChatAdapter extends BaseAdapter {
         MessageHolder messageHolder;
         Resources resources = context.getResources();
 
-        ChatAdapterItem message = items.get(position);
+        ChatItem message = items.get(position);
 
         if(row == null){
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
@@ -173,13 +187,14 @@ public class ChatAdapter extends BaseAdapter {
         );
         if(message.getFromUsername().equals(ParseUser.getCurrentUser().getUsername())){
             messageHolder.messageTextViewWrapper.setGravity(Gravity.RIGHT);
-            messageHolder.messageTextViewWrapper.setPadding(paddingPx,0,0,0);
+            messageHolder.messageTextViewWrapper.setPadding(paddingPx, 0, 0, 0);
             messageHolder.messageTextView.setBackgroundColor(resources.getColor(R.color.chat_current_user));
+            messageHolder.messageTextView.setTextColor(resources.getColor(R.color.chat_current_user_text));
         } else{
             messageHolder.messageTextViewWrapper.setGravity(Gravity.LEFT);
             messageHolder.messageTextViewWrapper.setPadding(0, 0, paddingPx, 0);
             messageHolder.messageTextView.setBackgroundColor(resources.getColor(R.color.chat_other_user));
-
+            messageHolder.messageTextView.setTextColor(resources.getColor(R.color.chat_other_user_text));
         }
 
 

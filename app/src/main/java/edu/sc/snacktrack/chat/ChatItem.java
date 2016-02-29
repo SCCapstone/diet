@@ -4,16 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.parse.ParseObject;
-
-import java.util.Date;
-
 /**
  * This class essentially wraps a message to make it parcelable.
  */
-public class ChatAdapterItem implements Parcelable{
+public class ChatItem implements Parcelable{
 
-    private static final String TAG = "ChatAdapterItem";
+    private static final String TAG = "ChatItem";
 
     private String message;
     private String fromUsername;
@@ -21,7 +17,7 @@ public class ChatAdapterItem implements Parcelable{
     private String messageId;
     private long createdTime;
 
-    public ChatAdapterItem(String message, String fromUsername, String toUsername, String messageId, long createdTime){
+    public ChatItem(String message, String fromUsername, String toUsername, String messageId, long createdTime){
         this.message = message;
         this.fromUsername = fromUsername;
         this.toUsername = toUsername;
@@ -29,16 +25,16 @@ public class ChatAdapterItem implements Parcelable{
         this.createdTime = createdTime;
     }
 
-    public ChatAdapterItem(Parcel parcel){
+    public ChatItem(Parcel parcel){
 
         this(parcel.readString(), parcel.readString(), parcel.readString(), parcel.readString(), parcel.readLong());
     }
 
-    public ChatAdapterItem(Message message){
+    public ChatItem(Message message){
         this(message.getMessage(), message.getFromUser().getUsername(), message.getToUser().getUsername(), message.getObjectId(), message.getCreatedAt().getTime());
     }
 
-    public ChatAdapterItem(){
+    public ChatItem(){
         this("", "", "", "", 0);
     }
 
@@ -106,13 +102,13 @@ public class ChatAdapterItem implements Parcelable{
         dest.writeLong(createdTime);
     }
 
-    public static final Parcelable.Creator<ChatAdapterItem> CREATOR = new Parcelable.Creator<ChatAdapterItem>(){
-        public ChatAdapterItem createFromParcel(Parcel in){
-            return new ChatAdapterItem(in);
+    public static final Parcelable.Creator<ChatItem> CREATOR = new Parcelable.Creator<ChatItem>(){
+        public ChatItem createFromParcel(Parcel in){
+            return new ChatItem(in);
         }
 
-        public ChatAdapterItem[] newArray(int size){
-            return new ChatAdapterItem[size];
+        public ChatItem[] newArray(int size){
+            return new ChatItem[size];
         }
     };
 }

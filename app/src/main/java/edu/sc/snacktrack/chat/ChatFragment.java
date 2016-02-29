@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.DeleteCallback;
@@ -45,6 +46,9 @@ public class ChatFragment extends Fragment{
     private ListView messageListView;
     private Button sendButton;
     private EditText messageET;
+    private TextView chatWithTextView;
+
+    private View progressOverlay;
 
     private ChatAdapter chatAdapter;
 
@@ -77,6 +81,12 @@ public class ChatFragment extends Fragment{
         } catch (ParseException e) {
             Log.d(TAG, "fetch from local datastore failed!");
             conversation.fetchInBackground();
+        }
+
+        // If we're just starting this fragment, display any pinned messages while we fetch
+        // new ones.
+        if(savedInstanceState == null){
+            displayPinnedMessages();
         }
     }
 
@@ -115,7 +125,10 @@ public class ChatFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         messageListView = (ListView) view.findViewById(R.id.messageListView);
         messageListView.setAdapter(chatAdapter);
-        setListLongClickListener();
+//        setListLongClickListener();
+
+        chatWithTextView = (TextView) view.findViewById(R.id.chatWithTextView);
+        chatWithTextView.setText(otherUser.getUsername());
 
         messageET = (EditText) view.findViewById(R.id.toSendEditText);
         sendButton = (Button) view.findViewById(R.id.sendButton);
@@ -165,7 +178,7 @@ public class ChatFragment extends Fragment{
         super.onActivityCreated(savedInstanceState);
 
         if(savedInstanceState != null) {
-            chatAdapter.addAll((ChatAdapterItem[]) savedInstanceState.getParcelableArray(STATE_MESSAGES));
+            chatAdapter.addAll((ChatItem[]) savedInstanceState.getParcelableArray(STATE_MESSAGES));
         } else{
             updateAllMessages();
         }
@@ -179,7 +192,7 @@ public class ChatFragment extends Fragment{
         messageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                final ChatAdapterItem item = chatAdapter.getItem(position);
+                final ChatItem item = chatAdapter.getItem(position);
                 final Message message = ParseObject.createWithoutData(Message.class, item.getMessageId());
 
                 new AlertDialog.Builder(getContext())
@@ -241,7 +254,8 @@ public class ChatFragment extends Fragment{
                 if (e == null) {
                     chatAdapter.clear();
                     for (Message message : objects) {
-                        chatAdapter.add(new ChatAdapterItem(message));
+                        message.pinInBackground();
+                        chatAdapter.add(new ChatItem(message));
                     }
 
                     chatAdapter.notifyDataSetChanged();
@@ -250,6 +264,38 @@ public class ChatFragment extends Fragment{
                 }
             }
         });
+    }
+
+    private void displayPinnedMessages(){
+        List<ParseQuery<Message>> orQueries = new ArrayList<>();
+        ParseQuery<Message> oredQuery;
+        List<Message> pinnedMessages;
+
+        orQueries.add(ParseQuery.getQuery(Message.class)
+                        .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
+                        .whereEqualTo(Message.TO_KEY, otherUser)
+        );
+        orQueries.add(ParseQuery.getQuery(Message.class)
+                        .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
+                        .whereEqualTo(Message.FROM_KEY, otherUser)
+        );
+        oredQuery = ParseQuery.or(orQueries);
+        oredQuery.orderByAscending("createdAt");
+        oredQuery.fromLocalDatastore();
+        try {
+            pinnedMessages = oredQuery.find();
+        } catch(ParseException e){
+            // Give up and do not display anything
+            pinnedMessages = null;
+        }
+
+        if(pinnedMessages != null){
+            chatAdapter.clear();
+            for(Message message : pinnedMessages){
+                chatAdapter.add(new ChatItem((message)));
+            }
+            chatAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -305,10 +351,9 @@ public class ChatFragment extends Fragment{
          * Fetches messages with a createdAt time greater than the most recent message in chatAdapter.
          */
         private void fetchNewMessages(){
-            Log.d(TAG, "fetchNewMessages");
             List<ParseQuery<Message>> orQueries = new ArrayList<>();
             ParseQuery<Message> oredQuery;
-            ChatAdapterItem lastItem = chatAdapter.getLast();
+            ChatItem lastItem = chatAdapter.getLastFromOther();
             List<Message> newMessages = null;
 
             Date lastDate = new Date(0);
@@ -316,10 +361,10 @@ public class ChatFragment extends Fragment{
                 lastDate.setTime(lastItem.getCreatedTime());
             }
 
-            orQueries.add(ParseQuery.getQuery(Message.class)
-                            .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
-                            .whereEqualTo(Message.TO_KEY, otherUser)
-            );
+//            orQueries.add(ParseQuery.getQuery(Message.class)
+//                            .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
+//                            .whereEqualTo(Message.TO_KEY, otherUser)
+//            );
             orQueries.add(ParseQuery.getQuery(Message.class)
                             .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
                             .whereEqualTo(Message.FROM_KEY, otherUser)
@@ -336,7 +381,7 @@ public class ChatFragment extends Fragment{
             if(newMessages != null){
                 if(newMessages.size() > 0){
                     for(Message message : newMessages){
-                        chatAdapter.add(new ChatAdapterItem(message));
+                        chatAdapter.add(new ChatItem(message));
                     }
 
                     if(myActivity!= null){

@@ -68,4 +68,6 @@
     <string name="chat_message_hint">Enter message</string>
     <string name="chat_enter_user_hint">Enter username</string>
     <string name="chat">Chat</string>
+    <string name="chat_with">Chat with:&#160;</string>
+    <string name="recent_message">Recent message:&#160;</string>
 </resources>
