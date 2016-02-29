@@ -125,6 +125,11 @@ public class ChatChooserFragment extends Fragment{
 
     private void startChat(final String username){
 
+        if(username.equals(ParseUser.getCurrentUser().getUsername())){
+            updateToast("You can't chat with yourself", Toast.LENGTH_SHORT);
+            return;
+        }
+
         if(!startingChat){
             progressOverlay.setVisibility(View.VISIBLE);
             newChatButton.setEnabled(false);
