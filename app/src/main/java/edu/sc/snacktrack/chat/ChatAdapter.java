@@ -18,13 +18,11 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import edu.sc.snacktrack.R;
 
 /**
- * ChatAdapter for displaying a list of chat messages.
+ * Adapter for displaying a list of chat messages.
  */
 public class ChatAdapter extends BaseAdapter {
 
@@ -57,20 +55,12 @@ public class ChatAdapter extends BaseAdapter {
         return position;
     }
 
-    public void remove(ChatItem item){
-        items.remove(item);
-    }
-
-    public boolean containsByMessageId(String messageId){
-        for(ChatItem item : items){
-            if(item.getMessageId().equals(messageId)){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
+    /**
+     * Add a Message to this adapter. If the Message is not fetched, it will be fetched in the
+     * background and the ChatAdapter will update if the fetch is successful.
+     *
+     * @param message The Message to add.
+     */
     public void addMessage(final Message message){
         final ChatItem item = new ChatItem();
         message.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
@@ -87,26 +77,27 @@ public class ChatAdapter extends BaseAdapter {
         });
     }
 
+    /**
+     * Adds a ChatItem to this adapter.
+     *
+     * @param item the ChatItem to add
+     */
     public void add(ChatItem item){
         items.add(item);
     }
 
+    /**
+     * Clears this adapter. That is, removes all items from the adapter.
+     */
     public void clear(){
         items.clear();
     }
 
-    public void sortMessages(){
-        Collections.sort(items, new Comparator<ChatItem>() {
-            @Override
-            public int compare(ChatItem lhs, ChatItem rhs) {
-                Long time1 = lhs.getCreatedTime();
-                Long time2 = rhs.getCreatedTime();
-                return time1.compareTo(time2);
-            }
-        });
-        notifyDataSetChanged();
-    }
-
+    /**
+     * Gets all ChatItems currently in this adapter.
+     *
+     * @return array of ChatItems
+     */
     public ChatItem[] getAllItems(){
         ChatItem[] messages = new ChatItem[getCount()];
 
@@ -117,6 +108,11 @@ public class ChatAdapter extends BaseAdapter {
         return messages;
     }
 
+    /**
+     * Adds an array of ChatItems to this adapter
+     *
+     * @param items array of ChatItems
+     */
     public void addAll(ChatItem[] items){
         for(ChatItem item : items){
             this.items.add(item);
@@ -125,20 +121,8 @@ public class ChatAdapter extends BaseAdapter {
     }
 
     /**
-     * Gets the last item.
+     * Gets the last item from the other user.
      *
-     * @return The last item if the list is not empty. null otherwise
-     */
-    public ChatItem getLast(){
-        if(items.size() > 0){
-            return items.get(items.size()-1);
-        } else{
-            return null;
-        }
-    }
-
-    /**
-     * Gets the last item from the other user
      * @return The last item from the other user if there is one. null otherwise.
      */
     public ChatItem getLastFromOther(){
@@ -201,6 +185,9 @@ public class ChatAdapter extends BaseAdapter {
         return row;
     }
 
+    /**
+     * Class for the ViewHolder pattern. Holds views for a single ChatItem.
+     */
     static class MessageHolder{
         TextView toTextView;
         TextView fromTextView;

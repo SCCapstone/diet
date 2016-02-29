@@ -13,10 +13,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.os.Handler;
 import edu.sc.snacktrack.R;
 import edu.sc.snacktrack.Utils;
 
+/**
+ * This DialogFragment asks the user to input a username to chat with and returns the entered
+ * username string.
+ *
+ * The target fragment must be set for this fragment. The username is passed to the target
+ * fragment in an intent by calling
+ *
+ * getTargetFragment().onActivityResult(...);
+ *
+ * The username has the name "username" in the returned intent.
+ *
+ */
 public class NewChatDialogFragment extends DialogFragment{
 
     private static final String TAG = "NewChatDialogFragment";

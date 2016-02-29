@@ -8,18 +8,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.os.Handler;
 import android.widget.Toast;
 
@@ -35,6 +29,9 @@ import java.util.List;
 import edu.sc.snacktrack.R;
 import edu.sc.snacktrack.Utils;
 
+/**
+ * Fragment for choosing from a list of previous chats or starting a new chat.
+ */
 public class ChatChooserFragment extends Fragment{
 
     private static final String TAG = "ChatChooserFragment";
@@ -87,9 +84,6 @@ public class ChatChooserFragment extends Fragment{
         newChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                String username = usernameEditText.getText().toString();
-//                Utils.closeSoftKeyboard(getContext(), button);
-//                startChat(username);
                 NewChatDialogFragment newChatDialogFragment = new NewChatDialogFragment();
                 newChatDialogFragment.setTargetFragment(ChatChooserFragment.this, USERNAME_REQUEST_CODE);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -97,19 +91,8 @@ public class ChatChooserFragment extends Fragment{
             }
         });
 
-//        if(savedInstanceState != null){
-//            startingChat = savedInstanceState.getBoolean(STATE_STARTING_CHAT);
-//        }
-
         return view;
     }
-
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putBoolean(STATE_STARTING_CHAT, startingChat);
-//    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -123,6 +106,11 @@ public class ChatChooserFragment extends Fragment{
         }
     }
 
+    /**
+     * Attempts to start a chat with a specified username.
+     *
+     * @param username The username to chat with
+     */
     private void startChat(final String username){
 
         if(username.equals(ParseUser.getCurrentUser().getUsername())){
@@ -213,6 +201,12 @@ public class ChatChooserFragment extends Fragment{
         }
     }
 
+    /**
+     * Attempts to find a user with a specified username.
+     *
+     * @param username The username to search for
+     * @return The user if one was found. null otherwise.
+     */
     private ParseUser findUser(String username) {
         List<ParseUser> users;
 
@@ -252,6 +246,13 @@ public class ChatChooserFragment extends Fragment{
 
     }
 
+    /**
+     * Attempts to find a conversation with the a specified user or creates a new one if
+     * no conversation exists.
+     *
+     * @param otherUser The fromUser
+     * @return The conversation if one was found or could be created. null otherwise.
+     */
     private Conversation findConversation(ParseUser otherUser){
 
         List<Conversation> conversations;
