@@ -1,5 +1,7 @@
 package edu.sc.snacktrack.chat;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,13 +38,13 @@ public class ChatChooserFragment extends Fragment{
 
     private static final String TAG = "ChatChooserFragment";
 
+    private static final int USERNAME_REQUEST_CODE = 100;
+
     private View progressOverlay;
     private Button newChatButton;
     private ListView chatChooserListView;
 
     private volatile boolean startingChat = false;
-
-    private static final String STATE_STARTING_CHAT = "startingChat";
 
     private ChatChooserAdapter chatChooserAdapter;
 
@@ -86,6 +88,7 @@ public class ChatChooserFragment extends Fragment{
 //                Utils.closeSoftKeyboard(getContext(), button);
 //                startChat(username);
                 NewChatDialogFragment newChatDialogFragment = new NewChatDialogFragment();
+                newChatDialogFragment.setTargetFragment(ChatChooserFragment.this, USERNAME_REQUEST_CODE);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 newChatDialogFragment.show(ft, "newChatDialog");
             }
@@ -103,6 +106,19 @@ public class ChatChooserFragment extends Fragment{
 //        super.onSaveInstanceState(outState);
 //        outState.putBoolean(STATE_STARTING_CHAT, startingChat);
 //    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode){
+            case USERNAME_REQUEST_CODE:
+                if(resultCode == Activity.RESULT_OK){
+                    String username = data.getStringExtra("username");
+                    Log.d(TAG, "received username " + username);
+                    startChat(username);
+                }
+        }
+    }
 
     private void startChat(final String username){
 
