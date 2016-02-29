@@ -43,14 +43,9 @@ public class NewChatDialogFragment extends DialogFragment{
                 final Intent result = new Intent();
                 result.putExtra("username", username);
 
-                // Use a 500ms delay here for less jerky animations
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, result);
-                        dismiss();
-                    }
-                }, 500);
                 Utils.closeSoftKeyboard(myActivity, chatButton);
+                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, result);
+                dismiss();
             }
         });
         getDialog().setTitle("New chat");
