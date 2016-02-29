@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -46,7 +47,6 @@ public class ChatFragment extends Fragment{
     private ListView messageListView;
     private Button sendButton;
     private EditText messageET;
-    private TextView chatWithTextView;
 
     private View progressOverlay;
 
@@ -75,6 +75,9 @@ public class ChatFragment extends Fragment{
         conversation = ParseObject.createWithoutData(
                 Conversation.class, getArguments().getString(ARG_CONVERSATION_ID)
         );
+
+        setTitleToUsername();
+
         try {
             Log.d(TAG, "fetch from local datastore...");
             conversation.fetchFromLocalDatastore();
@@ -87,6 +90,27 @@ public class ChatFragment extends Fragment{
         // new ones.
         if(savedInstanceState == null){
             displayPinnedMessages();
+        }
+    }
+
+    /**
+     * Attempts to set the action bar's title to the other user's username.
+     */
+    private void setTitleToUsername(){
+        String username = otherUser.getUsername();
+        if(username != null){
+            getActivity().setTitle(username);
+        } else{
+            otherUser.fetchInBackground(new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser fetchedUser, ParseException e) {
+                    if (e == null) {
+                        if (fetchedUser != null && fetchedUser.getUsername() != null) {
+                            getActivity().setTitle(fetchedUser.getUsername());
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -126,9 +150,6 @@ public class ChatFragment extends Fragment{
         messageListView = (ListView) view.findViewById(R.id.messageListView);
         messageListView.setAdapter(chatAdapter);
 //        setListLongClickListener();
-
-        chatWithTextView = (TextView) view.findViewById(R.id.chatWithTextView);
-        chatWithTextView.setText(otherUser.getUsername());
 
         messageET = (EditText) view.findViewById(R.id.toSendEditText);
         sendButton = (Button) view.findViewById(R.id.sendButton);
@@ -184,51 +205,51 @@ public class ChatFragment extends Fragment{
         }
     }
 
-    /**
-     * Sets the long click listener for messageListView. Currently, long clicking an item
-     * displays a dialog for deleting a message.
-     */
-    private void setListLongClickListener(){
-        messageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                final ChatItem item = chatAdapter.getItem(position);
-                final Message message = ParseObject.createWithoutData(Message.class, item.getMessageId());
-
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Delete this message?")
-                        .setMessage(String.format("%s", item.getMessage()))
-                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                message.deleteInBackground(new DeleteCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        if (e == null) {
-                                            chatAdapter.remove(item);
-                                            chatAdapter.notifyDataSetChanged();
-                                        } else {
-                                            updateToast(
-                                                    "" + e.getMessage(),
-                                                    Toast.LENGTH_SHORT
-                                            );
-                                        }
-                                    }
-                                });
-                            }
-                        })
-                        .setNegativeButton("Keep", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .setCancelable(true)
-                        .show();
-                return true;
-            }
-        });
-    }
+//    /**
+//     * Sets the long click listener for messageListView. Currently, long clicking an item
+//     * displays a dialog for deleting a message.
+//     */
+//    private void setListLongClickListener(){
+//        messageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+//                final ChatItem item = chatAdapter.getItem(position);
+//                final Message message = ParseObject.createWithoutData(Message.class, item.getMessageId());
+//
+//                new AlertDialog.Builder(getContext())
+//                        .setTitle("Delete this message?")
+//                        .setMessage(String.format("%s", item.getMessage()))
+//                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                message.deleteInBackground(new DeleteCallback() {
+//                                    @Override
+//                                    public void done(ParseException e) {
+//                                        if (e == null) {
+//                                            chatAdapter.remove(item);
+//                                            chatAdapter.notifyDataSetChanged();
+//                                        } else {
+//                                            updateToast(
+//                                                    "" + e.getMessage(),
+//                                                    Toast.LENGTH_SHORT
+//                                            );
+//                                        }
+//                                    }
+//                                });
+//                            }
+//                        })
+//                        .setNegativeButton("Keep", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.cancel();
+//                            }
+//                        })
+//                        .setCancelable(true)
+//                        .show();
+//                return true;
+//            }
+//        });
+//    }
 
     /**
      * Fetches a full list of messages between the two users and repopulates chatAdapter with
