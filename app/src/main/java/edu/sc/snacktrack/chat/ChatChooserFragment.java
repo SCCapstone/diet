@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.os.Handler;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseACL;
@@ -47,6 +48,8 @@ public class ChatChooserFragment extends Fragment{
     private volatile boolean startingChat = false;
 
     private ChatChooserAdapter chatChooserAdapter;
+
+    private Toast toast;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,9 +156,14 @@ public class ChatChooserFragment extends Fragment{
 
                     if(conversation == null){
                         Log.d(TAG, "null conversation");
-                        startingChat = false;
-                        progressOverlay.setVisibility(View.GONE);
-                        newChatButton.setEnabled(true);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                startingChat = false;
+                                progressOverlay.setVisibility(View.GONE);
+                                newChatButton.setEnabled(true);
+                            }
+                        });
                         return;
                     }
 
@@ -212,6 +220,7 @@ public class ChatChooserFragment extends Fragment{
         try{
             users = query.find();
         } catch(ParseException e){
+            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
             return null;
         }
 
@@ -224,12 +233,14 @@ public class ChatChooserFragment extends Fragment{
             try{
                 users = query.find();
             } catch(ParseException e){
+                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                 return null;
             }
 
             if(users.size() == 1){
                 return users.get(0);
             } else{
+                updateToast("Username not found", Toast.LENGTH_SHORT);
                 return null;
             }
         }
@@ -259,6 +270,7 @@ public class ChatChooserFragment extends Fragment{
                 return conversation;
             }
         } catch (ParseException e) {
+            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
             return null;
         }
     }
@@ -286,7 +298,7 @@ public class ChatChooserFragment extends Fragment{
             public void done(List<Conversation> conversations, ParseException e) {
 
                 // Pin the conversations for faster access later
-                for(Conversation conversation : conversations){
+                for (Conversation conversation : conversations) {
                     conversation.pinInBackground();
                 }
 
@@ -341,5 +353,29 @@ public class ChatChooserFragment extends Fragment{
         }
 
         return filtered;
+    }
+
+    /**
+     * Cancels the current toast and displays a new toast.
+     *
+     * @param text The text to display
+     * @param length The length to display the toast
+     */
+    private void updateToast(final String text, final int length){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (toast != null) {
+                    toast.cancel();
+                }
+
+                toast = Toast.makeText(
+                        getActivity(),
+                        text,
+                        length
+                );
+                toast.show();
+            }
+        });
     }
 }
