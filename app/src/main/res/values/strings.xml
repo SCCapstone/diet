@@ -59,4 +59,5 @@
     <string name="title_activity_snack_details">Snack Details</string>
     <string name="password_text"><u>Change Password</u></string>
     <string name="password_edit">Click here to change password</string>
+    <string name="edit_item">Edit</string>
 </resources>

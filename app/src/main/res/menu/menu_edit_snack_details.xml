@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/edit_item"
+        android:icon="@drawable/ic_action_edit"
+        app:showAsAction="always"
+
+        android:title="@string/edit_item">
+    </item>
+    <item
+        android:id="@+id/save_item"
+        android:icon="@drawable/system_save_icon"
+        app:showAsAction="always"
+
+        android:title="@string/edit_item">
+    </item>
+</menu>
+
+    <!--android:orderInCategory="10"-->

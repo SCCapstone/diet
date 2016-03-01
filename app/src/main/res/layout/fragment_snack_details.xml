@@ -43,16 +43,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="What is this?"
+                    android:text="Meal Type"
                     android:id="@+id/mealTypeLabel" />
 
-                <TextView
+                <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/mealTypeTextView"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    tools:text="Here's the meal type."
-                    android:textColor="@android:color/black"/>
+                    android:id="@+id/meal_type_spinner" />
+
+                <!--<Spinner-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/meal_location_spinner"-->
+                    <!--android:entries="@array/meal_location"-->
+                    <!--/>-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/mealTypeTextView"-->
+                    <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+                    <!--tools:text="Here's the meal type."-->
+                    <!--android:textColor="@android:color/black"/>-->
 
             </LinearLayout>
 
@@ -76,12 +88,12 @@
                     android:id="@+id/descriptionLabel" />
 
 
-                <TextView
+                <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:hint="@string/edit_description_hint"
-                    android:id="@+id/descriptionTextView"
+                    android:id="@+id/descriptionEditTextView"
                     android:scrollbars="vertical"
                     android:minHeight="100dp"
                     android:textColor="#000000"/>

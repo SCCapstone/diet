@@ -20,6 +20,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 //import com.jayway.android.robotium.solo.Solo;
 
+//import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.bus.ActivityResultBus;
+//import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.bus.ActivityResultEvent;
 import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity{
     private String[] drawerItems;
 
     private FileCache fileCache;
-
+private Menu _menu;
     private File newImageFile;
 
     @Override
@@ -98,7 +100,8 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                displayView(position);
+
+                      displayView(position);
             }
         });
         // END DRAWER STUFF
@@ -142,8 +145,7 @@ public class MainActivity extends AppCompatActivity{
      */
     private void displayView(int position){
 
-        Fragment fragment = null;
-
+        Fragment fragment;
         switch(position){
             case 0:
                 fragment = new PreviousEntriesFragment();
@@ -163,6 +165,8 @@ public class MainActivity extends AppCompatActivity{
 
         if(fragment != null){
             FragmentManager fm = getSupportFragmentManager();
+//fm.findFragmentById(R.id.content_frame).setHasOptionsMenu(false);
+
             fm.beginTransaction()
                     .replace(R.id.content_frame, fragment, CURRENT_FRAGMENT_TAG)
                     .commit();
@@ -171,6 +175,8 @@ public class MainActivity extends AppCompatActivity{
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
             setTitle(drawerItems[position]);
+
+           // invalidateOptionsMenu();
 
         } else{
             updateToast("Something went wrong with the drawer :/", Toast.LENGTH_LONG);
@@ -234,8 +240,11 @@ public class MainActivity extends AppCompatActivity{
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-
+        super.onActivityResult(requestCode, resultCode, data);
+//        ActivityResultBus.getInstance().postQueue(
+//                new ActivityResultEvent(requestCode, resultCode, data));
         switch(requestCode){
+
             case LOGIN_REQUEST:
                 SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
                     @Override
@@ -272,8 +281,10 @@ public class MainActivity extends AppCompatActivity{
                     }
                 }
                 break;
+
             default:
-                updateToast("Something's not right", Toast.LENGTH_LONG);
+
+                //updateToast("Something's not right", Toast.LENGTH_LONG);
         }
     }
 
@@ -286,7 +297,11 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        _menu = menu;
+menu.clear();
+
+                getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
@@ -294,6 +309,8 @@ public class MainActivity extends AppCompatActivity{
     public boolean onPrepareOptionsMenu(Menu menu) {
 //        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
 //        menu.findItem(R.id.action_logout).setVisible(!drawerOpen);
+
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -360,4 +377,12 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+
+                super.onBackPressed();
+setTitle("My Snacks");
+    }
+
 }

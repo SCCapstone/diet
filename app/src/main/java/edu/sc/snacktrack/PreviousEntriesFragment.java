@@ -36,7 +36,7 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+setHasOptionsMenu(false);
         adapter = new SnackListAdapter(getContext());
         SnackList.getInstance().registerUpdateListener(adapter);
         SnackList.getInstance().registerUpdateListener(this);
@@ -65,7 +65,8 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
                 SnackDetailsFragment snackDetailsFragment = new SnackDetailsFragment();
                 snackDetailsFragment.setArguments(arguments);
                 getFragmentManager().beginTransaction()
-                        .add(R.id.content_frame, snackDetailsFragment)
+                        .replace(R.id.content_frame,snackDetailsFragment)
+                        //.add(R.id.content_frame, snackDetailsFragment)
                         .addToBackStack(null)
                         .commit();
             }

@@ -67,7 +67,7 @@ public class NewEntryActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_entry);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mealTypeSpinner = (Spinner) findViewById(R.id.meal_type_spinner);
         mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
 
@@ -264,7 +264,8 @@ public class NewEntryActivity extends AppCompatActivity{
             entry.setDescription(descriptionTextView.getText().toString());
         }
 
-        if(mealType != null && !mealType.trim().equals(getResources().getString(R.string.default_spinner_item))){
+//        if(mealType != null && !mealType.trim().equals(getResources().getString(R.string.default_spinner_item))){
+        if(mealType != null){
             entry.setTypeOfMeal(mealTypeSpinner.getSelectedItem().toString());
         }
 
@@ -363,9 +364,7 @@ public class NewEntryActivity extends AppCompatActivity{
             case R.id.action_done:
                 saveEntry();
                 break;
-            case R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
