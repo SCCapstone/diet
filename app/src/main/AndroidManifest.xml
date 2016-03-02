@@ -37,7 +37,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:windowSoftInputMode="stateHidden|adjustResize">
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -51,7 +52,7 @@
         <activity
             android:name=".EditDescriptionActivity"
             android:label="@string/title_activity_edit_description"
-            android:windowSoftInputMode="stateVisible|adjustResize" >
+            android:windowSoftInputMode="stateVisible|adjustResize">
         </activity>
         <activity
             android:name=".ReminderAlarm"

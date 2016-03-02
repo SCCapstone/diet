@@ -5,6 +5,9 @@ import android.app.Application;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import edu.sc.snacktrack.chat.Conversation;
+import edu.sc.snacktrack.chat.Message;
+
 public class SnackTrackApplication extends Application{
 
     private static final String PARSE_APPLICATION_ID = "46YXlwzvjKZaNIfSE0h1uLdhMg7Zf6mWDtvF4CiY";
@@ -18,6 +21,8 @@ public class SnackTrackApplication extends Application{
 
         // Register ParseObject subclasses
         ParseObject.registerSubclass(SnackEntry.class);
+        ParseObject.registerSubclass(Message.class);
+        ParseObject.registerSubclass(Conversation.class);
 
         // Authenticate client with the application ID and client key.
         Parse.initialize(this, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);

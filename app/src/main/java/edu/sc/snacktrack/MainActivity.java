@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
+import edu.sc.snacktrack.chat.ChatChooserFragment;
+import edu.sc.snacktrack.chat.ChatFragment;
+
 public class MainActivity extends AppCompatActivity{
 
     private static final int LOGIN_REQUEST = 1;
@@ -134,6 +137,9 @@ public class MainActivity extends AppCompatActivity{
             newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
             mTitle = savedInstanceState.getCharSequence(STATE_MTITLE, getTitle());
             getSupportActionBar().setTitle(savedInstanceState.getCharSequence(STATE_CURRENT_TITLE, getTitle()));
+
+            // Restore fragment state
+
         }
     }
 
@@ -180,6 +186,13 @@ public class MainActivity extends AppCompatActivity{
 
             case 2:
                 fragment = new SettingsFragment();
+                break;
+
+            case 3:
+                fragment = new ChatChooserFragment();
+//                Bundle args = new Bundle();
+//                args.putString(ChatFragment.ARG_OTHER_USER_ID, "Audel3iEFb");
+//                fragment.setArguments(args);
                 break;
 
             default:

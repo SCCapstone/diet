@@ -21,6 +21,7 @@
         <item>My Snacks</item>
         <item>My Clients</item>
         <item>Settings</item>
+        <item>Chat</item>
     </string-array>
 
     <string name="drawer_open">Open navigation drawer</string>
@@ -79,4 +80,17 @@
     <string name="search_edittext">Dietitian\'s username</string>
     <string name="dietitian_search_submit">Search</string>
     <string name="dietitian_search_cancel">Cancel</string>
+
+    <string name="scan">Scan</string>
+
+    <!-- Chat strings -->
+    <string name="chat_to">to:&#160;</string>
+    <string name="chat_from">from:&#160;</string>
+    <string name="chat_send">Send</string>
+    <string name="chat_message_hint">Enter message</string>
+    <string name="chat_enter_user_hint">Enter username</string>
+    <string name="chat">Chat</string>
+    <string name="chat_with">Chat with:&#160;</string>
+    <string name="recent_message">Recent message:&#160;</string>
+
 </resources>
