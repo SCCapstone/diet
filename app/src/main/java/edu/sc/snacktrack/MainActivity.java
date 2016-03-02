@@ -29,10 +29,7 @@ import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
@@ -58,10 +55,10 @@ public class MainActivity extends AppCompatActivity{
     private String[] drawerItems;
     private Boolean disableEntryFlag = false;
 
-    private static final Format formatter = new SimpleDateFormat("EEEE MMM dd, h:mm a");
     private static final int BF_ALARM_REQUEST = 1;
     private static final int LUN_ALARM_REQUEST = 2;
     private static final int DIN_ALARM_REQUEST = 3;
+//    private static final int TEST_ALARM_REQUEST = 4;
 
     private FileCache fileCache;
 
@@ -144,6 +141,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
+        SnackList.getInstance().setUser(ParseUser.getCurrentUser());
         if(SnackList.getInstance().size() == 0){
             SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
                 @Override
@@ -151,6 +149,9 @@ public class MainActivity extends AppCompatActivity{
                     if(e != null){
                         updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
                     }
+
+                    else
+                        setAlarms(objects);
                 }
             });
         }
@@ -284,7 +285,7 @@ public class MainActivity extends AppCompatActivity{
                             }
 
                             else
-                                setAlarms();
+                                setAlarms(objects);
                         }
                     });
 
@@ -378,98 +379,97 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    private void setAlarms() {
+    private void setAlarms(List<SnackEntry> objects) {
 
         // TODO: If current user's SnackList is empty, set a daily reminder asking them to submit an entry (and make this notification optional in settings).
-        if(SnackList.getInstance().size() == 0)
+        if(objects.size() == 0)
             Log.i("Testing","Error: Current user's SnackList is empty or there was a problem fetching entries. [No reminder alarms set]");
 
         // If current user's SnackList is not empty, set alarms for the day to remind user to post entries.
         else
         {
-//******************************************** Need to check if entry was posted in last "meal period" ******************************
-            Date testDate = SnackList.getInstance().get(0).getCreatedAt();
-            String s = formatter.format(testDate);
-            //Log.i("Testing", "Current user's SnackList.size() = " + SnackList.getInstance().size());
-            //Log.i("Testing","SimpleDateFormat: " + s);
-//***********************************************************************************************************************************
+            // Initialize intents
+            Intent intent = new Intent(this, ReminderReceiver.class);
+                PendingIntent bfSender = PendingIntent.getBroadcast(this, BF_ALARM_REQUEST, intent, 0);
+                PendingIntent lunSender = PendingIntent.getBroadcast(this, LUN_ALARM_REQUEST, intent, 0);
+                PendingIntent dinSender = PendingIntent.getBroadcast(this, DIN_ALARM_REQUEST, intent, 0);
+
+//                PendingIntent testSender = PendingIntent.getBroadcast(this, TEST_ALARM_REQUEST, intent, 0);
+
+            // Breakfast period reminder
+            long _bfTime = 0;
+            Calendar bfTime = Calendar.getInstance();
+                bfTime.setTimeInMillis(System.currentTimeMillis());
+                bfTime.set(Calendar.HOUR_OF_DAY, 10);
+                bfTime.set(Calendar.MINUTE, 30);
+                bfTime.set(Calendar.SECOND, 00);
+                bfTime.set(Calendar.AM_PM, Calendar.AM);
+
+                if(bfTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+                    _bfTime = bfTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
+
+                else
+                    _bfTime = bfTime.getTimeInMillis();
+
+                AlarmManager bfAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+                bfAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _bfTime, AlarmManager.INTERVAL_DAY, bfSender);
+
+            // Lunch period reminder
+            long _lunTime = 0;
+            Calendar lunTime = Calendar.getInstance();
+                lunTime.setTimeInMillis(System.currentTimeMillis());
+                lunTime.set(Calendar.HOUR_OF_DAY, 3);
+                lunTime.set(Calendar.MINUTE, 30);
+                lunTime.set(Calendar.SECOND, 00);
+                lunTime.set(Calendar.AM_PM, Calendar.PM);
+
+                if(lunTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+                    _lunTime = lunTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
+
+                else
+                    _lunTime = lunTime.getTimeInMillis();
+
+                AlarmManager lunAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+                lunAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _lunTime, AlarmManager.INTERVAL_DAY, lunSender);
+
+            // Dinner period reminder
+            long _dinTime = 0;
+            Calendar dinTime = Calendar.getInstance();
+                dinTime.setTimeInMillis(System.currentTimeMillis());
+                dinTime.set(Calendar.HOUR_OF_DAY, 9);
+                dinTime.set(Calendar.MINUTE, 30);
+                dinTime.set(Calendar.SECOND, 00);
+                dinTime.set(Calendar.AM_PM, Calendar.PM);
+
+                if(dinTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+                    _dinTime = dinTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
+
+                else
+                    _dinTime = dinTime.getTimeInMillis();
+
+                AlarmManager dinAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+                dinAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _dinTime, AlarmManager.INTERVAL_DAY, dinSender);
+
+//************************************************* TEST CASE ********************************************************
+//            long _testTime = 0;
+//            Calendar testTime = Calendar.getInstance();
+//            testTime.setTimeInMillis(System.currentTimeMillis());
+//            testTime.set(Calendar.HOUR_OF_DAY, 9);
+//            testTime.set(Calendar.MINUTE, 03);
+//            testTime.set(Calendar.SECOND, 00);
+//            testTime.set(Calendar.AM_PM, Calendar.PM);
 //
-//            // Initialize intents
-//            Intent intent = new Intent(this, ReminderReceiver.class);
-//                PendingIntent bfSender = PendingIntent.getBroadcast(this, BF_ALARM_REQUEST, intent, 0);
-//                PendingIntent lunSender = PendingIntent.getBroadcast(this, LUN_ALARM_REQUEST, intent, 0);
-//                PendingIntent dinSender = PendingIntent.getBroadcast(this, DIN_ALARM_REQUEST, intent, 0);
+//            if(testTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+//                _testTime = testTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
 //
-//            // Breakfast period reminder
-//            Calendar bfTime = Calendar.getInstance();
-//                bfTime.setTimeInMillis(System.currentTimeMillis());
-//                bfTime.set(Calendar.HOUR_OF_DAY, 10);
-//                bfTime.set(Calendar.MINUTE, 30);
-//                bfTime.set(Calendar.SECOND, 00);
-//                bfTime.set(Calendar.AM_PM, Calendar.AM);
+//            else
+//                _testTime = testTime.getTimeInMillis();
 //
-//                AlarmManager bfAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-//                bfAlarm.setRepeating(AlarmManager.RTC_WAKEUP, bfTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, bfSender);
-//
-//
-//            // Lunch period reminder
-//            Calendar lunTime = Calendar.getInstance();
-//                lunTime.setTimeInMillis(System.currentTimeMillis());
-//                lunTime.set(Calendar.HOUR_OF_DAY, 3);
-//                lunTime.set(Calendar.MINUTE, 30);
-//                lunTime.set(Calendar.SECOND, 00);
-//                lunTime.set(Calendar.AM_PM, Calendar.PM);
-//
-//                AlarmManager lunAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-//                lunAlarm.setRepeating(AlarmManager.RTC_WAKEUP, lunTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, lunSender);
-//
-//
-//            // Dinner period reminder
-//            Calendar dinTime = Calendar.getInstance();
-//                dinTime.setTimeInMillis(System.currentTimeMillis());
-//                dinTime.set(Calendar.HOUR_OF_DAY, 9);
-//                dinTime.set(Calendar.MINUTE, 30);
-//                dinTime.set(Calendar.SECOND, 00);
-//                dinTime.set(Calendar.AM_PM, Calendar.PM);
-//
-//                AlarmManager dinAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-//                dinAlarm.setRepeating(AlarmManager.RTC_WAKEUP, dinTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, dinSender);
-//
+//            AlarmManager testAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+//            testAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _testTime, AlarmManager.INTERVAL_FIFTEEN_MINUTES, testSender);
+//************************************************** TEST CASE *******************************************************
         }
-
-///************************ Test alarm *********************************
-        //Testing reminder
-        Intent testIntent = new Intent(this, ReminderReceiver.class);
-            PendingIntent sender = PendingIntent.getBroadcast(this, BF_ALARM_REQUEST, testIntent, 0);
-            PendingIntent sender2 = PendingIntent.getBroadcast(this,LUN_ALARM_REQUEST,testIntent, 0);
-
-        Calendar testing = Calendar.getInstance();
-            testing.setTimeInMillis(System.currentTimeMillis());
-            testing.set(Calendar.HOUR_OF_DAY, 10);
-            testing.set(Calendar.MINUTE, 35);
-            testing.set(Calendar.SECOND, 00);
-            testing.set(Calendar.AM_PM, Calendar.PM);
-
-            AlarmManager amTest = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-            amTest.setRepeating(AlarmManager.RTC_WAKEUP, testing.getTimeInMillis(), AlarmManager.INTERVAL_DAY, sender);
-
-        Calendar testing2 = Calendar.getInstance();
-            testing2.setTimeInMillis(System.currentTimeMillis());
-            testing2.set(Calendar.HOUR_OF_DAY, 10);
-            testing2.set(Calendar.MINUTE, 33);
-            testing2.set(Calendar.SECOND, 00);
-            testing2.set(Calendar.AM_PM, Calendar.PM);
-
-            AlarmManager amTest2 = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-            amTest2.setRepeating(AlarmManager.RTC_WAKEUP, testing2.getTimeInMillis(), AlarmManager.INTERVAL_DAY, sender2);
-
-
-//************************* Test alarm *********************************/
-
-        //AlarmManager am1 = (AlarmManager) getSystemService(ALARM_SERVICE);
-        //am1.set(AlarmManager.RTC_WAKEUP, breakfastTime.getTimeInMillis(), sender);
     }
-
 
     /**
      * Cancels the current toast and displays a new toast.
