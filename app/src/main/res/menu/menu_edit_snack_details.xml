@@ -9,13 +9,13 @@
 
         android:title="@string/edit_item">
     </item>
-    <item
-        android:id="@+id/save_item"
-        android:icon="@drawable/system_save_icon"
-        app:showAsAction="always"
+    <!--<item-->
+        <!--android:id="@+id/save_item"-->
+        <!--android:icon="@drawable/system_save_icon"-->
+        <!--app:showAsAction="always"-->
 
-        android:title="@string/edit_item">
-    </item>
+        <!--android:title="@string/edit_item">-->
+    <!--</item>-->
 </menu>
 
     <!--android:orderInCategory="10"-->

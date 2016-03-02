@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -60,6 +61,7 @@ private String oldMealType;
   //  private Spinner mealLocationSpinner;
 
     private View progressOverlay;
+private Button saveButton;
 
     private ImageLoader imageLoader;
     private FileCache fileCache;
@@ -88,6 +90,44 @@ getActivity().setTitle("Details");
         imageView = (ImageView) view.findViewById(R.id.imageView);
         //descriptionTextView = (TextView) view.findViewById(R.id.descriptionTextView);
         descriptionEditText = (EditText) view.findViewById(R.id.descriptionEditTextView);
+       // descriptionEditText.setTextColor(#000000);
+saveButton = (Button) view.findViewById(R.id.save_button);
+        saveButton.setVisibility(View.GONE);
+        //saveButton.setEnabled(false);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                final ParseObject snackEntry = ParseObject.createWithoutData("SnackEntry", objectId);
+
+                if (!(oldMealType.equals(mealTypeSpinner.getSelectedItem().toString()))) ;
+                {
+                    snackEntry.put("mealType", mealTypeSpinner.getSelectedItem().toString());
+                }
+                if (!(oldDescription.equals(descriptionEditText.getText().toString()))) {
+                    snackEntry.put("description", descriptionEditText.getText().toString());
+                }
+                mealTypeSpinner.setEnabled(false);
+                snackEntry.saveInBackground(new SaveCallback() {
+                    public void done(ParseException e) {
+                        progressOverlay.setVisibility(View.GONE);
+                        if (e == null) {
+                            // Saved successfully.
+                            updateToast("Update Successful", Toast.LENGTH_LONG);
+                        } else {
+                            // The save failed.
+                            updateToast("Update Failed", Toast.LENGTH_LONG);
+                            //updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                        }
+                    }
+                });
+                myMenu.findItem(R.id.edit_item).setVisible(true);
+                saveButton.setEnabled(false);
+                saveButton.setVisibility(View.GONE);
+                imageView.setEnabled(true);
+                descriptionEditText.setEnabled(false);
+                //endhere
+            }
+        });
 
         mealTypeSpinner = (Spinner) view.findViewById(R.id.meal_type_spinner);
      //   mealLocationSpinner = (Spinner) view.findViewById(R.id.meal_location_spinner);
@@ -104,7 +144,7 @@ getActivity().setTitle("Details");
        //mealTypeSp.setText(R.string.loading);
         mealTypeSpinner.setEnabled(false);
         descriptionEditText.setEnabled(false);
-        descriptionEditText.setTextColor(333);
+      //  descriptionEditText.setTextColor(333);
        // mealLocationSpinner.setEnabled(false);
         // Set up the meal type spinner
 
@@ -166,12 +206,13 @@ imageView.setEnabled(false);
         menu.clear();
 
         inflater.inflate(R.menu.menu_edit_snack_details, menu);
-        menu.findItem(R.id.save_item).setVisible(false);
+//        menu.findItem(R.id.save_item).setVisible(false);
 
 
         myMenu = menu;
 
     }
+
     public Menu getMenu(){
         return myMenu;
     }
@@ -181,45 +222,47 @@ imageView.setEnabled(false);
        switch (item.getItemId()) {
             case R.id.edit_item:
                 mealTypeSpinner.setEnabled(true);
-                myMenu.findItem(R.id.save_item).setVisible(true);
+                //myMenu.findItem(R.id.save_item).setVisible(true);
+                //saveButton.setEnabled(true);
+                saveButton.setVisibility(View.VISIBLE);
                 item.setVisible(false);
-                descriptionEditText.setTextColor(555);
+               // descriptionEditText.setTextColor();
                 imageView.setEnabled(true);
 descriptionEditText.setEnabled(true);
                 return true;
-            case R.id.save_item:
-                //Save
-                final ParseObject snackEntry = ParseObject.createWithoutData("SnackEntry", objectId);
-
-                if (!(oldMealType.equals(mealTypeSpinner.getSelectedItem().toString())));{
-                snackEntry.put("mealType",mealTypeSpinner.getSelectedItem().toString());
-            }
-            if(!(oldDescription.equals(descriptionEditText.getText().toString()))){
-                snackEntry.put("description", descriptionEditText.getText().toString());
-            }
-            mealTypeSpinner.setEnabled(false);
-            snackEntry.saveInBackground(new SaveCallback() {
-                public void done(ParseException e) {
-                    progressOverlay.setVisibility(View.GONE);
-                    if (e == null) {
-                        // Saved successfully.
-                        updateToast("Update Successful", Toast.LENGTH_LONG);
-                    } else {
-                        // The save failed.
-                        updateToast("Update Failed", Toast.LENGTH_LONG);
-                        //updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                    }
-                }
-            });
-            myMenu.findItem(R.id.edit_item).setVisible(true);
-                item.setVisible(false);
-                imageView.setEnabled(true);
-                descriptionEditText.setEnabled(false);
-            descriptionEditText.setTextColor(333);
-                //EditText txt = (EditText)imageView.findViewById(R.id.descriptionEditTextView);
-                //txt.setEnabled(false);
-                //txt.setTextColor(R.color.material_grey_100);
-                return true;
+//            case R.id.save_item:
+//                //Save
+//                final ParseObject snackEntry = ParseObject.createWithoutData("SnackEntry", objectId);
+//
+//                if (!(oldMealType.equals(mealTypeSpinner.getSelectedItem().toString())));{
+//                snackEntry.put("mealType",mealTypeSpinner.getSelectedItem().toString());
+//            }
+//            if(!(oldDescription.equals(descriptionEditText.getText().toString()))) {
+//                snackEntry.put("description", descriptionEditText.getText().toString());
+//            }
+//            mealTypeSpinner.setEnabled(false);
+//            snackEntry.saveInBackground(new SaveCallback() {
+//                public void done(ParseException e) {
+//                    progressOverlay.setVisibility(View.GONE);
+//                    if (e == null) {
+//                        // Saved successfully.
+//                        updateToast("Update Successful", Toast.LENGTH_LONG);
+//                    } else {
+//                        // The save failed.
+//                        updateToast("Update Failed", Toast.LENGTH_LONG);
+//                        //updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+//                    }
+//                }
+//            });
+//            myMenu.findItem(R.id.edit_item).setVisible(true);
+//                item.setVisible(false);
+//                imageView.setEnabled(true);
+//                descriptionEditText.setEnabled(false);
+////            descriptionEditText.setTextColor(333);
+//                //EditText txt = (EditText)imageView.findViewById(R.id.descriptionEditTextView);
+//                //txt.setEnabled(false);
+//                //txt.setTextColor(R.color.material_grey_100);
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
