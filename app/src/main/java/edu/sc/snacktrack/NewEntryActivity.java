@@ -25,6 +25,7 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
@@ -35,6 +36,12 @@ import edu.sc.snacktrack.IntentResult;
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class NewEntryActivity extends AppCompatActivity implements OnClickListener{
 
@@ -236,6 +243,12 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             String scanFormat = scanningResult.getFormatName();
             formatTxt.setText("FORMAT: " + scanFormat);
             contentTxt.setText("CONTENT: " + scanContent);
+            try {
+                contentTxt.setText(httpGet(scanContent));
+            }catch(IOException ex) {
+                ex.printStackTrace();
+            }
+            barcodeContent = scanContent;
         }
         else{
             Toast toast = Toast.makeText(getApplicationContext(),
@@ -476,6 +489,40 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
     }
     private Button scanBtn;
     private TextView formatTxt, contentTxt;
+    private String barcodeContent;
+
+    //httpurlconnection to outpan
+    public static String httpGet(String urlStr) throws IOException {
+        try {
+            String yourProduct = urlStr;
+            urlStr = "https://api.outpan.com/v2/products/";
+            urlStr.concat(yourProduct);
+            urlStr.concat("?apikey=0486422639a1db6223dd81a97c9f996f");
+            URL url = new URL(urlStr);
+            HttpsURLConnection conn =
+                    (HttpsURLConnection) url.openConnection();
+
+            if (conn.getResponseCode() != 200) {
+                throw new IOException(conn.getResponseMessage());
+            }
+
+            // Buffer the result into a string
+            BufferedReader rd = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = rd.readLine()) != null) {
+                sb.append(line);
+            }
+            rd.close();
+
+            conn.disconnect();
+            return sb.toString();
+        }catch(IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 
     public void onClick(View v){
         if(v.getId()==R.id.scan_button){
