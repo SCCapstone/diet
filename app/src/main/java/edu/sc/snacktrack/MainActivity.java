@@ -33,7 +33,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import edu.sc.snacktrack.chat.ChatChooserFragment;
-import edu.sc.snacktrack.chat.ChatFragment;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -468,7 +467,7 @@ public class MainActivity extends AppCompatActivity{
 //            Calendar testTime = Calendar.getInstance();
 //            testTime.setTimeInMillis(System.currentTimeMillis());
 //            testTime.set(Calendar.HOUR_OF_DAY, 9);
-//            testTime.set(Calendar.MINUTE, 03);
+//            testTime.set(Calendar.MINUTE, 37);
 //            testTime.set(Calendar.SECOND, 00);
 //            testTime.set(Calendar.AM_PM, Calendar.PM);
 //
