@@ -302,16 +302,18 @@ public class ChatChooserFragment extends Fragment{
         oredQuery.findInBackground(new FindCallback<Conversation>() {
             @Override
             public void done(List<Conversation> conversations, ParseException e) {
+                if (e == null) {
+                    // Pin the conversations for faster access later
+                    for (Conversation conversation : conversations) {
+                        conversation.pinInBackground();
+                    }
 
-                // Pin the conversations for faster access later
-                for (Conversation conversation : conversations) {
-                    conversation.pinInBackground();
+                    for (Conversation conversation : filterConversations(conversations)) {
+                        chatChooserAdapter.addConversation(conversation);
+                    }
+                } else{
+                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                 }
-
-                for (Conversation conversation : filterConversations(conversations)) {
-                    chatChooserAdapter.addConversation(conversation);
-                }
-//                chatChooserAdapter.notifyDataSetChanged();
             }
         });
     }
