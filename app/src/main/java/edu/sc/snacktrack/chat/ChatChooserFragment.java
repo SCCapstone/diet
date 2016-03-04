@@ -1,7 +1,9 @@
 package edu.sc.snacktrack.chat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,6 +40,8 @@ public class ChatChooserFragment extends Fragment{
 
     private static final int USERNAME_REQUEST_CODE = 100;
 
+    private Activity myActivity;
+
     private View progressOverlay;
     private Button newChatButton;
     private ListView chatChooserListView;
@@ -45,6 +49,8 @@ public class ChatChooserFragment extends Fragment{
     private volatile boolean startingChat = false;
 
     private ChatChooserAdapter chatChooserAdapter;
+
+    private ChatStarter chatStarter;
 
     private Toast toast;
 
@@ -57,9 +63,25 @@ public class ChatChooserFragment extends Fragment{
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        myActivity = (Activity) context;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().setTitle("Chat");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Cancel any running chat starter.
+        if(chatStarter != null){
+            chatStarter.cancel(true);
+        }
     }
 
     @Override
@@ -100,7 +122,6 @@ public class ChatChooserFragment extends Fragment{
             case USERNAME_REQUEST_CODE:
                 if(resultCode == Activity.RESULT_OK){
                     String username = data.getStringExtra("username");
-                    Log.d(TAG, "received username " + username);
                     startChat(username);
                 }
         }
@@ -119,165 +140,8 @@ public class ChatChooserFragment extends Fragment{
         }
 
         if(!startingChat){
-            progressOverlay.setVisibility(View.VISIBLE);
-            newChatButton.setEnabled(false);
-            startingChat = true;
-
-            // If chatStarterThread is unexpectedly destroyed, this handler will keep the app from
-            // crashing.
-            Thread.UncaughtExceptionHandler exceptionHandler = new Thread.UncaughtExceptionHandler(){
-                @Override
-                public void uncaughtException(Thread thread, Throwable ex) {
-                    Log.d(TAG, "Uncaught exception: " + ex);
-
-                    startingChat = false;
-                    progressOverlay.setVisibility(View.GONE);
-                    newChatButton.setEnabled(true);
-                }
-            };
-
-            Thread chatStarterThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ParseUser user = findUser(username);
-                    final Conversation conversation;
-                    if(user != null){
-                        conversation = findConversation(user);
-                    } else{
-                        conversation = null;
-                    }
-
-                    if(conversation == null){
-                        Log.d(TAG, "null conversation");
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                startingChat = false;
-                                progressOverlay.setVisibility(View.GONE);
-                                newChatButton.setEnabled(true);
-                            }
-                        });
-                        return;
-                    }
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Bundle args = new Bundle();
-                            FragmentManager fm = getFragmentManager();
-
-                            // The fragment manager may be null if the fragment gets destroyed.
-                            if(fm == null){
-                                startingChat = false;
-                                progressOverlay.setVisibility(View.GONE);
-                                newChatButton.setEnabled(true);
-                                return;
-                            }
-
-                            args.putString(ChatFragment.ARG_OTHER_USER_ID, conversation.getToUser().getObjectId());
-                            args.putString(ChatFragment.ARG_CONVERSATION_ID, conversation.getObjectId());
-                            Fragment chatFragment = new ChatFragment();
-                            chatFragment.setArguments(args);
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.content_frame, chatFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-
-                            // Give some time for the chat fragment to display before setting
-                            // startingChat to false and hiding the progress overlay
-                            new Handler().postDelayed(new Runnable() {
-                                public void run() {
-                                    startingChat = false;
-                                    progressOverlay.setVisibility(View.GONE);
-                                    newChatButton.setEnabled(true);
-                                }
-                            }, 1000);
-                        }
-                    });
-                }
-            });
-            chatStarterThread.setUncaughtExceptionHandler(exceptionHandler);
-            chatStarterThread.start();
-        }
-    }
-
-    /**
-     * Attempts to find a user with a specified username.
-     *
-     * @param username The username to search for
-     * @return The user if one was found. null otherwise.
-     */
-    private ParseUser findUser(String username) {
-        List<ParseUser> users;
-
-        ParseQuery<ParseUser> query;
-
-        // First try local query
-        query = ParseUser.getQuery();
-        query.whereEqualTo("username", username);
-        query.fromLocalDatastore();
-        try{
-            users = query.find();
-        } catch(ParseException e){
-            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
-            return null;
-        }
-
-        // If local query fails, try online query
-        if(users.size() != 0){
-            return users.get(0);
-        } else{
-            query = ParseUser.getQuery();
-            query.whereEqualTo("username", username);
-            try{
-                users = query.find();
-            } catch(ParseException e){
-                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
-                return null;
-            }
-
-            if(users.size() == 1){
-                return users.get(0);
-            } else{
-                updateToast("Username not found", Toast.LENGTH_SHORT);
-                return null;
-            }
-        }
-
-    }
-
-    /**
-     * Attempts to find a conversation with the a specified user or creates a new one if
-     * no conversation exists.
-     *
-     * @param otherUser The fromUser
-     * @return The conversation if one was found or could be created. null otherwise.
-     */
-    private Conversation findConversation(ParseUser otherUser){
-
-        List<Conversation> conversations;
-        ParseQuery<Conversation> query = ParseQuery.getQuery(Conversation.class);
-        query.fromLocalDatastore();
-        query.whereEqualTo(Conversation.FROM_USER_KEY, ParseUser.getCurrentUser());
-        query.whereEqualTo(Conversation.TO_USER_KEY, otherUser);
-        try {
-            conversations = query.find();
-            if(conversations.size() > 0){
-                return conversations.get(0);
-            } else{
-                Conversation conversation = new Conversation();
-                ParseACL acl = new ParseACL(ParseUser.getCurrentUser());
-                acl.setReadAccess(otherUser, true);
-                conversation.setACL(acl);
-                conversation.setFromUser(ParseUser.getCurrentUser());
-                conversation.setToUser(otherUser);
-                conversation.save();
-                conversation.pin();
-                return conversation;
-            }
-        } catch (ParseException e) {
-            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
-            return null;
+            chatStarter = new ChatStarter();
+            chatStarter.execute(username);
         }
     }
 
@@ -311,7 +175,7 @@ public class ChatChooserFragment extends Fragment{
                     for (Conversation conversation : filterConversations(conversations)) {
                         chatChooserAdapter.addConversation(conversation);
                     }
-                } else{
+                } else {
                     updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                 }
             }
@@ -370,20 +234,187 @@ public class ChatChooserFragment extends Fragment{
      * @param length The length to display the toast
      */
     private void updateToast(final String text, final int length){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (toast != null) {
-                    toast.cancel();
-                }
-
-                toast = Toast.makeText(
-                        getActivity(),
-                        text,
-                        length
-                );
-                toast.show();
+        if(myActivity != null){
+            if (toast != null) {
+                toast.cancel();
             }
-        });
+
+            toast = Toast.makeText(
+                    myActivity,
+                    text,
+                    length
+            );
+            toast.show();
+        }
+    }
+
+    /**
+     * Async task for starting a new chat
+     */
+    private class ChatStarter extends AsyncTask<String, Void, Void>{
+
+        private String usernameStr;
+
+        private ParseUser user;
+        private Conversation conversation;
+        private ParseException exception;
+
+        ParseQuery<?> currentQuery;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            startingChat = true;
+            progressOverlay.setVisibility(View.VISIBLE);
+            newChatButton.setEnabled(false);
+        }
+
+        @Override
+        protected Void doInBackground(String... username) {
+
+            this.usernameStr = username[0];
+
+            try{
+                this.user = findUser(usernameStr);
+            } catch(ParseException e){
+                this.user = null;
+                this.exception = e;
+                return null;
+            }
+
+            if(user != null){
+                try{
+                    this.conversation = findConversation(user);
+                } catch(ParseException e){
+                    this.conversation = null;
+                    this.exception = e;
+                    return null;
+                }
+            } else{
+                this.conversation = null;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            super.onPostExecute(v);
+
+            if(exception == null){
+                if(conversation != null){
+                    startChatFragment(conversation);
+                } else if(user == null){
+                    updateToast(String.format("User %s not found", usernameStr), Toast.LENGTH_SHORT);
+                }
+            } else{
+                updateToast(Utils.getErrorMessage(exception), Toast.LENGTH_LONG);
+            }
+
+            // Give some time for the chat fragment to display before setting
+            // startingChat to false and hiding the progress overlay
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    startingChat = false;
+                    progressOverlay.setVisibility(View.GONE);
+                    newChatButton.setEnabled(true);
+                }
+            }, 1000);
+        }
+
+        private void startChatFragment(Conversation conversation){
+            Bundle args = new Bundle();
+            FragmentManager fm = getFragmentManager();
+
+            // The fragment manager may be null if the fragment gets destroyed.
+            if(fm == null){
+                startingChat = false;
+                progressOverlay.setVisibility(View.GONE);
+                newChatButton.setEnabled(true);
+                return;
+            }
+
+            args.putString(ChatFragment.ARG_OTHER_USER_ID, conversation.getToUser().getObjectId());
+            args.putString(ChatFragment.ARG_CONVERSATION_ID, conversation.getObjectId());
+            Fragment chatFragment = new ChatFragment();
+            chatFragment.setArguments(args);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, chatFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+        /**
+         * Attempts to find a user with a specified username.
+         *
+         * @param username The username to search for
+         * @return The user if one was found. null otherwise.
+         */
+        private ParseUser findUser(String username) throws ParseException{
+            List<ParseUser> users;
+
+            ParseQuery<ParseUser> query;
+
+            // First try local query
+            query = ParseUser.getQuery();
+            query.whereEqualTo("username", username);
+            query.fromLocalDatastore();
+
+            this.currentQuery = query;
+
+            users = query.find();
+
+            // If local query fails, try online query
+            if(users.size() != 0){
+                return users.get(0);
+            } else{
+                query = ParseUser.getQuery();
+                query.whereEqualTo("username", username);
+
+                users = query.find();
+
+                if(users.size() == 1){
+                    return users.get(0);
+                } else{
+                    return null;
+                }
+            }
+        }
+
+        /**
+         * Attempts to find a conversation with the a specified user or creates a new one if
+         * no conversation exists.
+         *
+         * @param otherUser The fromUser
+         * @return The conversation if one was found or could be created. null otherwise.
+         */
+        private Conversation findConversation(ParseUser otherUser) throws ParseException{
+
+            List<Conversation> conversations;
+            ParseQuery<Conversation> query = ParseQuery.getQuery(Conversation.class);
+            query.fromLocalDatastore();
+            query.whereEqualTo(Conversation.FROM_USER_KEY, ParseUser.getCurrentUser());
+            query.whereEqualTo(Conversation.TO_USER_KEY, otherUser);
+
+            this.currentQuery = query;
+
+            conversations = query.find();
+
+            if(conversations.size() > 0){
+                return conversations.get(0);
+            } else{
+                Conversation conversation = new Conversation();
+                ParseACL acl = new ParseACL(ParseUser.getCurrentUser());
+                acl.setReadAccess(otherUser, true);
+                conversation.setACL(acl);
+                conversation.setFromUser(ParseUser.getCurrentUser());
+                conversation.setToUser(otherUser);
+                conversation.save();
+                conversation.pin();
+                return conversation;
+            }
+
+        }
     }
 }
