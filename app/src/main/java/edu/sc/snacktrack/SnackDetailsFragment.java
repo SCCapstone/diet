@@ -178,9 +178,7 @@ saveButton = (Button) view.findViewById(R.id.save_button);
                     if(description != null){
                         oldDescription = description;
                     }
-                    else{
-                        oldDescription = "No description";
-                    }
+
                 } else {
                     updateToast("Unable to retrieve snack details", Toast.LENGTH_LONG);
                     Log.e(TAG, e.getMessage());

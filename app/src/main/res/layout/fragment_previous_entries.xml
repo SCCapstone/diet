@@ -12,7 +12,8 @@
             android:id="@+id/SnackList"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:divider="@null"/>
 
     </RelativeLayout>
 

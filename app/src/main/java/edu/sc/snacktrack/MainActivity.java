@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -102,6 +103,11 @@ public class MainActivity extends AppCompatActivity{
                 getSupportActionBar().setTitle("Select an option");
                 invalidateOptionsMenu();
                 disableEntryFlag = true;
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         };
 
@@ -497,10 +503,10 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void done(ParseException e) {
-                if(e == null){
+                if (e == null) {
                     displayView(0);
                     startLoginActivity();
-                } else{
+                } else {
                     updateToast(e.getMessage(), Toast.LENGTH_LONG);
                 }
             }
