@@ -19,8 +19,9 @@
 
     <string-array name="main_drawer_items">
         <item>My Snacks</item>
-        <item>Test 2</item>
+        <item>My Clients</item>
         <item>Settings</item>
+        <item>Chat</item>
     </string-array>
 
     <string name="drawer_open">Open navigation drawer</string>
@@ -57,6 +58,41 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">WELCOME TO \nSNACKTRACK</string>
     <string name="title_activity_snack_details">Snack Details</string>
+
+    <!-- Settings strings -->
+    <string name="password_text">Change Password</string>
+    <string name="change_password_text">Change Account Password</string>
+    <string name="change_email_text">Change Account Email</string>
+    <string name="my_dietitian_text">Add/Change Dietitian</string>
+    <string name="change_font_size_text">Change Font Size</string>
+    <string name="settings_group_1">Account Settings</string>
+    <string name="settings_group_2">Other Settings</string>
+    <string name="new_password_text">Enter new password:</string>
+    <string name="new_password_tip">(Password cannot be blank)</string>
+    <string name="password_edittext">New password</string>
+    <string name="password_submit">Submit</string>
+    <string name="password_cancel">Cancel</string>
+    <string name="new_email_text">Enter new email:</string>
+    <string name="email_edittext">Click here</string>
+    <string name="email_submit">SUBMIT</string>
+
+    <string name="search_text">Search dietitians:</string>
+    <string name="search_edittext">Dietitian\'s username</string>
+    <string name="dietitian_search_submit">Search</string>
+    <string name="dietitian_search_cancel">Cancel</string>
+
+    <string name="scan">Scan</string>
+
+    <!-- Chat strings -->
+    <string name="chat_to">to:&#160;</string>
+    <string name="chat_from">from:&#160;</string>
+    <string name="chat_send">Send</string>
+    <string name="chat_message_hint">Enter message</string>
+    <string name="chat_enter_user_hint">Enter username</string>
+    <string name="chat">Chat</string>
+    <string name="chat_with">Chat with:&#160;</string>
+    <string name="recent_message">Recent message:&#160;</string>
+
     <string name="password_text"><u>Change Password</u></string>
     <string name="password_edit">Click here to change password</string>
     <string name="edit_item">Edit</string>

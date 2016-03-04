@@ -13,6 +13,12 @@
     <uses-feature android:name="android.hardware.camera" />
     <!-- Camera -->
 
+    <!-- Reminders -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Reminders -->
+
     <application
         android:name=".SnackTrackApplication"
         android:allowBackup="true"
@@ -31,7 +37,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:windowSoftInputMode="stateHidden|adjustResize">
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -46,8 +53,19 @@
         <activity
             android:name=".EditDescriptionActivity"
             android:label="@string/title_activity_edit_description"
-            android:windowSoftInputMode="stateVisible|adjustResize" >
+            android:windowSoftInputMode="stateVisible|adjustResize">
         </activity>
+        <activity
+            android:name=".ReminderAlarm"
+            android:launchMode="singleInstance"
+            android:theme="@style/TransparentCompat">
+        </activity>
+        <receiver
+            android:name=".ReminderReceiver"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="edu.sc.snacktrack.broadcast.ALARM"/>
+            </intent-filter>
+        </receiver>
     </application>
-
 </manifest>

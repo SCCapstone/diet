@@ -9,6 +9,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateListener{
 
@@ -75,8 +79,16 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
         }
         // Set the results into TextViews
        // holder.name.setText(mySnackList.get(position).getName());
-        holder.date.setText(SnackList.getInstance().get(position).getCreatedAt().toString().substring(0, 10));
-       // Set the results into ImageView
+        //holder.date.setText(SnackList.getInstance().get(position).getCreatedAt().toString().substring(0, 10));
+
+        // Entry's date formatted to show wall clock time when submitted
+        Date initialDate = SnackList.getInstance().get(position).getCreatedAt();
+            Format formatter = new SimpleDateFormat("EEE MMM dd, h:mm a");
+            String formatDate = formatter.format(initialDate);
+
+        holder.date.setText(formatDate);
+
+        // Set the results into ImageView
         imageLoader.DisplayImage(SnackList.getInstance().get(position).getPhoto().getUrl(),
                 holder.photo);
 

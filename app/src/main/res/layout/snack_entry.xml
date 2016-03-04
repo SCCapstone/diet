@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_alignBottom="@+id/textBackground"
-        android:textSize="25sp"
+        android:textSize="20sp"
         />
 
 </RelativeLayout>

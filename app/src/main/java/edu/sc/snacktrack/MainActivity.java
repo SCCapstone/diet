@@ -1,5 +1,8 @@
 package edu.sc.snacktrack;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,10 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-//import com.jayway.android.robotium.solo.Solo;
 
-//import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.bus.ActivityResultBus;
-//import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.bus.ActivityResultEvent;
 import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
@@ -29,7 +29,10 @@ import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
+
+import edu.sc.snacktrack.chat.ChatChooserFragment;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -52,15 +55,20 @@ public class MainActivity extends AppCompatActivity{
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle = "";
     private String[] drawerItems;
+    private Boolean disableEntryFlag = false;
+
+    private static final int BF_ALARM_REQUEST = 1;
+    private static final int LUN_ALARM_REQUEST = 2;
+    private static final int DIN_ALARM_REQUEST = 3;
+//    private static final int TEST_ALARM_REQUEST = 4;
 
     private FileCache fileCache;
-private Menu _menu;
+
     private File newImageFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
         // If no user is logged in, start the login activity.
@@ -69,22 +77,31 @@ private Menu _menu;
             startLoginActivity();
         }
 
+        // Ensure current user's SnackList is displayed first
+        SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+
         // BEGIN DRAWER STUFF
         mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
+
+        /**
+         * condition if currentUser is client or dietitian
+         */
         drawerItems = getResources().getStringArray(R.array.main_drawer_items);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 getSupportActionBar().setTitle(mTitle);
                 invalidateOptionsMenu();
+                disableEntryFlag = false;
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle("Select an option");
                 invalidateOptionsMenu();
+                disableEntryFlag = true;
             }
         };
 
@@ -100,8 +117,7 @@ private Menu _menu;
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
-                      displayView(position);
+                displayView(position);
             }
         });
         // END DRAWER STUFF
@@ -119,6 +135,9 @@ private Menu _menu;
             newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
             mTitle = savedInstanceState.getCharSequence(STATE_MTITLE, getTitle());
             getSupportActionBar().setTitle(savedInstanceState.getCharSequence(STATE_CURRENT_TITLE, getTitle()));
+
+            // Restore fragment state
+
         }
     }
 
@@ -126,6 +145,7 @@ private Menu _menu;
     protected void onResume() {
         super.onResume();
 
+        SnackList.getInstance().setUser(ParseUser.getCurrentUser());
         if(SnackList.getInstance().size() == 0){
             SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
                 @Override
@@ -133,6 +153,9 @@ private Menu _menu;
                     if(e != null){
                         updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
                     }
+
+                    else
+                        setAlarms(objects);
                 }
             });
         }
@@ -145,14 +168,29 @@ private Menu _menu;
      */
     private void displayView(int position){
 
-        Fragment fragment;
+        Fragment fragment = null;
+
         switch(position){
             case 0:
                 fragment = new PreviousEntriesFragment();
+                SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                SnackList.getInstance().refresh(null);
+                break;
+
+            case 1:
+                fragment = new DisplayClientsFragment();
+                ClientList.getInstance().refresh(null);
                 break;
 
             case 2:
                 fragment = new SettingsFragment();
+                break;
+
+            case 3:
+                fragment = new ChatChooserFragment();
+//                Bundle args = new Bundle();
+//                args.putString(ChatFragment.ARG_OTHER_USER_ID, "Audel3iEFb");
+//                fragment.setArguments(args);
                 break;
 
             default:
@@ -165,8 +203,6 @@ private Menu _menu;
 
         if(fragment != null){
             FragmentManager fm = getSupportFragmentManager();
-//fm.findFragmentById(R.id.content_frame).setHasOptionsMenu(false);
-
             fm.beginTransaction()
                     .replace(R.id.content_frame, fragment, CURRENT_FRAGMENT_TAG)
                     .commit();
@@ -175,8 +211,6 @@ private Menu _menu;
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
             setTitle(drawerItems[position]);
-
-           // invalidateOptionsMenu();
 
         } else{
             updateToast("Something went wrong with the drawer :/", Toast.LENGTH_LONG);
@@ -189,7 +223,6 @@ private Menu _menu;
         super.setTitle(title);
         mTitle = title;
         getSupportActionBar().setTitle(title);
-
     }
 
     @Override
@@ -240,21 +273,33 @@ private Menu _menu;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-//        ActivityResultBus.getInstance().postQueue(
-//                new ActivityResultEvent(requestCode, resultCode, data));
-        switch(requestCode){
 
+        switch(requestCode){
             case LOGIN_REQUEST:
-                SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
-                    @Override
-                    public void done(List<SnackEntry> objects, ParseException e) {
-                        if(e != null){
-                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                        }
-                    }
-                });
+                // If successful login, refresh SnackLists and attempt to set reminder alarms
                 if(resultCode == RESULT_OK){
+                    ClientList.getInstance().refresh(new FindCallback<ParseUser>() {
+                        @Override
+                        public void done(List<ParseUser> objects, ParseException e) {
+                            if (e != null) {
+                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                            }
+                        }
+                    });
+
+                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                    SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
+                        @Override
+                        public void done(List<SnackEntry> objects, ParseException e) {
+                            if (e != null) {
+                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                            }
+
+                            else
+                                setAlarms(objects);
+                        }
+                    });
+
                     updateToast("Log in successful!", Toast.LENGTH_SHORT);
 
                 } else{
@@ -281,10 +326,8 @@ private Menu _menu;
                     }
                 }
                 break;
-
             default:
-
-                //updateToast("Something's not right", Toast.LENGTH_LONG);
+                updateToast("Something's not right", Toast.LENGTH_LONG);
         }
     }
 
@@ -297,11 +340,7 @@ private Menu _menu;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        _menu = menu;
-menu.clear();
-
-                getMenuInflater().inflate(R.menu.menu_main, menu);
-
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -309,8 +348,6 @@ menu.clear();
     public boolean onPrepareOptionsMenu(Menu menu) {
 //        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
 //        menu.findItem(R.id.action_logout).setVisible(!drawerOpen);
-
-
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -340,6 +377,97 @@ menu.clear();
         return super.onOptionsItemSelected(item);
     }
 
+    private void setAlarms(List<SnackEntry> objects) {
+
+        // TODO: If current user's SnackList is empty, set a daily reminder asking them to submit an entry (and make this notification optional in settings).
+        if(objects.size() == 0)
+            Log.i("Testing","Error: Current user's SnackList is empty or there was a problem fetching entries. [No reminder alarms set]");
+
+        // If current user's SnackList is not empty, set alarms for the day to remind user to post entries.
+        else
+        {
+            // Initialize intents
+            Intent intent = new Intent(this, ReminderReceiver.class);
+                PendingIntent bfSender = PendingIntent.getBroadcast(this, BF_ALARM_REQUEST, intent, 0);
+                PendingIntent lunSender = PendingIntent.getBroadcast(this, LUN_ALARM_REQUEST, intent, 0);
+                PendingIntent dinSender = PendingIntent.getBroadcast(this, DIN_ALARM_REQUEST, intent, 0);
+
+//                PendingIntent testSender = PendingIntent.getBroadcast(this, TEST_ALARM_REQUEST, intent, 0);
+
+            // Breakfast period reminder
+            long _bfTime = 0;
+            Calendar bfTime = Calendar.getInstance();
+                bfTime.setTimeInMillis(System.currentTimeMillis());
+                bfTime.set(Calendar.HOUR_OF_DAY, 10);
+                bfTime.set(Calendar.MINUTE, 30);
+                bfTime.set(Calendar.SECOND, 00);
+                bfTime.set(Calendar.AM_PM, Calendar.AM);
+
+                if(bfTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+                    _bfTime = bfTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
+
+                else
+                    _bfTime = bfTime.getTimeInMillis();
+
+                AlarmManager bfAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+                bfAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _bfTime, AlarmManager.INTERVAL_DAY, bfSender);
+
+            // Lunch period reminder
+            long _lunTime = 0;
+            Calendar lunTime = Calendar.getInstance();
+                lunTime.setTimeInMillis(System.currentTimeMillis());
+                lunTime.set(Calendar.HOUR_OF_DAY, 3);
+                lunTime.set(Calendar.MINUTE, 30);
+                lunTime.set(Calendar.SECOND, 00);
+                lunTime.set(Calendar.AM_PM, Calendar.PM);
+
+                if(lunTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+                    _lunTime = lunTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
+
+                else
+                    _lunTime = lunTime.getTimeInMillis();
+
+                AlarmManager lunAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+                lunAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _lunTime, AlarmManager.INTERVAL_DAY, lunSender);
+
+            // Dinner period reminder
+            long _dinTime = 0;
+            Calendar dinTime = Calendar.getInstance();
+                dinTime.setTimeInMillis(System.currentTimeMillis());
+                dinTime.set(Calendar.HOUR_OF_DAY, 9);
+                dinTime.set(Calendar.MINUTE, 30);
+                dinTime.set(Calendar.SECOND, 00);
+                dinTime.set(Calendar.AM_PM, Calendar.PM);
+
+                if(dinTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+                    _dinTime = dinTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
+
+                else
+                    _dinTime = dinTime.getTimeInMillis();
+
+                AlarmManager dinAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+                dinAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _dinTime, AlarmManager.INTERVAL_DAY, dinSender);
+
+//************************************************* TEST CASE ********************************************************
+//            long _testTime = 0;
+//            Calendar testTime = Calendar.getInstance();
+//            testTime.setTimeInMillis(System.currentTimeMillis());
+//            testTime.set(Calendar.HOUR_OF_DAY, 9);
+//            testTime.set(Calendar.MINUTE, 37);
+//            testTime.set(Calendar.SECOND, 00);
+//            testTime.set(Calendar.AM_PM, Calendar.PM);
+//
+//            if(testTime.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis())
+//                _testTime = testTime.getTimeInMillis() + (AlarmManager.INTERVAL_DAY + 1);
+//
+//            else
+//                _testTime = testTime.getTimeInMillis();
+//
+//            AlarmManager testAlarm = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+//            testAlarm.setRepeating(AlarmManager.RTC_WAKEUP, _testTime, AlarmManager.INTERVAL_FIFTEEN_MINUTES, testSender);
+//************************************************** TEST CASE *******************************************************
+        }
+    }
 
     /**
      * Cancels the current toast and displays a new toast.
@@ -370,6 +498,7 @@ menu.clear();
             @Override
             public void done(ParseException e) {
                 if(e == null){
+                    displayView(0);
                     startLoginActivity();
                 } else{
                     updateToast(e.getMessage(), Toast.LENGTH_LONG);
@@ -377,12 +506,4 @@ menu.clear();
             }
         });
     }
-
-    @Override
-    public void onBackPressed() {
-
-                super.onBackPressed();
-setTitle("My Snacks");
-    }
-
 }

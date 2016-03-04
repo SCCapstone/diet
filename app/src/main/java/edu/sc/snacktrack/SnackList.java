@@ -36,6 +36,11 @@ public class SnackList{
     private ArrayList<UpdateListener> updateListeners;
 
     /**
+     * The designated ParseUser from whom owns the foreign SnackList
+     */
+    private ParseUser targetUser;
+
+    /**
      * UpdateListener interface.
      *
      * Interface definition for callbacks to be invoked when the SnackList is modified.
@@ -93,6 +98,18 @@ public class SnackList{
      */
     public int size(){
         return snacks.size();
+    }
+
+    /**
+     * Sets a new target user to be used when refreshing a SnackList
+     */
+    public ParseUser setUser(ParseUser user) {
+        targetUser = user;
+        return targetUser;
+    }
+
+    public ParseUser getUser() {
+        return targetUser;
     }
 
     /**
@@ -205,7 +222,7 @@ public class SnackList{
 
         ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
         query.orderByDescending("createdAt");
-        query.whereEqualTo("owner", ParseUser.getCurrentUser());
+        query.whereEqualTo("owner", targetUser);
         query.findInBackground(new FindCallback<SnackEntry>() {
             @Override
             public void done(List<SnackEntry> refreshedSnacks, ParseException e) {

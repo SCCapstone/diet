@@ -5,12 +5,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.ParseUser;
 
 public class PreviousEntriesFragment extends Fragment implements SnackList.UpdateListener{
 
@@ -20,6 +22,8 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
     private SnackListAdapter adapter;
 
     private View progressOverlay;
+
+    private Boolean disableEntryFlag = false;
 
     @Override
     public void onSnackListUpdateComplete() {
@@ -36,10 +40,34 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-setHasOptionsMenu(false);
+        setHasOptionsMenu(true);
+
+        if(SnackList.getInstance().getUser() != ParseUser.getCurrentUser())
+            disableEntryFlag = true;
+
+        else
+            disableEntryFlag = false;
+
         adapter = new SnackListAdapter(getContext());
         SnackList.getInstance().registerUpdateListener(adapter);
         SnackList.getInstance().registerUpdateListener(this);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if(disableEntryFlag)
+        {
+            menu.findItem(R.id.action_new).setEnabled(false);
+            menu.findItem(R.id.action_new).setVisible(false);
+        }
+
+        else
+        {
+            menu.findItem(R.id.action_new).setEnabled(true);
+            menu.findItem(R.id.action_new).setVisible(true);
+        }
+
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -65,8 +93,7 @@ setHasOptionsMenu(false);
                 SnackDetailsFragment snackDetailsFragment = new SnackDetailsFragment();
                 snackDetailsFragment.setArguments(arguments);
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame,snackDetailsFragment)
-                        //.add(R.id.content_frame, snackDetailsFragment)
+                        .replace(R.id.content_frame, snackDetailsFragment)
                         .addToBackStack(null)
                         .commit();
             }
