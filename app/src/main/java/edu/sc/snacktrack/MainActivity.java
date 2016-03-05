@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity{
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle = "";
     private String[] drawerItems;
-    private Boolean disableEntryFlag = false;
 
     private static final int BF_ALARM_REQUEST = 1;
     private static final int LUN_ALARM_REQUEST = 2;
@@ -95,14 +94,12 @@ public class MainActivity extends AppCompatActivity{
             public void onDrawerClosed(View drawerView) {
                 getSupportActionBar().setTitle(mTitle);
                 invalidateOptionsMenu();
-                disableEntryFlag = false;
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle("Select an option");
                 invalidateOptionsMenu();
-                disableEntryFlag = true;
             }
         };
 
@@ -343,17 +340,6 @@ public class MainActivity extends AppCompatActivity{
 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        if(disableEntryFlag)
-        {
-            menu.findItem(R.id.action_new).setEnabled(false);
-            menu.findItem(R.id.action_new).setVisible(false);
-        }
-        else
-        {
-            menu.findItem(R.id.action_new).setEnabled(true);
-            menu.findItem(R.id.action_new).setVisible(true);
-        }
 
         return true;
     }
