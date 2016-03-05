@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity{
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle = "";
     private String[] drawerItems;
-    private Boolean disableEntryFlag = false;
 
     private static final int BF_ALARM_REQUEST = 1;
     private static final int LUN_ALARM_REQUEST = 2;
@@ -95,14 +94,12 @@ public class MainActivity extends AppCompatActivity{
             public void onDrawerClosed(View drawerView) {
                 getSupportActionBar().setTitle(mTitle);
                 invalidateOptionsMenu();
-                disableEntryFlag = false;
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle("Select an option");
                 invalidateOptionsMenu();
-                disableEntryFlag = true;
                 View view = getCurrentFocus();
                 if (view != null) {
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -347,6 +344,7 @@ public class MainActivity extends AppCompatActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
@@ -503,10 +501,10 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void done(ParseException e) {
-                if (e == null) {
+                if(e == null){
                     displayView(0);
                     startLoginActivity();
-                } else {
+                } else{
                     updateToast(e.getMessage(), Toast.LENGTH_LONG);
                 }
             }
