@@ -45,10 +45,4 @@ public class LoginActivity extends AppCompatActivity {
             actionBar.setTitle("Log in");
         }
     }
-
-    @Override
-    public void onBackPressed() {
-        // The default behavior here is to go back to the previous activity.
-        // We override this behavior as the user must be logged in to continue.
-    }
 }

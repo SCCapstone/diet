@@ -37,7 +37,6 @@ import edu.sc.snacktrack.chat.ChatChooserFragment;
 
 public class MainActivity extends AppCompatActivity{
 
-    private static final int LOGIN_REQUEST = 1;
     private static final int NEW_ENTRY_REQUEST = 2;
     private static final int CAMERA_REQUEST = 3;
 
@@ -70,12 +69,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // If no user is logged in, start the login activity.
-        if(ParseUser.getCurrentUser() == null){
-            Log.d(TAG, "No user is logged in, starting new account activity.");
-            startLoginActivity();
-        }
 
         // Ensure current user's SnackList is displayed first
         SnackList.getInstance().setUser(ParseUser.getCurrentUser());
@@ -148,16 +141,20 @@ public class MainActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
+        // If no user is logged in, start the login activity.
+        if(ParseUser.getCurrentUser() == null){
+            Log.d(TAG, "No user is logged in, starting new account activity.");
+            startLoginActivity();
+        }
+
         SnackList.getInstance().setUser(ParseUser.getCurrentUser());
         if(SnackList.getInstance().size() == 0){
             SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
                 @Override
                 public void done(List<SnackEntry> objects, ParseException e) {
-                    if(e != null){
+                    if (e != null) {
                         updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                    }
-
-                    else
+                    } else
                         setAlarms(objects);
                 }
             });
@@ -252,8 +249,8 @@ public class MainActivity extends AppCompatActivity{
 
     private void startLoginActivity(){
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivityForResult(intent, LOGIN_REQUEST);
-        overridePendingTransition(R.animator.animation, R.animator.animation2);
+        startActivity(intent);
+        finish();
     }
 
     /**
@@ -278,38 +275,38 @@ public class MainActivity extends AppCompatActivity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
 
         switch(requestCode){
-            case LOGIN_REQUEST:
-                // If successful login, refresh SnackLists and attempt to set reminder alarms
-                if(resultCode == RESULT_OK){
-                    ClientList.getInstance().refresh(new FindCallback<ParseUser>() {
-                        @Override
-                        public void done(List<ParseUser> objects, ParseException e) {
-                            if (e != null) {
-                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                            }
-                        }
-                    });
-
-                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
-                    SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
-                        @Override
-                        public void done(List<SnackEntry> objects, ParseException e) {
-                            if (e != null) {
-                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                            }
-
-                            else
-                                setAlarms(objects);
-                        }
-                    });
-
-                    updateToast("Log in successful!", Toast.LENGTH_SHORT);
-
-                } else{
-                    startLoginActivity();
-                }
-
-                break;
+//            case LOGIN_REQUEST:
+//                // If successful login, refresh SnackLists and attempt to set reminder alarms
+//                if(resultCode == RESULT_OK){
+//                    ClientList.getInstance().refresh(new FindCallback<ParseUser>() {
+//                        @Override
+//                        public void done(List<ParseUser> objects, ParseException e) {
+//                            if (e != null) {
+//                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+//                            }
+//                        }
+//                    });
+//
+//                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+//                    SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
+//                        @Override
+//                        public void done(List<SnackEntry> objects, ParseException e) {
+//                            if (e != null) {
+//                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+//                            }
+//
+//                            else
+//                                setAlarms(objects);
+//                        }
+//                    });
+//
+//                    updateToast("Log in successful!", Toast.LENGTH_SHORT);
+//
+//                } else{
+//                    startLoginActivity();
+//                }
+//
+//                break;
             case NEW_ENTRY_REQUEST:
 
                 break;
@@ -502,7 +499,6 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void done(ParseException e) {
                 if(e == null){
-                    displayView(0);
                     startLoginActivity();
                 } else{
                     updateToast(e.getMessage(), Toast.LENGTH_LONG);

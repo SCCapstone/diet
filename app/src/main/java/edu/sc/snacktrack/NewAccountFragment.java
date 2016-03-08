@@ -1,6 +1,7 @@
 package edu.sc.snacktrack;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -119,10 +120,7 @@ public class NewAccountFragment extends Fragment {
                     public void done(ParseException e) {
                         if(e == null){
                             // Sign up was successful
-                            Activity activity = getActivity();
-
-                            activity.setResult(Activity.RESULT_OK);
-                            activity.finish();
+                            startMainActivity();
                         } else{
                             updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                         }
@@ -338,6 +336,12 @@ public class NewAccountFragment extends Fragment {
                 length
         );
         toast.show();
+    }
+
+    private void startMainActivity(){
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 
     /**
