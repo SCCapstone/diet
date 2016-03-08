@@ -89,7 +89,7 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
         holder.date.setText(formatDate);
 
         // Set the results into ImageView
-        imageLoader.DisplayImage(SnackList.getInstance().get(position).getPhoto().getUrl(),
+        imageLoader.displayImage(SnackList.getInstance().get(position).getPhoto().getUrl(),
                 holder.photo);
 
         return view;

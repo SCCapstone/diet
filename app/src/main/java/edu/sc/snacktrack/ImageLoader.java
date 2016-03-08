@@ -43,19 +43,39 @@ public class ImageLoader {
         executorService = Executors.newFixedThreadPool(5);
     }
 
-    final int stub_id = R.drawable.temp_img;
+    /**
+     * Displays an image at a specified url in a specified ImageView.
+     *
+     * @param url The url pointing to an image.
+     * @param imageView The image view to hold the image.
+     * @param forceReload Whether or not to reload the image if the ImageView is already displaying
+     *                    the specified url.
+     */
+    public void displayImage(String url, ImageView imageView, boolean forceReload){
+        String imageViewUrl = imageViews.get(imageView);
 
-    public void DisplayImage(String url, ImageView imageView) {
-        imageViews.put(imageView, url);
-        Bitmap bitmap = memoryCache.get(url);
+        if(forceReload || imageViewUrl == null || !imageViewUrl.equals(url)){
+            Bitmap bitmap = memoryCache.get(url);
+            imageViews.put(imageView, url);
 
-        if (bitmap != null)
-            imageView.setImageBitmap(bitmap);
-        else {
-            queuePhoto(url, imageView);
-            //imageView.setImageResource(stub_id);
-            imageView.setImageBitmap(null);
+            if(bitmap != null){
+                imageView.setImageBitmap(bitmap);
+            } else{
+                queuePhoto(url, imageView);
+                imageView.setImageBitmap(null);
+            }
         }
+    }
+
+    /**
+     * Displays an image at a specified url in a specified ImageView. Does not reload the image
+     * if the ImageView is already displaying the specified url.
+     *
+     * @param url The url pointing to an image.
+     * @param imageView The ImageView to hold the image.
+     */
+    public void displayImage(String url, ImageView imageView) {
+        displayImage(url, imageView, false);
     }
 
     private void queuePhoto(String url, ImageView imageView) {
