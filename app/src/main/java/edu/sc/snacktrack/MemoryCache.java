@@ -1,8 +1,5 @@
 package edu.sc.snacktrack;
 
-/**
- * Created by dowdw on 11/9/2015.
- */
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,6 +8,10 @@ import java.util.Map.Entry;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+/**
+ * @deprecated Use android.util.LruCache instead.
+ */
+@Deprecated
 public class MemoryCache {
 
     private static final String TAG = "MemoryCache";
