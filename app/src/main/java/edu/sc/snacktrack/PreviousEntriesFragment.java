@@ -91,8 +91,5 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
         // Unregister the adapter and this from the SnackList's update listeners.
         SnackList.getInstance().unregisterUpdateListener(adapter);
         SnackList.getInstance().unregisterUpdateListener(this);
-
-        // Tell the adapter to release its allocated memory.
-        adapter.releaseMemory();
     }
 }

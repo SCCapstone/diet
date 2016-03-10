@@ -53,7 +53,6 @@ private String oldMealType;
     private View progressOverlay;
 private Button saveButton;
 
-    private ImageLoader imageLoader;
     private FileCache fileCache;
     private File newImageFile;
 private String objectId;
@@ -62,8 +61,6 @@ private String objectId;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
-        imageLoader = new ImageLoader(context);
     }
 
 
@@ -71,7 +68,7 @@ private String objectId;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 getActivity().setTitle("Details");
         getActivity().invalidateOptionsMenu();
@@ -154,7 +151,7 @@ saveButton = (Button) view.findViewById(R.id.save_button);
                     String description = snackEntry.getDescription();
                     String mealType = snackEntry.getMealType();
 
-                            imageLoader.displayImage(photoURL, imageView);
+                            ImageLoader.getInstance(getContext()).displayImage(photoURL, imageView);
                     descriptionEditText.setText(description != null ? description : "No description");
                    // mealTypeTextView.setText(mealType != null ? mealType : "No meal type");
                     if(mealType != null) {
@@ -284,7 +281,7 @@ descriptionEditText.setEnabled(true);
                             progressOverlay.setVisibility(View.GONE);
                             if (e == null) {
                                 // Saved successfully.
-                                imageLoader.displayImage(snackEntry.getParseFile("photo").getUrl(), imageView);
+                                ImageLoader.getInstance(getContext()).displayImage(snackEntry.getParseFile("photo").getUrl(), imageView);
 
                                 //updateToast("Update Successful", Toast.LENGTH_LONG);
                             } else {
