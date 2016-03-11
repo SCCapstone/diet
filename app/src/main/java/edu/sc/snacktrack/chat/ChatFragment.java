@@ -19,10 +19,15 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,11 +38,12 @@ import edu.sc.snacktrack.R;
 /**
  * Fragment for chatting with another user.
  */
-public class ChatFragment extends Fragment{
+public class ChatFragment extends Fragment implements Conversations.UpdateListener{
     private static final String TAG = "ChatFragment";
 
     private ParseUser otherUser;
-    private Conversation conversation;
+    private Conversations.Group group;
+//    private Conversation conversation;
 
     private ListView messageListView;
     private Button sendButton;
@@ -51,7 +57,7 @@ public class ChatFragment extends Fragment{
 
     private Toast toast;
 
-    private NewMessageFetcher newMessageFetcher;
+//    private NewMessageFetcher newMessageFetcher;
 
     private static final String STATE_MESSAGES = "messages";
 
@@ -67,25 +73,26 @@ public class ChatFragment extends Fragment{
         otherUser = ParseUser.createWithoutData(
                 ParseUser.class, getArguments().getString(ARG_OTHER_USER_ID)
         );
-        conversation = ParseObject.createWithoutData(
-                Conversation.class, getArguments().getString(ARG_CONVERSATION_ID)
-        );
+        group = new Conversations.Group(ParseUser.getCurrentUser(), otherUser);
+//        conversation = ParseObject.createWithoutData(
+//                Conversation.class, getArguments().getString(ARG_CONVERSATION_ID)
+//        );
 
         setTitleToUsername();
+//
+//        try {
+//            Log.d(TAG, "fetch from local datastore...");
+//            conversation.fetchFromLocalDatastore();
+//        } catch (ParseException e) {
+//            Log.d(TAG, "fetch from local datastore failed!");
+//            conversation.fetchInBackground();
+//        }
 
-        try {
-            Log.d(TAG, "fetch from local datastore...");
-            conversation.fetchFromLocalDatastore();
-        } catch (ParseException e) {
-            Log.d(TAG, "fetch from local datastore failed!");
-            conversation.fetchInBackground();
-        }
-
-        // If we're just starting this fragment, display any pinned messages while we fetch
-        // new ones.
-        if(savedInstanceState == null){
-            displayPinnedMessages();
-        }
+//        // If we're just starting this fragment, display any pinned messages while we fetch
+//        // new ones.
+//        if(savedInstanceState == null){
+//            displayPinnedMessages();
+//        }
     }
 
     /**
@@ -119,17 +126,21 @@ public class ChatFragment extends Fragment{
     public void onStart() {
         super.onStart();
 
-        newMessageFetcher = new NewMessageFetcher();
-        newMessageFetcher.execute();
+        Conversations.getInstance().registerUpdateListener(this);
+//        newMessageFetcher = new NewMessageFetcher();
+//        newMessageFetcher.execute();
+        refreshAdapter();
     }
 
     @Override
     public void onStop(){
         super.onStop();
 
-        if(newMessageFetcher != null){
-            newMessageFetcher.cancel(true);
-        }
+//        if(newMessageFetcher != null){
+//            newMessageFetcher.cancel(true);
+//        }
+
+        Conversations.getInstance().unregisterUpdateListener(this);
     }
 
     @Override
@@ -160,7 +171,7 @@ public class ChatFragment extends Fragment{
             public void onClick(View v) {
                 final Message message = new Message();
                 ParseACL acl = new ParseACL();
-                String messageStr = messageET.getText().toString();
+                final String messageStr = messageET.getText().toString();
 
                 message.setMessage(messageStr);
                 message.setFromUser(ParseUser.getCurrentUser());
@@ -180,10 +191,27 @@ public class ChatFragment extends Fragment{
                     public void done(ParseException e) {
                         if (e == null) {
                             messageET.setText("");
-                            chatAdapter.addMessage(message);
-                            chatAdapter.notifyDataSetChanged();
-                            conversation.setRecentMessage(message);
-                            conversation.saveEventually();
+//                            chatAdapter.addMessage(message);
+//                            chatAdapter.notifyDataSetChanged();
+                            Conversations.getInstance().addMessage(message);
+//                            conversation.setRecentMessage(message);
+//                            conversation.saveEventually();
+
+                            ParsePush push = new ParsePush();
+                            ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+                            JSONObject data = new JSONObject();
+                            try {
+                                data.put("isChat", true);
+                                data.put("messageId", message.getObjectId());
+                                data.put("messageStr", messageStr);
+                                data.put("fromUserId", ParseUser.getCurrentUser().getObjectId());
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+                            query.whereEqualTo("user", otherUser);
+                            push.setQuery(query);
+                            push.setData(data);
+                            push.sendInBackground();
                         }
 
                         messageET.setEnabled(true);
@@ -203,7 +231,7 @@ public class ChatFragment extends Fragment{
         if(savedInstanceState != null) {
             chatAdapter.addAll((ChatItem[]) savedInstanceState.getParcelableArray(STATE_MESSAGES));
         } else{
-            updateAllMessages();
+//            updateAllMessages();
         }
     }
 
@@ -253,75 +281,103 @@ public class ChatFragment extends Fragment{
 //        });
 //    }
 
-    /**
-     * Fetches a full list of messages between the two users and repopulates chatAdapter with
-     * those messages (clearing the old messages).
-     */
-    private void updateAllMessages(){
-        List<ParseQuery<Message>> orQueries = new ArrayList<>();
-        ParseQuery<Message> oredQuery;
+//    /**
+//     * Fetches a full list of messages between the two users and repopulates chatAdapter with
+//     * those messages (clearing the old messages).
+//     */
+//    private void updateAllMessages(){
+//        List<ParseQuery<Message>> orQueries = new ArrayList<>();
+//        ParseQuery<Message> oredQuery;
+//
+//        orQueries.add(ParseQuery.getQuery(Message.class)
+//                        .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
+//                        .whereEqualTo(Message.TO_KEY, otherUser)
+//        );
+//        orQueries.add(ParseQuery.getQuery(Message.class)
+//                        .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
+//                        .whereEqualTo(Message.FROM_KEY, otherUser)
+//        );
+//        oredQuery = ParseQuery.or(orQueries);
+//        oredQuery.orderByAscending("createdAt");
+//        oredQuery.findInBackground(new FindCallback<Message>() {
+//            @Override
+//            public void done(List<Message> objects, ParseException e) {
+//                if (e == null) {
+//                    chatAdapter.clear();
+//                    for (Message message : objects) {
+//                        message.pinInBackground();
+//                        chatAdapter.add(new ChatItem(message));
+//                    }
+//
+//                    chatAdapter.notifyDataSetChanged();
+//                } else {
+//
+//                }
+//            }
+//        });
+//    }
+//
+//    /**
+//     * Adds all relevant pinned messages to the chat adapter.
+//     */
+//    private void displayPinnedMessages(){
+//        List<ParseQuery<Message>> orQueries = new ArrayList<>();
+//        ParseQuery<Message> oredQuery;
+//        List<Message> pinnedMessages;
+//
+//        orQueries.add(ParseQuery.getQuery(Message.class)
+//                        .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
+//                        .whereEqualTo(Message.TO_KEY, otherUser)
+//        );
+//        orQueries.add(ParseQuery.getQuery(Message.class)
+//                        .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
+//                        .whereEqualTo(Message.FROM_KEY, otherUser)
+//        );
+//        oredQuery = ParseQuery.or(orQueries);
+//        oredQuery.orderByAscending("createdAt");
+//        oredQuery.fromLocalDatastore();
+//        try {
+//            pinnedMessages = oredQuery.find();
+//        } catch(ParseException e){
+//            // Give up and do not display anything
+//            pinnedMessages = null;
+//        }
+//
+//        if(pinnedMessages != null){
+//            chatAdapter.clear();
+//            for(Message message : pinnedMessages){
+//                chatAdapter.add(new ChatItem((message)));
+//            }
+//            chatAdapter.notifyDataSetChanged();
+//        }
+//    }
 
-        orQueries.add(ParseQuery.getQuery(Message.class)
-                        .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
-                        .whereEqualTo(Message.TO_KEY, otherUser)
-        );
-        orQueries.add(ParseQuery.getQuery(Message.class)
-                        .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
-                        .whereEqualTo(Message.FROM_KEY, otherUser)
-        );
-        oredQuery = ParseQuery.or(orQueries);
-        oredQuery.orderByAscending("createdAt");
-        oredQuery.findInBackground(new FindCallback<Message>() {
+    public void refreshAdapter(){
+        Conversations.getInstance().getConversation(group, new FindCallback<Message>() {
             @Override
-            public void done(List<Message> objects, ParseException e) {
-                if (e == null) {
+            public void done(List<Message> messages, ParseException e) {
+                if(e == null){
                     chatAdapter.clear();
-                    for (Message message : objects) {
-                        message.pinInBackground();
-                        chatAdapter.add(new ChatItem(message));
+                    for(Message message : messages){
+                        chatAdapter.addMessage(message);
                     }
-
-                    chatAdapter.notifyDataSetChanged();
-                } else {
-
                 }
             }
         });
     }
 
-    /**
-     * Adds all relevant pinned messages to the chat adapter.
-     */
-    private void displayPinnedMessages(){
-        List<ParseQuery<Message>> orQueries = new ArrayList<>();
-        ParseQuery<Message> oredQuery;
-        List<Message> pinnedMessages;
-
-        orQueries.add(ParseQuery.getQuery(Message.class)
-                        .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
-                        .whereEqualTo(Message.TO_KEY, otherUser)
-        );
-        orQueries.add(ParseQuery.getQuery(Message.class)
-                        .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
-                        .whereEqualTo(Message.FROM_KEY, otherUser)
-        );
-        oredQuery = ParseQuery.or(orQueries);
-        oredQuery.orderByAscending("createdAt");
-        oredQuery.fromLocalDatastore();
-        try {
-            pinnedMessages = oredQuery.find();
-        } catch(ParseException e){
-            // Give up and do not display anything
-            pinnedMessages = null;
-        }
-
-        if(pinnedMessages != null){
-            chatAdapter.clear();
-            for(Message message : pinnedMessages){
-                chatAdapter.add(new ChatItem((message)));
+    @Override
+    public void onConversationsGroupUpdate(Conversations.Group updatedGroup, Message... newMessages) {
+        if(updatedGroup.equals(this.group)){
+            for(Message message : newMessages){
+                chatAdapter.addMessage(message);
             }
-            chatAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onConversationsRefresh() {
+        refreshAdapter();
     }
 
     /**
@@ -342,86 +398,86 @@ public class ChatFragment extends Fragment{
         toast.show();
     }
 
-    /**
-     * AsyncTask for periodically checking for new messages
-     */
-    private class NewMessageFetcher extends AsyncTask<Integer, Void, Void> {
-
-        private static final int DEFAULT_INTERVAL_MILIS = 5000; // 5 seconds
-
-        @Override
-        protected Void doInBackground(Integer... params) {
-            int intervalMilis;
-            if(params.length > 0){
-                intervalMilis = params[0];
-            } else{
-                intervalMilis = DEFAULT_INTERVAL_MILIS;
-            }
-            while(true){
-                try{
-                    Thread.sleep(intervalMilis);
-                } catch(InterruptedException e){
-                    updateToast("New Message Fetcher died", Toast.LENGTH_LONG);
-                    Log.d(TAG, "New message fetcher died");
-                    e.printStackTrace();
-                    break;
-                }
-
-                fetchNewMessages();
-            }
-
-            return null;
-        }
-
-        /**
-         * Fetches messages with a createdAt time greater than the most recent message in chatAdapter.
-         */
-        private void fetchNewMessages(){
-            List<ParseQuery<Message>> orQueries = new ArrayList<>();
-            ParseQuery<Message> oredQuery;
-            ChatItem lastItem = chatAdapter.getLastFromOther();
-            List<Message> newMessages = null;
-
-            Date lastDate = new Date(0);
-            if(lastItem != null){
-                lastDate.setTime(lastItem.getCreatedTime());
-            }
-
+//    /**
+//     * AsyncTask for periodically checking for new messages
+//     */
+//    private class NewMessageFetcher extends AsyncTask<Integer, Void, Void> {
+//
+//        private static final int DEFAULT_INTERVAL_MILIS = 5000; // 5 seconds
+//
+//        @Override
+//        protected Void doInBackground(Integer... params) {
+//            int intervalMilis;
+//            if(params.length > 0){
+//                intervalMilis = params[0];
+//            } else{
+//                intervalMilis = DEFAULT_INTERVAL_MILIS;
+//            }
+//            while(true){
+//                try{
+//                    Thread.sleep(intervalMilis);
+//                } catch(InterruptedException e){
+//                    updateToast("New Message Fetcher died", Toast.LENGTH_LONG);
+//                    Log.d(TAG, "New message fetcher died");
+//                    e.printStackTrace();
+//                    break;
+//                }
+//
+//                fetchNewMessages();
+//            }
+//
+//            return null;
+//        }
+//
+//        /**
+//         * Fetches messages with a createdAt time greater than the most recent message in chatAdapter.
+//         */
+//        private void fetchNewMessages(){
+//            List<ParseQuery<Message>> orQueries = new ArrayList<>();
+//            ParseQuery<Message> oredQuery;
+//            ChatItem lastItem = chatAdapter.getLastFromOther();
+//            List<Message> newMessages = null;
+//
+//            Date lastDate = new Date(0);
+//            if(lastItem != null){
+//                lastDate.setTime(lastItem.getCreatedTime());
+//            }
+//
+////            orQueries.add(ParseQuery.getQuery(Message.class)
+////                            .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
+////                            .whereEqualTo(Message.TO_KEY, otherUser)
+////            );
 //            orQueries.add(ParseQuery.getQuery(Message.class)
-//                            .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
-//                            .whereEqualTo(Message.TO_KEY, otherUser)
+//                            .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
+//                            .whereEqualTo(Message.FROM_KEY, otherUser)
 //            );
-            orQueries.add(ParseQuery.getQuery(Message.class)
-                            .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())
-                            .whereEqualTo(Message.FROM_KEY, otherUser)
-            );
-            oredQuery = ParseQuery.or(orQueries);
-            oredQuery.whereGreaterThan("createdAt", lastDate);
-            oredQuery.orderByAscending("createdAt");
-            try {
-                newMessages = oredQuery.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            if(newMessages != null){
-                if(newMessages.size() > 0){
-                    for(Message message : newMessages){
-                        chatAdapter.add(new ChatItem(message));
-                    }
-
-                    if(myActivity!= null){
-                        myActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                chatAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    } else{
-                        Log.d(TAG, "myActivity is null");
-                    }
-                }
-            }
-        }
-    }
+//            oredQuery = ParseQuery.or(orQueries);
+//            oredQuery.whereGreaterThan("createdAt", lastDate);
+//            oredQuery.orderByAscending("createdAt");
+//            try {
+//                newMessages = oredQuery.find();
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//
+//            if(newMessages != null){
+//                if(newMessages.size() > 0){
+//                    for(Message message : newMessages){
+//                        chatAdapter.add(new ChatItem(message));
+//                    }
+//
+//                    if(myActivity!= null){
+//                        myActivity.runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                chatAdapter.notifyDataSetChanged();
+//                            }
+//                        });
+//                    } else{
+//                        Log.d(TAG, "myActivity is null");
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

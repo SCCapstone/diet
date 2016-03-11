@@ -25,8 +25,9 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import edu.sc.snacktrack.R;
 import edu.sc.snacktrack.Utils;
@@ -59,7 +60,70 @@ public class ChatChooserFragment extends Fragment{
         super.onCreate(savedInstanceState);
 
         chatChooserAdapter = new ChatChooserAdapter(getContext());
-        updateConversations();
+//        updateConversations();
+
+        if(!Conversations.getInstance().isUpdating() && Conversations.getInstance().needsRefresh()){
+            Conversations.getInstance().refresh(new FindCallback<Message>() {
+                @Override
+                public void done(List<Message> messages, ParseException e) {
+                    Set<Conversations.Group> groups = Conversations.getInstance().keySet();
+                    for(Conversations.Group group : groups){
+                        final ChatChooserItem item = new ChatChooserItem();
+                        Iterator<ParseUser> it = group.iterator();
+                        ParseUser user1 = it.next();
+                        ParseUser user2 = it.next();
+                        if(user1 == ParseUser.getCurrentUser()){
+                            item.setUsername(user2.getUsername());
+                        } else if(user2 == ParseUser.getCurrentUser()){
+                            item.setUsername(user1.getUsername());
+                        } else{
+                            // This group doesn't have the current user
+                            continue;
+                        }
+                        Conversations.getInstance().getConversation(group, new FindCallback<Message>() {
+                            @Override
+                            public void done(List<Message> objects, ParseException e) {
+                                int recentMessageIndex = objects.size() - 1;
+                                item.setRecentMessage(objects.get(recentMessageIndex).getMessage());
+                                item.setCreatedTime(objects.get(recentMessageIndex).getCreatedAt().getTime());
+                            }
+                        });
+                        chatChooserAdapter.addItem(item);
+                    }
+                    chatChooserAdapter.sort();
+                    chatChooserAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "DONE " + chatChooserAdapter.getCount());
+                }
+            });
+        } else{
+            Set<Conversations.Group> groups = Conversations.getInstance().keySet();
+            for(Conversations.Group group : groups){
+                Log.d(TAG, "add");
+                Log.d(TAG, "group has " + group.size() + " members.");
+                final ChatChooserItem item = new ChatChooserItem();
+                Iterator<ParseUser> it = group.iterator();
+                ParseUser user1 = it.next();
+                ParseUser user2 = it.next();
+                if(user1 == ParseUser.getCurrentUser()){
+                    item.setUsername(user2.getUsername());
+                } else if(user2 == ParseUser.getCurrentUser()){
+                    item.setUsername(user1.getUsername());
+                }
+                Conversations.getInstance().getConversation(group, new FindCallback<Message>() {
+                    @Override
+                    public void done(List<Message> objects, ParseException e) {
+                        int recentMessageIndex = objects.size() - 1;
+                        item.setRecentMessage(objects.get(recentMessageIndex).getMessage());
+                        item.setCreatedTime(objects.get(recentMessageIndex).getCreatedAt().getTime());
+                    }
+                });
+                chatChooserAdapter.addItem(item);
+            }
+            chatChooserAdapter.sort();
+            chatChooserAdapter.notifyDataSetChanged();
+            Log.d(TAG, "DONE " + chatChooserAdapter.getCount());
+        }
+
     }
 
     @Override
@@ -145,87 +209,87 @@ public class ChatChooserFragment extends Fragment{
         }
     }
 
-    /**
-     * Finds the relevant past conversations to display in the chat chooser.
-     */
-    private void updateConversations(){
-        ArrayList<ParseQuery<Conversation>> orQueries = new ArrayList<>();
-        ParseQuery<Conversation> oredQuery;
-
-        orQueries.add(ParseQuery.getQuery(Conversation.class)
-                        .whereEqualTo(Conversation.TO_USER_KEY, ParseUser.getCurrentUser())
-        );
-        orQueries.add(ParseQuery.getQuery(Conversation.class)
-                        .whereEqualTo(Conversation.FROM_USER_KEY, ParseUser.getCurrentUser())
-        );
-        oredQuery = ParseQuery.or(orQueries);
-        oredQuery.include(Conversation.FROM_USER_KEY);
-        oredQuery.include(Conversation.TO_USER_KEY);
-        oredQuery.include(Conversation.RECENT_MESSAGE_KEY);
-        oredQuery.orderByDescending("updatedAt");
-        oredQuery.findInBackground(new FindCallback<Conversation>() {
-            @Override
-            public void done(List<Conversation> conversations, ParseException e) {
-                if (e == null) {
-                    // Pin the conversations for faster access later
-                    for (Conversation conversation : conversations) {
-                        conversation.pinInBackground();
-                    }
-
-                    for (Conversation conversation : filterConversations(conversations)) {
-                        chatChooserAdapter.addConversation(conversation);
-                    }
-                } else {
-                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
-                }
-            }
-        });
-    }
-
-    /**
-     * Filters a list of conversations by removing any duplicates.
-     * The conversations *must* be sorted in descending order by updatedAt, or this method will
-     * not work correctly.
-     *
-     * @param conversations The list of conversations to filter
-     * @return The filtered conversations
-     */
-    private List<Conversation> filterConversations(List<Conversation> conversations){
-        ArrayList<Conversation> filtered = new ArrayList<>();
-
-        for(Conversation conversation : conversations){
-            ParseUser otherUser1;
-            boolean add = true;
-
-            if(conversation.getToUser().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())){
-                otherUser1 = conversation.getFromUser();
-            } else{
-                otherUser1 = conversation.getToUser();
-            }
-
-            for(Conversation filteredConv : filtered){
-                ParseUser otherUser2;
-
-                if(filteredConv.getToUser().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())){
-                    otherUser2 = filteredConv.getFromUser();
-                } else{
-                    otherUser2 = filteredConv.getToUser();
-                }
-
-
-                if(otherUser1.getObjectId().equals(otherUser2.getObjectId())){
-                    add = false;
-                    break;
-                }
-            }
-
-            if(add){
-                filtered.add(conversation);
-            }
-        }
-
-        return filtered;
-    }
+//    /**
+//     * Finds the relevant past conversations to display in the chat chooser.
+//     */
+//    private void updateConversations(){
+//        ArrayList<ParseQuery<Conversation>> orQueries = new ArrayList<>();
+//        ParseQuery<Conversation> oredQuery;
+//
+//        orQueries.add(ParseQuery.getQuery(Conversation.class)
+//                        .whereEqualTo(Conversation.TO_USER_KEY, ParseUser.getCurrentUser())
+//        );
+//        orQueries.add(ParseQuery.getQuery(Conversation.class)
+//                        .whereEqualTo(Conversation.FROM_USER_KEY, ParseUser.getCurrentUser())
+//        );
+//        oredQuery = ParseQuery.or(orQueries);
+//        oredQuery.include(Conversation.FROM_USER_KEY);
+//        oredQuery.include(Conversation.TO_USER_KEY);
+//        oredQuery.include(Conversation.RECENT_MESSAGE_KEY);
+//        oredQuery.orderByDescending("updatedAt");
+//        oredQuery.findInBackground(new FindCallback<Conversation>() {
+//            @Override
+//            public void done(List<Conversation> conversations, ParseException e) {
+//                if (e == null) {
+//                    // Pin the conversations for faster access later
+//                    for (Conversation conversation : conversations) {
+//                        conversation.pinInBackground();
+//                    }
+//
+//                    for (Conversation conversation : filterConversations(conversations)) {
+//                        chatChooserAdapter.addConversation(conversation);
+//                    }
+//                } else {
+//                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+//                }
+//            }
+//        });
+//    }
+//
+//    /**
+//     * Filters a list of conversations by removing any duplicates.
+//     * The conversations *must* be sorted in descending order by updatedAt, or this method will
+//     * not work correctly.
+//     *
+//     * @param conversations The list of conversations to filter
+//     * @return The filtered conversations
+//     */
+//    private List<Conversation> filterConversations(List<Conversation> conversations){
+//        ArrayList<Conversation> filtered = new ArrayList<>();
+//
+//        for(Conversation conversation : conversations){
+//            ParseUser otherUser1;
+//            boolean add = true;
+//
+//            if(conversation.getToUser().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())){
+//                otherUser1 = conversation.getFromUser();
+//            } else{
+//                otherUser1 = conversation.getToUser();
+//            }
+//
+//            for(Conversation filteredConv : filtered){
+//                ParseUser otherUser2;
+//
+//                if(filteredConv.getToUser().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())){
+//                    otherUser2 = filteredConv.getFromUser();
+//                } else{
+//                    otherUser2 = filteredConv.getToUser();
+//                }
+//
+//
+//                if(otherUser1.getObjectId().equals(otherUser2.getObjectId())){
+//                    add = false;
+//                    break;
+//                }
+//            }
+//
+//            if(add){
+//                filtered.add(conversation);
+//            }
+//        }
+//
+//        return filtered;
+//    }
 
     /**
      * Cancels the current toast and displays a new toast.

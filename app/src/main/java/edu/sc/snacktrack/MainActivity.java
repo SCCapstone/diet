@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
 import java.io.File;
@@ -34,6 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import edu.sc.snacktrack.chat.ChatChooserFragment;
+import edu.sc.snacktrack.chat.Conversations;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -145,6 +147,11 @@ public class MainActivity extends AppCompatActivity{
         if(ParseUser.getCurrentUser() == null){
             Log.d(TAG, "No user is logged in, starting new account activity.");
             startLoginActivity();
+        } else{
+            // Associate the device with the current user
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("user",ParseUser.getCurrentUser());
+            installation.saveInBackground();
         }
 
         SnackList.getInstance().setUser(ParseUser.getCurrentUser());
@@ -158,6 +165,11 @@ public class MainActivity extends AppCompatActivity{
                         setAlarms(objects);
                 }
             });
+        }
+
+        // Update conversations if needed
+        if(!Conversations.getInstance().isUpdating() && Conversations.getInstance().needsRefresh()){
+            Conversations.getInstance().refresh(null);
         }
     }
 

@@ -15,6 +15,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import edu.sc.snacktrack.R;
@@ -54,6 +57,20 @@ public class ChatChooserAdapter extends BaseAdapter{
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public void addItem(ChatChooserItem item){
+        items.add(item);
+    }
+
+    public void addAllItems(List<ChatChooserItem> items){
+        for(ChatChooserItem item : items){
+            addItem(item);
+        }
+    }
+
+    public void sort(){
+        Collections.sort(items, Collections.reverseOrder());
     }
 
     /**
