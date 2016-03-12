@@ -39,7 +39,7 @@ public class ImageLoader {
 
     /**
      * Private constructor to prevent multiple instances. Use getInstance() to get the current
-     * instance of SnackList.
+     * instance of ImageLoader.
      */
     private ImageLoader(Context context) {
         // We will use 25% of available memory for the memory cache.
