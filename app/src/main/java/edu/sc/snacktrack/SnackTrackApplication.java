@@ -1,5 +1,6 @@
 package edu.sc.snacktrack;
 
+import android.app.Activity;
 import android.app.Application;
 
 import com.parse.Parse;
@@ -10,6 +11,8 @@ import edu.sc.snacktrack.chat.Conversation;
 import edu.sc.snacktrack.chat.Message;
 
 public class SnackTrackApplication extends Application{
+
+    private Activity mCurrentActivity = null;
 
     public void onCreate(){
         super.onCreate();
@@ -25,5 +28,12 @@ public class SnackTrackApplication extends Application{
         // Authenticate client with the application ID and client key.
         Parse.initialize(this);
         ParseInstallation.getCurrentInstallation().saveInBackground();
+    }
+
+    public Activity getCurrentActivity(){
+        return mCurrentActivity;
+    }
+    public void setCurrentActivity(Activity mCurrentActivity){
+        this.mCurrentActivity = mCurrentActivity;
     }
 }

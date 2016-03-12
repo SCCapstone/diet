@@ -23,8 +23,19 @@ public class SplashScreen extends Activity {
     }
 
     private void startMainActivity(){
-        Intent intent = new Intent(SplashScreen.this, MainActivity.class);
-        startActivity(intent);
+        Intent launchIntent = getIntent();
+        Intent startMainIntent;
+
+        boolean isChat = launchIntent.getBooleanExtra("isChat", false);
+        String fromUserId = launchIntent.getStringExtra("fromUserId");
+        String fromUserName = launchIntent.getStringExtra("fromUserName");
+
+        startMainIntent = new Intent(SplashScreen.this, MainActivity.class);
+        startMainIntent.putExtra("isChat", isChat);
+        startMainIntent.putExtra("fromUserId", fromUserId);
+        startMainIntent.putExtra("fromUserName", fromUserName);
+
+        startActivity(startMainIntent);
         finish();
     }
 

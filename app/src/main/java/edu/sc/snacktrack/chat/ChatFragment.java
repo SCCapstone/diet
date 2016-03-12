@@ -62,6 +62,7 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
     private static final String STATE_MESSAGES = "messages";
 
     public static final String ARG_OTHER_USER_ID = "argOtherUserId";
+    public static final String ARG_OTHER_USER_NAME = "argOtherUserName";
     public static final String ARG_CONVERSATION_ID = "conversationId";
 
     @Override
@@ -99,21 +100,7 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
      * Attempts to set the action bar's title to the other user's username.
      */
     private void setTitleToUsername(){
-        String username = otherUser.getUsername();
-        if(username != null){
-            getActivity().setTitle(username);
-        } else{
-            otherUser.fetchInBackground(new GetCallback<ParseUser>() {
-                @Override
-                public void done(ParseUser fetchedUser, ParseException e) {
-                    if (e == null) {
-                        if (fetchedUser != null && fetchedUser.getUsername() != null) {
-                            getActivity().setTitle(fetchedUser.getUsername());
-                        }
-                    }
-                }
-            });
-        }
+        getActivity().setTitle(getArguments().getString(ARG_OTHER_USER_NAME));
     }
 
     @Override
@@ -166,6 +153,12 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
 
         messageET = (EditText) view.findViewById(R.id.toSendEditText);
         sendButton = (Button) view.findViewById(R.id.sendButton);
+        setSendButtonClickListener();
+
+        return view;
+    }
+
+    private void setSendButtonClickListener(){
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,21 +190,7 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
 //                            conversation.setRecentMessage(message);
 //                            conversation.saveEventually();
 
-                            ParsePush push = new ParsePush();
-                            ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
-                            JSONObject data = new JSONObject();
-                            try {
-                                data.put("isChat", true);
-                                data.put("messageId", message.getObjectId());
-                                data.put("messageStr", messageStr);
-                                data.put("fromUserId", ParseUser.getCurrentUser().getObjectId());
-                            } catch (JSONException e1) {
-                                e1.printStackTrace();
-                            }
-                            query.whereEqualTo("user", otherUser);
-                            push.setQuery(query);
-                            push.setData(data);
-                            push.sendInBackground();
+                            sendPush(message);
                         }
 
                         messageET.setEnabled(true);
@@ -220,8 +199,33 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
                 });
             }
         });
+    }
 
-        return view;
+    private void sendPush(Message message){
+        ParsePush push = new ParsePush();
+        ParseQuery<ParseInstallation> installationQuery = ParseInstallation.getQuery();
+        JSONObject pushData = new JSONObject();
+
+        installationQuery.whereEqualTo("user", otherUser);
+
+        try{
+            pushData.put("isChat", true);
+            pushData.put("messageId", message.getObjectId());
+            pushData.put("messageStr", message.getMessage());
+            pushData.put("fromUserId", ParseUser.getCurrentUser().getObjectId());
+            pushData.put("fromUserName", ParseUser.getCurrentUser().getUsername());
+            pushData.put("title", String.format(
+                    "New message from %s", ParseUser.getCurrentUser().getUsername()
+            ));
+            pushData.put("alert", message.getMessage());
+        } catch(JSONException e){
+            Log.d(TAG, e.getMessage());
+            updateToast("JSON exception occurred", Toast.LENGTH_LONG);
+        }
+
+        push.setQuery(installationQuery);
+        push.setData(pushData);
+        push.sendInBackground();
     }
 
     @Override
@@ -359,8 +363,9 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
                 if(e == null){
                     chatAdapter.clear();
                     for(Message message : messages){
-                        chatAdapter.addMessage(message);
+                        chatAdapter.add(new ChatItem(message));
                     }
+                    chatAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -370,8 +375,9 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
     public void onConversationsGroupUpdate(Conversations.Group updatedGroup, Message... newMessages) {
         if(updatedGroup.equals(this.group)){
             for(Message message : newMessages){
-                chatAdapter.addMessage(message);
+                chatAdapter.add(new ChatItem(message));
             }
+            chatAdapter.notifyDataSetChanged();
         }
     }
 

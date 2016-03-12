@@ -55,27 +55,27 @@ public class ChatAdapter extends BaseAdapter {
         return position;
     }
 
-    /**
-     * Add a Message to this adapter. If the Message is not fetched, it will be fetched in the
-     * background and the ChatAdapter will update if the fetch is successful.
-     *
-     * @param message The Message to add.
-     */
-    public void addMessage(final Message message){
-        final ChatItem item = new ChatItem();
-        message.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, ParseException e) {
-                if (e == null) {
-                    item.readMessage(message);
-                    items.add(item);
-                    notifyDataSetChanged();
-                } else {
-
-                }
-            }
-        });
-    }
+//    /**
+//     * Add a Message to this adapter. If the Message is not fetched, it will be fetched in the
+//     * background and the ChatAdapter will update if the fetch is successful.
+//     *
+//     * @param message The Message to add.
+//     */
+//    public void addMessage(final Message message){
+//        final ChatItem item = new ChatItem();
+//        message.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+//            @Override
+//            public void done(ParseObject object, ParseException e) {
+//                if (e == null) {
+//                    item.readMessage(message);
+//                    items.add(item);
+//                    notifyDataSetChanged();
+//                } else {
+//
+//                }
+//            }
+//        });
+//    }
 
     /**
      * Adds a ChatItem to this adapter.

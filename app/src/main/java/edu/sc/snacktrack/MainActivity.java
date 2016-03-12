@@ -1,5 +1,6 @@
 package edu.sc.snacktrack;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -34,7 +35,9 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
+import edu.sc.snacktrack.chat.ChatActivity;
 import edu.sc.snacktrack.chat.ChatChooserFragment;
+import edu.sc.snacktrack.chat.ChatFragment;
 import edu.sc.snacktrack.chat.Conversations;
 
 public class MainActivity extends AppCompatActivity{
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity{
     private static final String STATE_MTITLE = "mTitle";
 
     private static final String CURRENT_FRAGMENT_TAG = "mainActivityCurrentFragment";
+
+    private SnackTrackApplication application;
 
     private Toast toast;
 
@@ -71,6 +76,8 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        application = (SnackTrackApplication) getApplicationContext();
 
         // Ensure current user's SnackList is displayed first
         SnackList.getInstance().setUser(ParseUser.getCurrentUser());
@@ -135,6 +142,23 @@ public class MainActivity extends AppCompatActivity{
             getSupportActionBar().setTitle(savedInstanceState.getCharSequence(STATE_CURRENT_TITLE, getTitle()));
 
             // Restore fragment state
+        }
+
+        // Check if MainActivity was started from a chat push notification, and start
+        // the chat if it was
+        if(getIntent() != null){
+            boolean startChat = getIntent().getBooleanExtra("isChat", false);
+
+            Log.d(TAG, "isChat " + startChat);
+
+            if(startChat){
+                Intent startChatIntent = new Intent(MainActivity.this, ChatActivity.class);
+                String otherUserId = getIntent().getStringExtra("fromUserId");
+                String otherUserName = getIntent().getStringExtra("fromUserName");
+                startChatIntent.putExtra(ChatActivity.OTHER_USER_ID_KEY, otherUserId);
+                startChatIntent.putExtra(ChatActivity.OTHER_USER_NAME_KEY, otherUserName);
+                startActivity(startChatIntent);
+            }
 
         }
     }
@@ -170,6 +194,28 @@ public class MainActivity extends AppCompatActivity{
         // Update conversations if needed
         if(!Conversations.getInstance().isUpdating() && Conversations.getInstance().needsRefresh()){
             Conversations.getInstance().refresh(null);
+        }
+
+        application.setCurrentActivity(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        clearReferences();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        clearReferences();
+    }
+
+    private void clearReferences(){
+        Activity currentActivity = application.getCurrentActivity();
+        if(this == currentActivity){
+            application.setCurrentActivity(null);
         }
     }
 

@@ -7,7 +7,7 @@ public class ChatChooserItem implements Comparable<ChatChooserItem>{
 
     private String username;
     private String recentMessage;
-    private String id;
+    private String userId;
     private long createdTime;
 
     /**
@@ -15,12 +15,12 @@ public class ChatChooserItem implements Comparable<ChatChooserItem>{
      *
      * @param username The other user's username
      * @param recentMessage The recent message string
-     * @param id The objectId of the Conversation ParseObject
+     * @param userId The objectId of the other user
      */
-    public ChatChooserItem(String username, String recentMessage, String id, long createdTime){
+    public ChatChooserItem(String username, String recentMessage, String userId, long createdTime){
         this.username = username;
         this.recentMessage = recentMessage;
-        this.id = id;
+        this.userId = userId;
         this.createdTime = createdTime;
     }
 
@@ -32,21 +32,21 @@ public class ChatChooserItem implements Comparable<ChatChooserItem>{
     }
 
     /**
-     * Gets the objectId of the conversation.
+     * Gets the objectId of the other user.
      *
      * @return The objectId
      */
-    public String getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
     /**
-     * Sets the objectId of the conversation.
+     * Sets the objectId of the other user.
      *
-     * @param id The objectId
+     * @param userId The objectId
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     /**

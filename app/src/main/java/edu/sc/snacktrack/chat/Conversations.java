@@ -140,6 +140,7 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
                         .whereEqualTo(Message.FROM_KEY, user2)
         );
         oredQuery = ParseQuery.or(orQueries);
+        oredQuery.include(Message.FROM_KEY).include(Message.TO_KEY);
         oredQuery.orderByAscending("createdAt");
         oredQuery.findInBackground(callback);
     }
@@ -152,6 +153,7 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
 
         orQueries.add(ParseQuery.getQuery(Message.class)
                         .whereEqualTo(Message.FROM_KEY, ParseUser.getCurrentUser())
+
         );
         orQueries.add(ParseQuery.getQuery(Message.class)
                         .whereEqualTo(Message.TO_KEY, ParseUser.getCurrentUser())

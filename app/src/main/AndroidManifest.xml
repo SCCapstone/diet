@@ -88,6 +88,9 @@
             android:launchMode="singleInstance"
             android:theme="@style/TransparentCompat">
         </activity>
+        <activity
+            android:name=".chat.ChatActivity">
+        </activity>
         <receiver
             android:name=".ReminderReceiver"
             android:process=":remote">
@@ -112,9 +115,6 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <!--
-                  IMPORTANT: Change "com.parse.starter" to match your app's package name.
-                -->
                 <category android:name="edu.sc.snacktrack" />
             </intent-filter>
         </receiver>
