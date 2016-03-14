@@ -73,81 +73,8 @@ public class ChatChooserAdapter extends BaseAdapter{
         Collections.sort(items, Collections.reverseOrder());
     }
 
-    /**
-     * Adds a conversation to this ChatChooserAdapter. If the conversation is not fetched, it will
-     * be fetched in the background and the adapter will update if the fetch is successful.
-     *
-     * @param conversation The conversation to add
-     */
-    public void addConversation(final Conversation conversation){
-        final ChatChooserItem item = new ChatChooserItem();
-        ParseQuery<Conversation> query = null;
-        final ParseUser fromUser = conversation.getFromUser();
-        final ParseUser toUser = conversation.getToUser();
-        final Message recentMessage = conversation.getRecentMessage();
-
-        // Create a query if necessary
-        if(conversation.isDataAvailable()){
-            // Don't add this conversation if it has dangling pointers.
-            if(fromUser == null || toUser == null || recentMessage == null){
-                Log.d(TAG, "dangling pointer(s)");
-                return;
-            }
-
-            if(!fromUser.isDataAvailable() || !toUser.isDataAvailable() || !recentMessage.isDataAvailable()){
-                query = ParseQuery.getQuery(Conversation.class);
-                query.whereEqualTo("objectId", conversation.getObjectId());
-                query.include(Conversation.FROM_USER_KEY);
-                query.include(Conversation.TO_USER_KEY);
-                query.include(Conversation.RECENT_MESSAGE_KEY);
-            }
-        } else{
-            query = ParseQuery.getQuery(Conversation.class);
-            query.whereEqualTo("objectId", conversation.getObjectId());
-            query.include(Conversation.FROM_USER_KEY);
-            query.include(Conversation.TO_USER_KEY);
-            query.include(Conversation.RECENT_MESSAGE_KEY);
-        }
-
-        // Execute the query if it exists
-        if(query != null){
-            query.findInBackground(new FindCallback<Conversation>() {
-                @Override
-                public void done(List<Conversation> objects, ParseException e) {
-                    if(e == null){
-                        if(objects.size() == 1){
-                            Conversation fetchedConversation = objects.get(0);
-                            ParseUser fetchedFromUser = fetchedConversation.getFromUser();
-                            ParseUser fetchedToUser = fetchedConversation.getToUser();
-                            Message fetchedMessage = fetchedConversation.getRecentMessage();
-
-                            // Don't add this conversation if it has dangling pointers.
-                            if(fetchedFromUser == null || fetchedToUser == null || fetchedMessage == null){
-                                return;
-                            }
-
-                            if(ParseUser.getCurrentUser().getObjectId().equals(fetchedFromUser.getObjectId())){
-                                item.setUsername(fetchedToUser.getUsername());
-                            } else{
-                                item.setUsername(fetchedFromUser.getUsername());
-                            }
-                            item.setRecentMessage(fetchedMessage.getMessage());
-                            items.add(item);
-                            notifyDataSetChanged();
-                        }
-                    }
-                }
-            });
-        } else{
-            if(ParseUser.getCurrentUser().getObjectId().equals(fromUser.getObjectId())){
-                item.setUsername(toUser.getUsername());
-            } else{
-                item.setUsername(fromUser.getUsername());
-            }
-            item.setRecentMessage(recentMessage.getMessage());
-            items.add(item);
-            notifyDataSetChanged();
-        }
+    public void clear(){
+        items.clear();
     }
 
     @Override

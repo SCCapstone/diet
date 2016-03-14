@@ -32,9 +32,6 @@ public class ChatActivity extends AppCompatActivity{
             String otherUserId = getIntent().getStringExtra(OTHER_USER_ID_KEY);
             String otherUserName = getIntent().getStringExtra(OTHER_USER_NAME_KEY);
 
-            Log.d("ChatActivity", otherUserId);
-            Log.d("ChatActivity", otherUserName);
-
             Bundle args = new Bundle();
 
             args.putString(ChatFragment.ARG_OTHER_USER_ID, otherUserId);
@@ -50,6 +47,11 @@ public class ChatActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * Gets the id of the user specified in the intent for this activity.
+     *
+     * @return The other user's objectId
+     */
     public String getOtherUserId(){
         return getIntent().getStringExtra(OTHER_USER_ID_KEY);
     }

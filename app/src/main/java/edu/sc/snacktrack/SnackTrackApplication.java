@@ -7,7 +7,6 @@ import com.parse.Parse;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 
-import edu.sc.snacktrack.chat.Conversation;
 import edu.sc.snacktrack.chat.Message;
 
 public class SnackTrackApplication extends Application{
@@ -23,17 +22,27 @@ public class SnackTrackApplication extends Application{
         // Register ParseObject subclasses
         ParseObject.registerSubclass(SnackEntry.class);
         ParseObject.registerSubclass(Message.class);
-        ParseObject.registerSubclass(Conversation.class);
 
         // Authenticate client with the application ID and client key.
         Parse.initialize(this);
         ParseInstallation.getCurrentInstallation().saveInBackground();
     }
 
+    /**
+     * Gets the current foreground activity specified by setCurrentActivity().
+     *
+     * @return The current foreground activity
+     */
     public Activity getCurrentActivity(){
         return mCurrentActivity;
     }
-    public void setCurrentActivity(Activity mCurrentActivity){
-        this.mCurrentActivity = mCurrentActivity;
+
+    /**
+     * Sets a reference to the current foreground activity.
+     *
+     * @param currentActivity The current foreground activity
+     */
+    public void setCurrentActivity(Activity currentActivity){
+        this.mCurrentActivity = currentActivity;
     }
 }

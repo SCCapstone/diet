@@ -30,6 +30,9 @@ import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
@@ -144,8 +147,14 @@ public class MainActivity extends AppCompatActivity{
             // Restore fragment state
         }
 
-        // Check if MainActivity was started from a chat push notification, and start
-        // the chat if it was
+        checkChatPushData();
+    }
+
+    /**
+     * Checks if this MainActivity was started from a chat push notification. If so, starts
+     * ChatActivity with the user specified in the notification's JSON Object.
+     */
+    private void checkChatPushData(){
         if(getIntent() != null){
             boolean startChat = getIntent().getBooleanExtra("isChat", false);
 
