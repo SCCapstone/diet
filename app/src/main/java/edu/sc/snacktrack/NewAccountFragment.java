@@ -1,6 +1,5 @@
 package edu.sc.snacktrack;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -13,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +35,8 @@ public class NewAccountFragment extends Fragment {
     private TextView usernameErrorStatus;
     private TextView passwordErrorStatus;
 
+    private CheckBox signUpCheckBox;
+
     private Button signUpButton;
 
     private Button existingAccountButton;
@@ -56,6 +58,7 @@ public class NewAccountFragment extends Fragment {
         usernameErrorStatus = (TextView) view.findViewById(R.id.usernameErrorStatus);
         passwordErrorStatus = (TextView) view.findViewById(R.id.passwordErrorStatus);
         signUpButton = (Button) view.findViewById(R.id.signUpButton);
+        //signUpCheckBox = (CheckBox) view.findViewById(R.id.signUpCheckbox);
         existingAccountButton = (Button) view.findViewById(R.id.existingAccountButton);
 
         // When the root view gains focus, we should hide the soft keyboard.
@@ -115,13 +118,19 @@ public class NewAccountFragment extends Fragment {
                 newUser.setUsername(username);
                 newUser.setPassword(password);
 
+                if(signUpCheckBox.isChecked())
+                    newUser.put("isDietitian",true);
+
+                else
+                    newUser.put("isDietitian",false);
+
                 newUser.signUpInBackground(new SignUpCallback() {
                     @Override
                     public void done(ParseException e) {
-                        if(e == null){
+                        if (e == null) {
                             // Sign up was successful
                             startMainActivity();
-                        } else{
+                        } else {
                             updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                         }
                         setWidgetsEnabled(true);
