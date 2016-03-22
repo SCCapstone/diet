@@ -8,12 +8,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +37,15 @@ public class NewAccountFragment extends Fragment {
     private TextView usernameErrorStatus;
     private TextView passwordErrorStatus;
 
-    private CheckBox signUpCheckBox;
+    private RadioGroup rGroup;
+    private RadioButton rButtonDietitian;
+    private RadioButton rButtonPatient;
+    private RadioButton rButton;
+    private static final int dietitianId = 100000;
+    private static final int patientId = 100001;
+    ///////////
+    private Button testB;
+    ///////////
 
     private Button signUpButton;
 
@@ -58,7 +68,68 @@ public class NewAccountFragment extends Fragment {
         usernameErrorStatus = (TextView) view.findViewById(R.id.usernameErrorStatus);
         passwordErrorStatus = (TextView) view.findViewById(R.id.passwordErrorStatus);
         signUpButton = (Button) view.findViewById(R.id.signUpButton);
-        //signUpCheckBox = (CheckBox) view.findViewById(R.id.signUpCheckbox);
+        rGroup = (RadioGroup) view.findViewById(R.id.signUpRadioGroup);
+//            rGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//                @Override
+//                public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                    rButton = (RadioButton) group.findViewById(checkedId);
+//                    if(rButton != null && checkedId > -1)
+//                    {
+//                        Log.i("Testing","checkedId = " + rButton.getText());
+//                    }
+//                }
+//            });
+//            rButtonDietitian = (RadioButton) view.findViewById(R.id.radioDietitian);
+//            rButtonDietitian.setId(0);
+//            rButtonPatient = (RadioButton) view.findViewById(R.id.radioPatient);
+//            rButtonPatient.setId(patientId);
+        testB = (Button) view.findViewById(R.id.testButton);
+        testB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                checkRadioSelection();
+                if(rGroup.getCheckedRadioButtonId() == -1)
+                {
+                    Log.i("Testing","************************************************");
+                    Log.i("Testing","Nothing selected");
+                    Log.i("Testing","************************************************\n");
+                }
+
+                else
+                {
+                    Log.i("Testing","************************************************");
+                    RadioButton rb = (RadioButton) rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+                    Log.i("Testing","Selection = " + rb.getText());
+//                    Log.i("Testing","Selection = " + rb.getText());
+                    Log.i("Testing","************************************************\n");
+                }
+                RadioButton rb = (RadioButton) rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+                Log.i("Testing","rb.getText() returned " + rb.getText());
+                Log.i("Testing","************************************************");
+
+//                int rButtonId = rGroup.getCheckedRadioButtonId();
+//                rButton = (RadioButton) view.findViewById(rButtonId);
+
+//                switch(rButtonId)
+//                {
+//                    case 0:
+//                        Log.i("Testing","case 0 used");
+//                        break;
+//
+//                    case 1:
+//                        Log.i("Testing","case 1 used");
+//                        break;
+//
+//                    case -1:
+//                        Log.i("Testing","no button selected");
+//                }
+
+//                RadioButton rb = (RadioButton) rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+//                Log.i("Testing",rb.getText().toString());
+//                Toast.makeText(getActivity(),rb.getText().toString(),Toast.LENGTH_LONG).show();
+            }
+        });
+
         existingAccountButton = (Button) view.findViewById(R.id.existingAccountButton);
 
         // When the root view gains focus, we should hide the soft keyboard.
@@ -99,6 +170,58 @@ public class NewAccountFragment extends Fragment {
      * Attempts to sign up the new user. If unable to, displays an error message to the user.
      * If successful, sets the result to RESULT_OK and finishes this activity.
      */
+//    private void attemptSignup(){
+//        setWidgetsEnabled(false);
+//
+//        String username = usernameET.getText().toString();
+//        String password = passwordET.getText().toString();
+//        String passwordConfirm = passwordConfirmET.getText().toString();
+//
+//        StringBuilder usernameInvalidReason = new StringBuilder();
+//        StringBuilder passwordInvalidReason = new StringBuilder();
+//
+//        // First check if the username is valid
+//        if(isUsernameValid(username, usernameInvalidReason)){
+//
+//            // Next, check if the passwords are valid.
+//            if(isPasswordValid(password, passwordConfirm, passwordInvalidReason)){
+//                ParseUser newUser = new ParseUser();
+//                newUser.setUsername(username);
+//                newUser.setPassword(password);
+//
+//                newUser.signUpInBackground(new SignUpCallback() {
+//                    @Override
+//                    public void done(ParseException e) {
+//                        if (e == null) {
+//                            // Sign up was successful
+//                            startMainActivity();
+//                        } else {
+//                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+//                        }
+//                        setWidgetsEnabled(true);
+//                    }
+//                });
+//            }
+//
+//            // If the passwords are invalid, display the reason to the user.
+//            else{
+//                updateToast(passwordInvalidReason.toString(), Toast.LENGTH_LONG);
+//                setWidgetsEnabled(true);
+//            }
+//        }
+//
+//        // If the username is invalid, display the reason to the user
+//        else{
+//            updateToast(usernameInvalidReason.toString(), Toast.LENGTH_LONG);
+//            setWidgetsEnabled(true);
+//        }
+//    }
+
+
+    /**
+     * Attempts to sign up the new user. If unable to, displays an error message to the user.
+     * If successful, sets the result to RESULT_OK and finishes this activity.
+     */
     private void attemptSignup(){
         setWidgetsEnabled(false);
 
@@ -108,34 +231,49 @@ public class NewAccountFragment extends Fragment {
 
         StringBuilder usernameInvalidReason = new StringBuilder();
         StringBuilder passwordInvalidReason = new StringBuilder();
+        StringBuilder selectionInvalidReason = new StringBuilder();
 
         // First check if the username is valid
         if(isUsernameValid(username, usernameInvalidReason)){
 
             // Next, check if the passwords are valid.
             if(isPasswordValid(password, passwordConfirm, passwordInvalidReason)){
-                ParseUser newUser = new ParseUser();
-                newUser.setUsername(username);
-                newUser.setPassword(password);
 
-                if(signUpCheckBox.isChecked())
-                    newUser.put("isDietitian",true);
+                // Finally, check if a radio button was selected
+                if(isSelected(selectionInvalidReason)) {
+                    ParseUser newUser = new ParseUser();
+                    newUser.setUsername(username);
+                    newUser.setPassword(password);
 
-                else
-                    newUser.put("isDietitian",false);
+                    String sel = isDietitian();
 
-                newUser.signUpInBackground(new SignUpCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            // Sign up was successful
-                            startMainActivity();
-                        } else {
-                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+                    if(sel == "true")
+                        newUser.put("isDietitian", true);
+
+                    else
+                        newUser.put("isDietitian", false);
+
+//                    newUser.put("isDietitian", isDietitian());
+
+                    newUser.signUpInBackground(new SignUpCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                // Sign up was successful
+                                startMainActivity();
+                            } else {
+                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+                            }
+                            setWidgetsEnabled(true);
                         }
-                        setWidgetsEnabled(true);
-                    }
-                });
+                    });
+                }
+
+                // If no radio buttons are selected, display the reason to the user.
+                else {
+                    updateToast(selectionInvalidReason.toString(), Toast.LENGTH_LONG);
+                    setWidgetsEnabled(true);
+                }
             }
 
             // If the passwords are invalid, display the reason to the user.
@@ -151,6 +289,10 @@ public class NewAccountFragment extends Fragment {
             setWidgetsEnabled(true);
         }
     }
+
+
+
+
 
     /**
      * Enables or disables all user input widgets.
@@ -311,6 +453,43 @@ public class NewAccountFragment extends Fragment {
         }
     }
 
+    private boolean isSelected(@Nullable StringBuilder reason) {
+        if(rGroup.getCheckedRadioButtonId() == -1)  {
+            if(reason != null)
+                reason.append("Please pick your user type");
+
+            return false;
+        }
+
+        else {
+            if(reason != null)
+                reason.append("OK");
+
+            return true;
+        }
+    }
+
+    private String isDietitian() {
+        RadioButton rb = (RadioButton) rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+        String selection = (String) rb.getText();
+
+        if(selection == "Dietitian") {
+            Log.i("Testing","isDietitian = true");
+            return "true";
+        }
+
+        else {
+            Log.i("Testing","isDietitian = false");
+            return "false";
+        }
+
+//        if(rb.getText() == "Dietitian")
+//            return true;
+//
+//        else
+//            return false;
+    }
+
     /**
      * Updates the passwordErrorStatus based on a reason returned by isPasswordValid().
      */
@@ -328,6 +507,25 @@ public class NewAccountFragment extends Fragment {
             passwordErrorStatus.setText(reasonString);
         }
     }
+
+    private void checkRadioSelection()
+    {
+        if(rGroup.getCheckedRadioButtonId() == -1)
+        {
+            Log.i("Testing","************************************************");
+            Log.i("Testing","Nothing selected");
+            Log.i("Testing","************************************************\n");
+        }
+
+        else
+        {
+            Log.i("Testing","************************************************");
+            RadioButton rb = (RadioButton) rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+            Log.i("Testing","Selection = " + rb.getText());
+            Log.i("Testing","************************************************\n");
+        }
+    }
+
 
     /**
      * Cancels the current toast and displays a new toast.

@@ -163,6 +163,13 @@
             android:text="@string/existing_account"
             android:layout_marginTop="10dp"
             android:singleLine="true" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/testButton"
+            android:layout_below="@+id/existingAccountButton"
+            android:text="TEST BUTTON"/>
     </RelativeLayout>
 
 </ScrollView>
