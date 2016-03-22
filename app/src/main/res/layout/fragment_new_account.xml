@@ -119,19 +119,6 @@
 
         </RadioGroup>
 
-<!--
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/signUpCheckbox"
-            android:text="@string/checkbox_text"
-            android:layout_below="@+id/passwordErrorStatus"
-            android:layout_centerHorizontal="true"
-            android:textColor="#808080"
-            android:textSize="20sp"
-            android:paddingBottom="10dp" />
--->
-
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -164,12 +151,6 @@
             android:layout_marginTop="10dp"
             android:singleLine="true" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/testButton"
-            android:layout_below="@+id/existingAccountButton"
-            android:text="TEST BUTTON"/>
     </RelativeLayout>
 
 </ScrollView>
