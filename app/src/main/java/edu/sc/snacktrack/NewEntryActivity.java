@@ -54,7 +54,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
     private TextView descriptionTextView;
     private ImageView imageView;
     private Spinner mealTypeSpinner;
-    private Spinner mealLocationSpinner;
+  //  private Spinner mealLocationSpinner;
 
     private View progressOverlay;
 
@@ -84,7 +84,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 
 
         mealTypeSpinner = (Spinner) findViewById(R.id.meal_type_spinner);
-        mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
+      //  mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
 
         // Set up the meal type spinner
         mealTypeSpinner.setAdapter(ArrayAdapter.createFromResource(

@@ -55,12 +55,12 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/meal_type_spinner" />
 
-                <Spinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/meal_location_spinner"
-                    android:entries="@array/meal_location"
-                    />
+                <!--<Spinner-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/meal_location_spinner"-->
+                    <!--android:entries="@array/meal_location"-->
+                    <!--/>-->
 
             </LinearLayout>
 

@@ -69,7 +69,7 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
             holder = new ViewHolder();
             view = inflater.inflate(R.layout.snack_entry, null);
             // Locate the TextViews in listview_item.xml
-            holder.name = (TextView) view.findViewById(R.id.name);
+          //  holder.name = (TextView) view.findViewById(R.id.name);
             holder.date = (TextView) view.findViewById(R.id.date);
             // Locate the ImageView in listview_item.xml
             holder.photo = (ImageView) view.findViewById(R.id.pic);
