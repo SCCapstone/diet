@@ -27,6 +27,12 @@
         <item>Chat</item>
     </string-array>
 
+    <string-array name="main_drawer_items_2">
+        <item>My Snacks</item>
+        <item>Settings</item>
+        <item>Chat</item>
+    </string-array>
+
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 

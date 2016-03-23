@@ -30,9 +30,6 @@ import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
@@ -40,7 +37,6 @@ import java.util.List;
 
 import edu.sc.snacktrack.chat.ChatActivity;
 import edu.sc.snacktrack.chat.ChatChooserFragment;
-import edu.sc.snacktrack.chat.ChatFragment;
 import edu.sc.snacktrack.chat.Conversations;
 
 public class MainActivity extends AppCompatActivity{
@@ -93,7 +89,19 @@ public class MainActivity extends AppCompatActivity{
         /**
          * condition if currentUser is client or dietitian
          */
-        drawerItems = getResources().getStringArray(R.array.main_drawer_items);
+        if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
+        {
+            drawerItems = getResources().getStringArray(R.array.main_drawer_items);
+            Log.i("Testing","isDietitian = true");
+        }
+
+        else
+        {
+            drawerItems = getResources().getStringArray(R.array.main_drawer_items_2);
+            Log.i("Testing","isDietitian = false");
+        }
+
+        //drawerItems = getResources().getStringArray(R.array.main_drawer_items);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -237,35 +245,67 @@ public class MainActivity extends AppCompatActivity{
 
         Fragment fragment = null;
 
-        switch(position){
-            case 0:
-                fragment = new PreviousEntriesFragment();
-                SnackList.getInstance().setUser(ParseUser.getCurrentUser());
-                SnackList.getInstance().refresh(null);
-                break;
+        if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
+        {
+            switch(position){
+                case 0:
+                    fragment = new PreviousEntriesFragment();
+                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                    SnackList.getInstance().refresh(null);
+                    break;
 
-            case 1:
-                fragment = new DisplayClientsFragment();
-                ClientList.getInstance().refresh(null);
-                break;
+                case 1:
+                    fragment = new DisplayClientsFragment();
+                    ClientList.getInstance().refresh(null);
+                    break;
 
-            case 2:
-                fragment = new SettingsFragment();
-                break;
+                case 2:
+                    fragment = new SettingsFragment();
+                    break;
 
-            case 3:
-                fragment = new ChatChooserFragment();
+                case 3:
+                    fragment = new ChatChooserFragment();
 //                Bundle args = new Bundle();
 //                args.putString(ChatFragment.ARG_OTHER_USER_ID, "Audel3iEFb");
 //                fragment.setArguments(args);
-                break;
+                    break;
 
-            default:
-                fragment = new TestFragment();
-                Bundle data = new Bundle();
-                data.putInt("position", position);
-                fragment.setArguments(data);
-                break;
+                default:
+                    fragment = new TestFragment();
+                    Bundle data = new Bundle();
+                    data.putInt("position", position);
+                    fragment.setArguments(data);
+                    break;
+            }
+        }
+
+        else
+        {
+            switch(position){
+                case 0:
+                    fragment = new PreviousEntriesFragment();
+                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                    SnackList.getInstance().refresh(null);
+                    break;
+
+                case 1:
+                    fragment = new SettingsFragment();
+                    break;
+
+                case 2:
+                    fragment = new ChatChooserFragment();
+//                Bundle args = new Bundle();
+//                args.putString(ChatFragment.ARG_OTHER_USER_ID, "Audel3iEFb");
+//                fragment.setArguments(args);
+                    break;
+
+                default:
+                    fragment = new TestFragment();
+                    Bundle data = new Bundle();
+                    data.putInt("position", position);
+                    fragment.setArguments(data);
+                    break;
+            }
         }
 
         if(fragment != null){
