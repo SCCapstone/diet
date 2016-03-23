@@ -1,9 +1,5 @@
 package edu.sc.snacktrack;
 
-/**
- * Created by spitzfor on 2/16/2016.
- */
-
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -16,21 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This singleton class holds and manages a local dietitian's list of clients.
+ * Created by spitzfor on 3/22/2016.
  */
-public class ClientList {
 
-    private static final String TAG = "ClientList";
+/**
+ * This singleton class holds and manages a list of dietitians.
+ */
+public class DietitianList {
+
+    private static final String TAG = "DietitianList";
 
     /**
-     * The current instance of the ClientList
+     * The current instance of the DietitianList
      */
-    private static ClientList instance;
+    private static DietitianList instance;
 
     /**
      * The local list of ParseUsers.
      */
-    private ArrayList<ParseUser> clients;
+    private ArrayList<ParseUser> dietitians;
 
     /**
      * The list of update listeners.
@@ -38,66 +38,54 @@ public class ClientList {
     private ArrayList<UpdateListener> updateListeners;
 
     /**
-     * The designated ParseUser from whom owns the foreign ClientList
-     */
-    private ParseUser targetUser;
-
-    /**
      * UpdateListener interface.
      *
      * Interface definition for callbacks to be invoked when the SnackList is modified.
      */
     public interface UpdateListener{
+        void onDietitianListUpdateComplete();
 
-        /**
-         * Called for each registered UpdateListener when an update completes.
-         */
-        void onClientListUpdateComplete();
-
-        /**
-         * *************************************************************************
-         */
-        void onClientListUpdateStart();
+        void onDietitianListUpdateStart();
     }
 
     /**
      * Private constructor to prevent multiple instances. Use getInstance() to get the current
-     * instance of ClientList.
+     * instance of DietitianList.
      */
-    private ClientList(){
-        clients = new ArrayList<>();
+    private DietitianList(){
+        dietitians = new ArrayList<>();
         updateListeners = new ArrayList<>();
     }
 
     /**
-     * Returns the current ClientList instance.
+     * Returns the current DietitianList instance.
      *
-     * @return The ClientList instance
+     * @return The DietitianList instance
      */
-    public static ClientList getInstance(){
+    public static DietitianList getInstance(){
         if(instance == null){
-            instance = new ClientList();
+            instance = new DietitianList();
         }
         return instance;
     }
 
     /**
-     * Gets a ParseUser (client) at a specified position.
+     * Gets a ParseUser (dietitian) at a specified position.
      *
      * @param position The position.
-     * @return The ParseUser (client)
+     * @return The ParseUser (dietitian)
      */
     public ParseUser get(int position){
-        return clients.get(position);
+        return dietitians.get(position);
     }
 
     /**
-     * Returns the size of the ClientList.
+     * Returns the size of the DietitianList.
      *
      * @return The size
      */
     public int size(){
-        return clients.size();
+        return dietitians.size();
     }
 
     /**
@@ -128,7 +116,7 @@ public class ClientList {
      */
     private void notifyUpdateStart(){
         for(UpdateListener listener : updateListeners){
-            listener.onClientListUpdateStart();
+            listener.onDietitianListUpdateComplete();
         }
     }
 
@@ -137,13 +125,13 @@ public class ClientList {
      */
     private void notifyUpdateComplete(){
         for(UpdateListener listener : updateListeners){
-            listener.onClientListUpdateComplete();
+            listener.onDietitianListUpdateComplete();
         }
     }
 
     /**
-     * Refreshes the ClientList. That is, queries Parse for the current user's ParseUsers (clients) and
-     * repopulates the ClientList with the result. If the query fails, the ClientList remains
+     * Refreshes the DietitianList. That is, queries Parse for all ParseUsers whose isDietitian field is true and
+     * repopulates the DietitianList with the result. If the query fails, the DietitianList remains
      * unchanged.
      *
      * @param callback Optional. The callback to invoke after completion.
@@ -153,20 +141,38 @@ public class ClientList {
         notifyUpdateStart();
 
         ParseQuery<ParseUser> query = ParseQuery.getQuery("_User");
-        query.whereEqualTo("myDietitian", ParseUser.getCurrentUser());
+        query.whereEqualTo("isDietitian", true);
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
-            public void done(List<ParseUser> refreshedClients, ParseException e) {
+            public void done(List<ParseUser> refreshedDietitians, ParseException e) {
                 if (e == null) {
-                    clients.clear();
-                    clients.addAll(refreshedClients);
+                    dietitians.clear();
+                    dietitians.addAll(refreshedDietitians);
                 }
 
                 if (callback != null) {
-                    callback.done(refreshedClients, e);
+                    callback.done(refreshedDietitians, e);
                 }
                 notifyUpdateComplete();
             }
         });
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

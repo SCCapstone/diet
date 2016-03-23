@@ -70,11 +70,15 @@
 
     <!-- Settings strings -->
     <string name="password_text">Change Password</string>
+    <string name="pick_diet_text">Pick My Dietitian</string>
+    <string name="rem_diet_text">Remove My Dietitian</string>
+    <string name="msg_diet_text">Send Message To My Dietitian</string>
     <string name="change_password_text">Change Account Password</string>
     <string name="change_email_text">Change Account Email</string>
-    <string name="my_dietitian_text">Add/Change Dietitian</string>
+    <string name="my_dietitian_text">My Dietitian</string>
     <string name="change_font_size_text">Change Font Size</string>
     <string name="settings_group_1">Account Settings</string>
+    <string name="diet_set_group_1">My Dietitian Options</string>
     <string name="settings_group_2">Other Settings</string>
     <string name="new_password_text">Enter new password:</string>
     <string name="new_password_tip">(Password cannot be blank)</string>

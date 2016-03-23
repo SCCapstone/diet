@@ -16,9 +16,12 @@ import android.widget.Button;
  */
 public class SettingsFragment extends Fragment {
 
+    public Context cont;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        cont = context;
     }
 
     @Override
@@ -65,15 +68,9 @@ public class SettingsFragment extends Fragment {
 
         myDietitianButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
-
-                if (previousFrag != null)
-                    transaction.remove(previousFrag);
-                transaction.addToBackStack(null);
-
-                DialogFragment myDietitianDialog = new MyDietitianDialog();
-                myDietitianDialog.show(transaction, "dialog");
+                DietitianList.getInstance().refresh(null);
+                DisplayDietitiansFragment dispDietFrag = new DisplayDietitiansFragment();
+                getFragmentManager().beginTransaction().replace(R.id.content_frame, dispDietFrag).addToBackStack(null).commit();
             }
         });
 
