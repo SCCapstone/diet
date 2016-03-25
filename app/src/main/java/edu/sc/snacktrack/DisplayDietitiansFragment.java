@@ -68,6 +68,7 @@ public class DisplayDietitiansFragment extends Fragment implements DietitianList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
+        getActivity().setTitle("Pick Your Dietitian");
         View view = inflater.inflate(R.layout.fragment_display_dietitians, container, false);
 
         progressOverlay = view.findViewById(R.id.progressOverlay);

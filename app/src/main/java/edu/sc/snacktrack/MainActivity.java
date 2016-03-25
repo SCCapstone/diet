@@ -22,6 +22,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity{
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private RelativeLayout mRelativeLayout;
+    private TextView footerDietitian;
+    private TextView footerUsername;
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle = "";
     private String[] drawerItems;
@@ -85,6 +90,10 @@ public class MainActivity extends AppCompatActivity{
         mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.drawer_relative);
+        footerDietitian = (TextView) findViewById(R.id.drawerFooter1);
+//        footerUsername = (TextView) findViewById(R.id.drawerFooter2);
+//            footerUsername.setText("My Username: " + ParseUser.getCurrentUser().getUsername());
 
         /**
          * condition if currentUser is client or dietitian
@@ -92,13 +101,25 @@ public class MainActivity extends AppCompatActivity{
         if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items);
+            footerDietitian.setVisibility(View.INVISIBLE);
             Log.i("Testing","isDietitian = true");
         }
 
         else
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items_2);
-            Log.i("Testing","isDietitian = false");
+            //ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian").fetchIfNeeded();
+            String uName = "";
+            try
+            {
+                //ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser
+//                uName = ParseUser.getCurrentUser().fetchIfNeeded().getParseUser("myDietitian");
+                Log.i("Testing","myDietitian is " + uName);
+            }
+
+            catch(Exception e) {
+                Log.i("Testing","Something has gone wrong fetching myDietitian");
+            }
         }
 
         //drawerItems = getResources().getStringArray(R.array.main_drawer_items);
@@ -322,7 +343,8 @@ public class MainActivity extends AppCompatActivity{
         } else{
             updateToast("Something went wrong with the drawer :/", Toast.LENGTH_LONG);
         }
-        mDrawerLayout.closeDrawer(mDrawerList);
+//        mDrawerLayout.closeDrawer(mDrawerList);
+        mDrawerLayout.closeDrawer(mRelativeLayout);
     }
 
     @Override
