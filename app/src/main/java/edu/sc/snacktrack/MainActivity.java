@@ -27,9 +27,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.io.File;
@@ -108,17 +110,14 @@ public class MainActivity extends AppCompatActivity{
         else
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items_2);
-            //ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian").fetchIfNeeded();
-            String uName = "";
-            try
-            {
-                //ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser
-//                uName = ParseUser.getCurrentUser().fetchIfNeeded().getParseUser("myDietitian");
-                Log.i("Testing","myDietitian is " + uName);
-            }
-
-            catch(Exception e) {
-                Log.i("Testing","Something has gone wrong fetching myDietitian");
+            ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
+            if(myDietitian != null){
+                myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        footerDietitian.setText(user.getUsername());
+                    }
+                });
             }
         }
 
