@@ -21,7 +21,7 @@
             android:id="@+id/welcomeTextView"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:textSize="15pt"
+            android:textSize="10pt"
             android:textColor="#000000"
             android:singleLine="true" />
 

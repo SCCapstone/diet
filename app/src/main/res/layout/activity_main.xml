@@ -40,7 +40,6 @@
             android:textColor="#FFFFFF"
             android:layout_alignParentBottom="true"/>
 
-<!--
         <TextView
             android:id="@+id/drawerFooter2"
             android:layout_width="240dp"
@@ -48,10 +47,7 @@
             android:paddingLeft="15dp"
             android:textColor="#FFFFFF"
             android:layout_alignParentBottom="true"/>
--->
 
     </RelativeLayout>
-
-
 
 </android.support.v4.widget.DrawerLayout>

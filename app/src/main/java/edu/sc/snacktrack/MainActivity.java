@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity{
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.drawer_relative);
         footerDietitian = (TextView) findViewById(R.id.drawerFooter1);
-//        footerUsername = (TextView) findViewById(R.id.drawerFooter2);
-//            footerUsername.setText("My Username: " + ParseUser.getCurrentUser().getUsername());
+        footerUsername = (TextView) findViewById(R.id.drawerFooter2);
+            footerUsername.setText("My Username: " + ParseUser.getCurrentUser().getUsername());
 
         /**
          * condition if currentUser is client or dietitian
@@ -102,24 +102,11 @@ public class MainActivity extends AppCompatActivity{
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items);
             footerDietitian.setVisibility(View.INVISIBLE);
-            Log.i("Testing","isDietitian = true");
         }
 
         else
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items_2);
-            //ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian").fetchIfNeeded();
-            String uName = "";
-            try
-            {
-                //ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser
-//                uName = ParseUser.getCurrentUser().fetchIfNeeded().getParseUser("myDietitian");
-                Log.i("Testing","myDietitian is " + uName);
-            }
-
-            catch(Exception e) {
-                Log.i("Testing","Something has gone wrong fetching myDietitian");
-            }
         }
 
         //drawerItems = getResources().getStringArray(R.array.main_drawer_items);
