@@ -1,6 +1,5 @@
 package edu.sc.snacktrack;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -9,11 +8,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,8 @@ public class NewAccountFragment extends Fragment {
 
     private TextView usernameErrorStatus;
     private TextView passwordErrorStatus;
+
+    private RadioGroup rGroup;
 
     private Button signUpButton;
 
@@ -56,6 +60,7 @@ public class NewAccountFragment extends Fragment {
         usernameErrorStatus = (TextView) view.findViewById(R.id.usernameErrorStatus);
         passwordErrorStatus = (TextView) view.findViewById(R.id.passwordErrorStatus);
         signUpButton = (Button) view.findViewById(R.id.signUpButton);
+        rGroup = (RadioGroup) view.findViewById(R.id.signUpRadioGroup);
         existingAccountButton = (Button) view.findViewById(R.id.existingAccountButton);
 
         // When the root view gains focus, we should hide the soft keyboard.
@@ -105,28 +110,47 @@ public class NewAccountFragment extends Fragment {
 
         StringBuilder usernameInvalidReason = new StringBuilder();
         StringBuilder passwordInvalidReason = new StringBuilder();
+        StringBuilder selectionInvalidReason = new StringBuilder();
 
         // First check if the username is valid
         if(isUsernameValid(username, usernameInvalidReason)){
 
             // Next, check if the passwords are valid.
             if(isPasswordValid(password, passwordConfirm, passwordInvalidReason)){
-                ParseUser newUser = new ParseUser();
-                newUser.setUsername(username);
-                newUser.setPassword(password);
 
-                newUser.signUpInBackground(new SignUpCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if(e == null){
-                            // Sign up was successful
-                            startMainActivity();
-                        } else{
-                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+                // Finally, check if a radio button was selected
+                if(isSelected(selectionInvalidReason)) {
+                    ParseUser newUser = new ParseUser();
+                    newUser.setUsername(username);
+                    newUser.setPassword(password);
+
+                    String sel = isDietitian();
+
+                    if(sel.equals("true"))
+                        newUser.put("isDietitian", true);
+
+                    else
+                        newUser.put("isDietitian", false);
+
+                    newUser.signUpInBackground(new SignUpCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                // Sign up was successful
+                                startMainActivity();
+                            } else {
+                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+                            }
+                            setWidgetsEnabled(true);
                         }
-                        setWidgetsEnabled(true);
-                    }
-                });
+                    });
+                }
+
+                // If no radio buttons are selected, display the reason to the user.
+                else {
+                    updateToast(selectionInvalidReason.toString(), Toast.LENGTH_LONG);
+                    setWidgetsEnabled(true);
+                }
             }
 
             // If the passwords are invalid, display the reason to the user.
@@ -302,6 +326,37 @@ public class NewAccountFragment extends Fragment {
         }
     }
 
+    private boolean isSelected(@Nullable StringBuilder reason) {
+        if(rGroup.getCheckedRadioButtonId() == -1)  {
+            if(reason != null)
+                reason.append("Please pick your user type");
+
+            return false;
+        }
+
+        else {
+            if(reason != null)
+                reason.append("OK");
+
+            return true;
+        }
+    }
+
+    private String isDietitian() {
+        RadioButton rb = (RadioButton) rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+        String selection = (String) rb.getText();
+
+        if(selection.equals("Dietitian")) {
+            Log.i("Testing","isDietitian = true");
+            return "true";
+        }
+
+        else {
+            Log.i("Testing","isDietitian = false");
+            return "false";
+        }
+    }
+
     /**
      * Updates the passwordErrorStatus based on a reason returned by isPasswordValid().
      */
@@ -436,5 +491,4 @@ public class NewAccountFragment extends Fragment {
             // This line is unreachable.
         }
     }
-
 }

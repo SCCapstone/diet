@@ -12,8 +12,8 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="25dp"
-            android:id="@+id/group_1"
-            android:text="@string/settings_group_1"
+            android:id="@+id/diet_group_1"
+            android:text="@string/diet_set_group_1"
             android:clickable="false"
             android:longClickable="false"
             android:textColor="#FFFF"
@@ -26,20 +26,20 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:id="@+id/separator_1"
-            android:layout_below="@id/group_1"
+            android:id="@+id/diet_separator_1"
+            android:layout_below="@id/diet_group_1"
             android:background="#006600"/>
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
-            android:id="@+id/password_change"
-            android:hint="@string/password_text"
+            android:id="@+id/pick_dietitian"
+            android:hint="@string/pick_diet_text"
             android:textColor="#FFFF"
             android:background="#111"
             android:textColorHint="#FFFF"
-            android:textSize="25sp"
-            android:layout_below="@id/separator_1"
+            android:textSize="20sp"
+            android:layout_below="@id/diet_separator_1"
             android:gravity="left|center_vertical"
             android:paddingLeft="20dp"
             android:clickable="true" />
@@ -47,20 +47,20 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:id="@+id/separator_2"
-            android:layout_below="@id/password_change"
+            android:id="@+id/diet_separator_2"
+            android:layout_below="@id/pick_dietitian"
             android:background="#006600"/>
-<!--
+
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
-            android:id="@+id/email_change"
-            android:hint="@string/change_email_text"
+            android:id="@+id/remove_my_dietitian"
+            android:hint="@string/rem_diet_text"
             android:textColorHint="#FFFF"
             android:background="#111"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:gravity="left|center_vertical"
-            android:layout_below="@id/separator_2"
+            android:layout_below="@id/diet_separator_2"
             android:textColor="#FFFF"
             android:paddingLeft="20dp"
             android:clickable="true" />
@@ -68,20 +68,20 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:id="@+id/separator_3"
-            android:layout_below="@id/email_change"
+            android:id="@+id/diet_separator_3"
+            android:layout_below="@id/remove_my_dietitian"
             android:background="#006600"/>
--->
+
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
-            android:id="@+id/my_dietitian"
-            android:hint="@string/my_dietitian_text"
+            android:id="@+id/message_my_dietitian"
+            android:hint="@string/msg_diet_text"
             android:textColorHint="#FFFF"
             android:background="#111"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:gravity="left|center_vertical"
-            android:layout_below="@id/separator_2"
+            android:layout_below="@id/diet_separator_3"
             android:textColor="#FFFF"
             android:paddingLeft="20dp"
             android:clickable="true" />
@@ -89,31 +89,8 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:id="@+id/separator_4"
-            android:layout_below="@id/my_dietitian"
-            android:background="#006600"/>
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="25dp"
-            android:id="@+id/group_2"
-            android:text="@string/settings_group_2"
-            android:clickable="false"
-            android:longClickable="false"
-            android:textSize="15sp"
-            android:textColor="#FFFF"
-            android:layout_below="@id/separator_4"
-            android:gravity="left|center_vertical"
-            android:paddingLeft="10dp"
-            android:textStyle="bold"
-            android:background="#006600"
-            android:allowUndo="false" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:id="@+id/separator_5"
-            android:layout_below="@id/group_2"
+            android:id="@+id/diet_separator_4"
+            android:layout_below="@id/message_my_dietitian"
             android:background="#006600"/>
 
     </RelativeLayout>
