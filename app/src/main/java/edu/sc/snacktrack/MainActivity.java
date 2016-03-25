@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -107,6 +108,15 @@ public class MainActivity extends AppCompatActivity{
         else
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items_2);
+            ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
+            if(myDietitian != null){
+                myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        footerDietitian.setText(user.getUsername());
+                    }
+                });
+            }
         }
 
         //drawerItems = getResources().getStringArray(R.array.main_drawer_items);
