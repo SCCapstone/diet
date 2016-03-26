@@ -174,9 +174,13 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
             Conversations.getInstance().getConversation(group, new FindCallback<Message>() {
                 @Override
                 public void done(List<Message> objects, ParseException e) {
-                    int recentMessageIndex = objects.size() - 1;
-                    item.setRecentMessage(objects.get(recentMessageIndex).getMessage());
-                    item.setCreatedTime(objects.get(recentMessageIndex).getCreatedAt().getTime());
+                    if(e == null){
+                        if(objects.size() > 0){
+                            int recentMessageIndex = objects.size() - 1;
+                            item.setRecentMessage(objects.get(recentMessageIndex).getMessage());
+                            item.setCreatedTime(objects.get(recentMessageIndex).getCreatedAt().getTime());
+                        }
+                    }
                 }
             });
             chatChooserAdapter.addItem(item);
