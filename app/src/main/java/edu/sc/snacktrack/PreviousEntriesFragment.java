@@ -3,11 +3,13 @@ package edu.sc.snacktrack;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -69,6 +71,16 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
 
         super.onPrepareOptionsMenu(menu);
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set title
+        if(SnackList.getInstance().getUser() != ParseUser.getCurrentUser()){
+            getActivity().setTitle(SnackList.getInstance().getUser().getUsername() + "'s Snacks");
+        }else {
+            getActivity().setTitle("My Snacks");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,6 +95,28 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
 
         listview = (ListView) view.findViewById(R.id.SnackList);
         listview.setAdapter(adapter);
+        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                int threshold = 1;
+                int count = listview.getCount();
+
+                if (scrollState == SCROLL_STATE_IDLE) {
+                    if (listview.getLastVisiblePosition() >= count
+                            - threshold) {
+                      SnackList.getInstance().LoadMoreData(count);
+                       // new LoadMoreData;
+                    }
+                }
+            }
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+
+            }
+        });
         // Whenever an entry is clicked, show the details of that entry.
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

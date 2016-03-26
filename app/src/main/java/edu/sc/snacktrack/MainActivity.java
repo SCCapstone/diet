@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity{
 
         if(fragment != null){
             FragmentManager fm = getSupportFragmentManager();
+            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fm.beginTransaction()
                     .replace(R.id.content_frame, fragment, CURRENT_FRAGMENT_TAG)
                     .commit();

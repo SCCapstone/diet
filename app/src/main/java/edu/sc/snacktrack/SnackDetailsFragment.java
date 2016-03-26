@@ -86,7 +86,7 @@ public class SnackDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        getActivity().setTitle("Details");
+       // getActivity().setTitle("Details");
         getActivity().invalidateOptionsMenu();
         View view = inflater.inflate(R.layout.fragment_snack_details, container, false);
         fileCache = new FileCache(getActivity());
@@ -342,20 +342,26 @@ public class SnackDetailsFragment extends Fragment {
                 updateToast("Something's not right in SnackDetailsFragment", Toast.LENGTH_LONG);
         }
     }
-
-    // @Override
-    //   public void onBackPressed() {
-//        new Builder(this)
-//                .setTitle("Really Exit?")
-//                .setMessage("Are you sure you want to exit?")
-//                .setNegativeButton(android.R.string.no, null)
-//                .setPositiveButton(android.R.string.yes, new OnClickListener() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set title
+        getActivity().setTitle("Details");
+    }
+//     @Override
+//       public void onBackPressed() {
 //
-//                    public void onClick(DialogInterface arg0, int arg1) {
-//                        WelcomeActivity.super.onBackPressed();
-//                    }
-//                }).create().show();
-    //  }
+////        new Builder(this)
+////                .setTitle("Really Exit?")
+////                .setMessage("Are you sure you want to exit?")
+////                .setNegativeButton(android.R.string.no, null)
+////                .setPositiveButton(android.R.string.yes, new OnClickListener() {
+////
+////                    public void onClick(DialogInterface arg0, int arg1) {
+////                        WelcomeActivity.super.onBackPressed();
+////                    }
+////                }).create().show();
+//      }
 
 
     /**

@@ -223,6 +223,7 @@ public class SnackList{
         ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
         query.orderByDescending("createdAt");
         query.whereEqualTo("owner", targetUser);
+        query.setLimit(10);
         query.findInBackground(new FindCallback<SnackEntry>() {
             @Override
             public void done(List<SnackEntry> refreshedSnacks, ParseException e) {
@@ -234,6 +235,27 @@ public class SnackList{
                 if (callback != null) {
                     callback.done(refreshedSnacks, e);
                 }
+                notifyUpdateComplete();
+            }
+        });
+    }
+    public void LoadMoreData(Integer currentCount){
+        notifyUpdateStart();
+        ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
+        query.orderByDescending("createdAt");
+        query.whereEqualTo("owner", targetUser);
+        query.setLimit(10);
+        query.setSkip(currentCount);
+        query.findInBackground(new FindCallback<SnackEntry>() {
+            @Override
+            public void done(List<SnackEntry> moreSnacks, ParseException e) {
+                if (e == null) {
+                    //snacks.clear();
+                    snacks.addAll(moreSnacks);
+                }else{
+
+                }
+
                 notifyUpdateComplete();
             }
         });
