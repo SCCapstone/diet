@@ -133,6 +133,13 @@ public class ChatFragment extends Fragment{
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        chatAdapter.clear();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 

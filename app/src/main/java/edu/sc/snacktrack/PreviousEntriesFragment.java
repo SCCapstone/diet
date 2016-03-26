@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -25,8 +26,6 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
 
     private View progressOverlay;
 
-    private Boolean disableEntryFlag = false;
-
     @Override
     public void onSnackListUpdateComplete() {
         adapter.notifyDataSetChanged();
@@ -44,32 +43,15 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        if(SnackList.getInstance().getUser() != ParseUser.getCurrentUser())
-            disableEntryFlag = true;
-
-        else
-            disableEntryFlag = false;
-
         adapter = new SnackListAdapter(getContext());
         SnackList.getInstance().registerUpdateListener(adapter);
         SnackList.getInstance().registerUpdateListener(this);
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        if(disableEntryFlag)
-        {
-            menu.findItem(R.id.action_new).setEnabled(false);
-            menu.findItem(R.id.action_new).setVisible(false);
-        }
-
-        else
-        {
-            menu.findItem(R.id.action_new).setEnabled(true);
-            menu.findItem(R.id.action_new).setVisible(true);
-        }
-
-        super.onPrepareOptionsMenu(menu);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_previous_entries, menu);
     }
     @Override
     public void onResume() {

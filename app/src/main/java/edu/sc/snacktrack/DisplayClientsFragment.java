@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -44,19 +43,9 @@ public class DisplayClientsFragment extends Fragment implements ClientList.Updat
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         adapter = new ClientListAdapter(getContext());
         ClientList.getInstance().registerUpdateListener(adapter);
         ClientList.getInstance().registerUpdateListener(this);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-
-        menu.findItem(R.id.action_new).setEnabled(false);
-        menu.findItem(R.id.action_new).setVisible(false);
-
-        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
