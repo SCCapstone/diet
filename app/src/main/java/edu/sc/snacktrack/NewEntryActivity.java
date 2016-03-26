@@ -153,7 +153,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 //        }
 
         scanBtn = (Button)findViewById(R.id.scan_button);
-        formatTxt = (TextView)findViewById(R.id.scan_format);
+//        formatTxt = (TextView)findViewById(R.id.scan_format);
         contentTxt = (TextView)findViewById(R.id.scan_content);
         scanBtn.setOnClickListener(this);
     }
@@ -244,12 +244,34 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         if (scanningResult != null) {
             String scanContent = scanningResult.getContents();
             String scanFormat = scanningResult.getFormatName();
-            formatTxt.setText("FORMAT: " + scanFormat);
+//            formatTxt.setText("FORMAT: " + scanFormat);
             contentTxt.setText("CONTENT: " + scanContent);
+            Log.d("scanContent", scanContent);
+            /*
             try {
                 contentTxt.setText(httpGet(scanContent));
-            }catch(IOException ex) {
-                ex.printStackTrace();
+            }catch(Exception e) {
+                Log.e("httpget", scanContent);
+            }
+            barcodeContent = scanContent;
+            */
+            try {
+                String brand = "Brand";
+                String scannerInfo = new RetrieveFeedTask().execute(scanContent).get();
+                Integer nameBegin = scannerInfo.lastIndexOf("name") + 7;
+                Integer nameEnd = scannerInfo.indexOf("attributes") - 8;
+                String productName = scannerInfo.substring(nameBegin, nameEnd);
+                //brand name if statement currently causes an exception, not sure why
+                /*
+                if(scannerInfo.toLowerCase().contains(brand.toLowerCase())) {
+                    Integer brandBegin = scannerInfo.lastIndexOf("Brand") + 7;
+                    Integer brandEnd = scannerInfo.indexOf(",") - 2;
+                    productName = productName.concat(scannerInfo.substring(brandBegin, brandEnd));
+                }
+                */
+                contentTxt.setText(productName);
+            }catch(Exception e) {
+                Log.e("httpget", scanContent);
             }
             barcodeContent = scanContent;
         }
@@ -493,13 +515,17 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         }
     }
     private Button scanBtn;
-    private TextView formatTxt, contentTxt;
+    //private TextView formatTxt, contentTxt;
+    private TextView contentTxt;
     private String barcodeContent;
 
+//old way of httpGet
+/*
     //httpurlconnection to outpan
     public static String httpGet(String urlStr) throws IOException {
         try {
             String yourProduct = urlStr;
+            Log.d("urlStr", urlStr);
             urlStr = "https://api.outpan.com/v2/products/";
             urlStr.concat(yourProduct);
             urlStr.concat("?apikey=0486422639a1db6223dd81a97c9f996f");
@@ -528,6 +554,42 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             return null;
         }
     }
+*/
+
+
+    //new way of httpGet
+/*
+    public static String httpGet(String urlStr) {
+        String yourProduct = urlStr;
+        // Do some validation here
+
+        try {
+            //URL url = new URL(API_URL + "email=" + email + "&apiKey=" + API_KEY);
+            yourProduct = "https://api.outpan.com/v2/products/" + yourProduct;
+            yourProduct = yourProduct.concat("?apikey=0486422639a1db6223dd81a97c9f996f");
+            Log.d("myTag", yourProduct);
+            URL url = new URL(yourProduct);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line).append("\n");
+                }
+                bufferedReader.close();
+                return stringBuilder.toString();
+            }
+            finally{
+                urlConnection.disconnect();
+            }
+        }
+        catch(Exception e) {
+            Log.e("ERROR", e.getMessage(), e);
+            return null;
+        }
+    }
+    */
 
     public void onClick(View v){
         if(v.getId()==R.id.scan_button){

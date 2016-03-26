@@ -1,5 +1,6 @@
 package edu.sc.snacktrack;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,11 +22,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.io.File;
@@ -33,11 +39,12 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
+import edu.sc.snacktrack.chat.ChatActivity;
 import edu.sc.snacktrack.chat.ChatChooserFragment;
+import edu.sc.snacktrack.chat.Conversations;
 
 public class MainActivity extends AppCompatActivity{
 
-    private static final int LOGIN_REQUEST = 1;
     private static final int NEW_ENTRY_REQUEST = 2;
     private static final int CAMERA_REQUEST = 3;
 
@@ -47,12 +54,17 @@ public class MainActivity extends AppCompatActivity{
 
     private static final String CURRENT_FRAGMENT_TAG = "mainActivityCurrentFragment";
 
+    private SnackTrackApplication application;
+
     private Toast toast;
 
     private static final String TAG = "MainActivity";
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private RelativeLayout mRelativeLayout;
+    private TextView footerDietitian;
+    private TextView footerUsername;
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle = "";
     private String[] drawerItems;
@@ -71,11 +83,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // If no user is logged in, start the login activity.
-        if(ParseUser.getCurrentUser() == null){
-            Log.d(TAG, "No user is logged in, starting new account activity.");
-            startLoginActivity();
-        }
+        application = (SnackTrackApplication) getApplicationContext();
 
         // Ensure current user's SnackList is displayed first
         SnackList.getInstance().setUser(ParseUser.getCurrentUser());
@@ -84,11 +92,36 @@ public class MainActivity extends AppCompatActivity{
         mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.drawer_relative);
+        footerDietitian = (TextView) findViewById(R.id.drawerFooter1);
+//        footerUsername = (TextView) findViewById(R.id.drawerFooter2);
+//            footerUsername.setText("My Username: " + ParseUser.getCurrentUser().getUsername());
 
         /**
          * condition if currentUser is client or dietitian
          */
-        drawerItems = getResources().getStringArray(R.array.main_drawer_items);
+        if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
+        {
+            drawerItems = getResources().getStringArray(R.array.main_drawer_items);
+            footerDietitian.setVisibility(View.INVISIBLE);
+            Log.i("Testing","isDietitian = true");
+        }
+
+        else
+        {
+            drawerItems = getResources().getStringArray(R.array.main_drawer_items_2);
+            ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
+            if(myDietitian != null){
+                myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        footerDietitian.setText(user.getUsername());
+                    }
+                });
+            }
+        }
+
+        //drawerItems = getResources().getStringArray(R.array.main_drawer_items);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -140,6 +173,29 @@ public class MainActivity extends AppCompatActivity{
             getSupportActionBar().setTitle(savedInstanceState.getCharSequence(STATE_CURRENT_TITLE, getTitle()));
 
             // Restore fragment state
+        }
+
+        checkChatPushData();
+    }
+
+    /**
+     * Checks if this MainActivity was started from a chat push notification. If so, starts
+     * ChatActivity with the user specified in the notification's JSON Object.
+     */
+    private void checkChatPushData(){
+        if(getIntent() != null){
+            boolean startChat = getIntent().getBooleanExtra("isChat", false);
+
+            Log.d(TAG, "isChat " + startChat);
+
+            if(startChat){
+                Intent startChatIntent = new Intent(MainActivity.this, ChatActivity.class);
+                String otherUserId = getIntent().getStringExtra("fromUserId");
+                String otherUserName = getIntent().getStringExtra("fromUserName");
+                startChatIntent.putExtra(ChatActivity.OTHER_USER_ID_KEY, otherUserId);
+                startChatIntent.putExtra(ChatActivity.OTHER_USER_NAME_KEY, otherUserName);
+                startActivity(startChatIntent);
+            }
 
         }
     }
@@ -148,19 +204,55 @@ public class MainActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
+        // If no user is logged in, start the login activity.
+        if(ParseUser.getCurrentUser() == null){
+            Log.d(TAG, "No user is logged in, starting new account activity.");
+            startLoginActivity();
+        } else{
+            // Associate the device with the current user
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("user",ParseUser.getCurrentUser());
+            installation.saveInBackground();
+        }
+
         SnackList.getInstance().setUser(ParseUser.getCurrentUser());
         if(SnackList.getInstance().size() == 0){
             SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
                 @Override
                 public void done(List<SnackEntry> objects, ParseException e) {
-                    if(e != null){
+                    if (e != null) {
                         updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                    }
-
-                    else
+                    } else
                         setAlarms(objects);
                 }
             });
+        }
+
+        // Update conversations if needed
+        if(!Conversations.getInstance().isUpdating() && Conversations.getInstance().needsRefresh()){
+            Conversations.getInstance().refresh(null);
+        }
+
+        application.setCurrentActivity(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        clearReferences();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        clearReferences();
+    }
+
+    private void clearReferences(){
+        Activity currentActivity = application.getCurrentActivity();
+        if(this == currentActivity){
+            application.setCurrentActivity(null);
         }
     }
 
@@ -173,35 +265,67 @@ public class MainActivity extends AppCompatActivity{
 
         Fragment fragment = null;
 
-        switch(position){
-            case 0:
-                fragment = new PreviousEntriesFragment();
-                SnackList.getInstance().setUser(ParseUser.getCurrentUser());
-                SnackList.getInstance().refresh(null);
-                break;
+        if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
+        {
+            switch(position){
+                case 0:
+                    fragment = new PreviousEntriesFragment();
+                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                    SnackList.getInstance().refresh(null);
+                    break;
 
-            case 1:
-                fragment = new DisplayClientsFragment();
-                ClientList.getInstance().refresh(null);
-                break;
+                case 1:
+                    fragment = new DisplayClientsFragment();
+                    ClientList.getInstance().refresh(null);
+                    break;
 
-            case 2:
-                fragment = new SettingsFragment();
-                break;
+                case 2:
+                    fragment = new SettingsFragment();
+                    break;
 
-            case 3:
-                fragment = new ChatChooserFragment();
+                case 3:
+                    fragment = new ChatChooserFragment();
 //                Bundle args = new Bundle();
 //                args.putString(ChatFragment.ARG_OTHER_USER_ID, "Audel3iEFb");
 //                fragment.setArguments(args);
-                break;
+                    break;
 
-            default:
-                fragment = new TestFragment();
-                Bundle data = new Bundle();
-                data.putInt("position", position);
-                fragment.setArguments(data);
-                break;
+                default:
+                    fragment = new TestFragment();
+                    Bundle data = new Bundle();
+                    data.putInt("position", position);
+                    fragment.setArguments(data);
+                    break;
+            }
+        }
+
+        else
+        {
+            switch(position){
+                case 0:
+                    fragment = new PreviousEntriesFragment();
+                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+                    SnackList.getInstance().refresh(null);
+                    break;
+
+                case 1:
+                    fragment = new SettingsFragment();
+                    break;
+
+                case 2:
+                    fragment = new ChatChooserFragment();
+//                Bundle args = new Bundle();
+//                args.putString(ChatFragment.ARG_OTHER_USER_ID, "Audel3iEFb");
+//                fragment.setArguments(args);
+                    break;
+
+                default:
+                    fragment = new TestFragment();
+                    Bundle data = new Bundle();
+                    data.putInt("position", position);
+                    fragment.setArguments(data);
+                    break;
+            }
         }
 
         if(fragment != null){
@@ -219,7 +343,8 @@ public class MainActivity extends AppCompatActivity{
         } else{
             updateToast("Something went wrong with the drawer :/", Toast.LENGTH_LONG);
         }
-        mDrawerLayout.closeDrawer(mDrawerList);
+//        mDrawerLayout.closeDrawer(mDrawerList);
+        mDrawerLayout.closeDrawer(mRelativeLayout);
     }
 
     @Override
@@ -253,8 +378,8 @@ public class MainActivity extends AppCompatActivity{
 
     private void startLoginActivity(){
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivityForResult(intent, LOGIN_REQUEST);
-        overridePendingTransition(R.animator.animation, R.animator.animation2);
+        startActivity(intent);
+        finish();
     }
 
     /**
@@ -279,38 +404,38 @@ public class MainActivity extends AppCompatActivity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
 
         switch(requestCode){
-            case LOGIN_REQUEST:
-                // If successful login, refresh SnackLists and attempt to set reminder alarms
-                if(resultCode == RESULT_OK){
-                    ClientList.getInstance().refresh(new FindCallback<ParseUser>() {
-                        @Override
-                        public void done(List<ParseUser> objects, ParseException e) {
-                            if (e != null) {
-                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                            }
-                        }
-                    });
-
-                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
-                    SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
-                        @Override
-                        public void done(List<SnackEntry> objects, ParseException e) {
-                            if (e != null) {
-                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                            }
-
-                            else
-                                setAlarms(objects);
-                        }
-                    });
-
-                    updateToast("Log in successful!", Toast.LENGTH_SHORT);
-
-                } else{
-                    startLoginActivity();
-                }
-
-                break;
+//            case LOGIN_REQUEST:
+//                // If successful login, refresh SnackLists and attempt to set reminder alarms
+//                if(resultCode == RESULT_OK){
+//                    ClientList.getInstance().refresh(new FindCallback<ParseUser>() {
+//                        @Override
+//                        public void done(List<ParseUser> objects, ParseException e) {
+//                            if (e != null) {
+//                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+//                            }
+//                        }
+//                    });
+//
+//                    SnackList.getInstance().setUser(ParseUser.getCurrentUser());
+//                    SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
+//                        @Override
+//                        public void done(List<SnackEntry> objects, ParseException e) {
+//                            if (e != null) {
+//                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+//                            }
+//
+//                            else
+//                                setAlarms(objects);
+//                        }
+//                    });
+//
+//                    updateToast("Log in successful!", Toast.LENGTH_SHORT);
+//
+//                } else{
+//                    startLoginActivity();
+//                }
+//
+//                break;
             case NEW_ENTRY_REQUEST:
 
                 break;
@@ -503,7 +628,6 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void done(ParseException e) {
                 if(e == null){
-                    displayView(0);
                     startLoginActivity();
                 } else{
                     updateToast(e.getMessage(), Toast.LENGTH_LONG);

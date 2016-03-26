@@ -21,12 +21,10 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
     // Declare Variables
     private Context context;
     private LayoutInflater inflater;
-    private ImageLoader imageLoader;
 
     public SnackListAdapter(Context context) {
         this.context = context;
         inflater = LayoutInflater.from(context);
-        imageLoader = new ImageLoader(context);
 
         Log.d(TAG, "New custom adapter");
     }
@@ -89,14 +87,9 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
         holder.date.setText(formatDate);
 
         // Set the results into ImageView
-        imageLoader.DisplayImage(SnackList.getInstance().get(position).getPhoto().getUrl(),
+        ImageLoader.getInstance(context).displayImage(SnackList.getInstance().get(position).getPhoto().getUrl(),
                 holder.photo);
 
         return view;
     }
-
-    public void releaseMemory(){
-        imageLoader.releaseMemory();
-    }
-
 }

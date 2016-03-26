@@ -2,16 +2,12 @@ package edu.sc.snacktrack;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.StatedFragment;
-import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -42,8 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.acl.Owner;
 import java.util.List;
-
-import static android.support.v7.app.AlertDialog.*;
 
 public class SnackDetailsFragment extends Fragment {
 
@@ -65,7 +58,6 @@ public class SnackDetailsFragment extends Fragment {
     private View progressOverlay;
     private Button saveButton;
 
-    private ImageLoader imageLoader;
     private FileCache fileCache;
     private File newImageFile;
     private String objectId;
@@ -75,10 +67,7 @@ public class SnackDetailsFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-
         super.onAttach(context);
-
-        imageLoader = new ImageLoader(context);
     }
 
 
@@ -174,7 +163,7 @@ public class SnackDetailsFragment extends Fragment {
                     String description = snackEntry.getDescription();
                     String mealType = snackEntry.getMealType();
 
-                    imageLoader.DisplayImage(photoURL, imageView);
+                            ImageLoader.getInstance(getContext()).displayImage(photoURL, imageView);
                     descriptionEditText.setText(description != null ? description : "No description");
                     // mealTypeTextView.setText(mealType != null ? mealType : "No meal type");
                     if (mealType != null) {
@@ -208,7 +197,6 @@ public class SnackDetailsFragment extends Fragment {
         setHasOptionsMenu(true);
         return view;
     }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
 
@@ -317,7 +305,7 @@ public class SnackDetailsFragment extends Fragment {
                             progressOverlay.setVisibility(View.GONE);
                             if (e == null) {
                                 // Saved successfully.
-                                imageLoader.DisplayImage(snackEntry.getParseFile("photo").getUrl(), imageView);
+                                ImageLoader.getInstance(getContext()).displayImage(snackEntry.getParseFile("photo").getUrl(), imageView);
 
                                 //updateToast("Update Successful", Toast.LENGTH_LONG);
                             } else {
@@ -351,27 +339,25 @@ public class SnackDetailsFragment extends Fragment {
 //     @Override
 //       public void onBackPressed() {
 //
-////        new Builder(this)
-////                .setTitle("Really Exit?")
-////                .setMessage("Are you sure you want to exit?")
-////                .setNegativeButton(android.R.string.no, null)
-////                .setPositiveButton(android.R.string.yes, new OnClickListener() {
-////
-////                    public void onClick(DialogInterface arg0, int arg1) {
-////                        WelcomeActivity.super.onBackPressed();
-////                    }
-////                }).create().show();
-//      }
+//                    public void onClick(DialogInterface arg0, int arg1) {
+//                        WelcomeActivity.super.onBackPressed();
+//                    }
+//                }).create().show();
+  //  }
+
+
+
+
 
 
     /**
      * Cancels the current toast and displays a new toast.
      *
-     * @param text   The text to display
+     * @param text The text to display
      * @param length The length to display the toast
      */
-    private void updateToast(String text, int length) {
-        if (toast != null) {
+    private void updateToast(String text, int length){
+        if(toast != null){
             toast.cancel();
         }
 

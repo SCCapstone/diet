@@ -1,6 +1,7 @@
 package edu.sc.snacktrack;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -119,7 +120,7 @@ public class LoginExistingFragment extends Fragment {
 
     /**
      * Attempts to log in the user. If unable to, displays an error message to the user.
-     * If successful, sets result to RESULT_OK and finishes this activity.
+     * If successful, sets result to RESULT_OK, finishes this activity and starts MainActivity.
      */
     private void attemptLogIn(){
         setWidgetsEnabled(false);
@@ -131,10 +132,7 @@ public class LoginExistingFragment extends Fragment {
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
                     // Sign in was successful
-                    Activity activity = getActivity();
-
-                    activity.setResult(Activity.RESULT_OK);
-                    activity.finish();
+                    startMainActivity();
                 } else {
                     updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
                 }
@@ -142,5 +140,11 @@ public class LoginExistingFragment extends Fragment {
                 setWidgetsEnabled(true);
             }
         });
+    }
+
+    private void startMainActivity(){
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 }

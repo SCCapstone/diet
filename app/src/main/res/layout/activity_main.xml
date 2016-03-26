@@ -14,15 +14,44 @@
         android:layout_height="match_parent">
     </FrameLayout>
 
-    <ListView
-        android:id="@+id/drawer_list"
+    <RelativeLayout
+        android:id="@+id/drawer_relative"
         android:layout_width="240dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#111">
-    </ListView>
+        android:layout_gravity="start">
+
+        <ListView
+            android:id="@+id/drawer_list"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:background="#111">
+        </ListView>
+
+        <TextView
+            android:id="@+id/drawerFooter1"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:paddingLeft="10dp"
+            android:text="You have not picked a dietitian yet"
+            android:textColor="#FFFFFF"
+            android:layout_alignParentBottom="true"/>
+
+<!--
+        <TextView
+            android:id="@+id/drawerFooter2"
+            android:layout_width="240dp"
+            android:layout_height="30dp"
+            android:paddingLeft="15dp"
+            android:textColor="#FFFFFF"
+            android:layout_alignParentBottom="true"/>
+-->
+
+    </RelativeLayout>
+
+
 
 </android.support.v4.widget.DrawerLayout>
