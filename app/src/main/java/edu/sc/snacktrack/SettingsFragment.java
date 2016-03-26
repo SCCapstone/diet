@@ -66,11 +66,35 @@ public class SettingsFragment extends Fragment {
 //            }
 //        });
 
+
+
+
+
+    // Original myDietitianButton
+//        myDietitianButton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                DietitianList.getInstance().refresh(null);
+//                DisplayDietitiansFragment dispDietFrag = new DisplayDietitiansFragment();
+//                getFragmentManager().beginTransaction().replace(R.id.content_frame, dispDietFrag).addToBackStack(null).commit();
+//            }
+//        });
+
         myDietitianButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                DietitianList.getInstance().refresh(null);
-                DisplayDietitiansFragment dispDietFrag = new DisplayDietitiansFragment();
-                getFragmentManager().beginTransaction().replace(R.id.content_frame, dispDietFrag).addToBackStack(null).commit();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    DietitianSettingsFragment dietitianSettingsFragment = new DietitianSettingsFragment();
+                    transaction.replace(R.id.content_frame, dietitianSettingsFragment).addToBackStack(null).commit();
+
+
+//                Fragment fragment = new DietitianSettingsFragment();
+//                FragmentManager fm = getSupportFragmentManager();
+//                fm.beginTransaction()
+//                        .replace(R.id.content_frame, fragment, CURRENT_FRAGMENT_TAG)
+//                        .commit();
+//
+//                DietitianList.getInstance().refresh(null);
+//                DisplayDietitiansFragment dispDietFrag = new DisplayDietitiansFragment();
+//                getFragmentManager().beginTransaction().replace(R.id.content_frame, dispDietFrag).addToBackStack(null).commit();
             }
         });
 

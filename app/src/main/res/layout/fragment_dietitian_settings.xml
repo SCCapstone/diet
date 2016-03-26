@@ -21,24 +21,23 @@
             android:gravity="left|center_vertical"
             android:paddingLeft="10dp"
             android:textStyle="bold"
-            android:background="#006600" />
+            android:background="#003300" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
             android:id="@+id/diet_separator_1"
             android:layout_below="@id/diet_group_1"
-            android:background="#006600"/>
+            android:background="#003300"/>
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
             android:id="@+id/pick_dietitian"
             android:hint="@string/pick_diet_text"
-            android:textColor="#FFFF"
             android:background="#111"
-            android:textColorHint="#FFFF"
-            android:textSize="20sp"
+            android:textColorHint="#cccccc"
+            android:textSize="22sp"
             android:layout_below="@id/diet_separator_1"
             android:gravity="left|center_vertical"
             android:paddingLeft="20dp"
@@ -49,16 +48,16 @@
             android:layout_height="1dip"
             android:id="@+id/diet_separator_2"
             android:layout_below="@id/pick_dietitian"
-            android:background="#006600"/>
+            android:background="#003300"/>
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
             android:id="@+id/remove_my_dietitian"
             android:hint="@string/rem_diet_text"
-            android:textColorHint="#FFFF"
+            android:textColorHint="#cccccc"
             android:background="#111"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:gravity="left|center_vertical"
             android:layout_below="@id/diet_separator_2"
             android:textColor="#FFFF"
@@ -70,16 +69,16 @@
             android:layout_height="1dip"
             android:id="@+id/diet_separator_3"
             android:layout_below="@id/remove_my_dietitian"
-            android:background="#006600"/>
+            android:background="#003300"/>
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
             android:id="@+id/message_my_dietitian"
             android:hint="@string/msg_diet_text"
-            android:textColorHint="#FFFF"
+            android:textColorHint="#cccccc"
             android:background="#111"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:gravity="left|center_vertical"
             android:layout_below="@id/diet_separator_3"
             android:textColor="#FFFF"
@@ -91,7 +90,7 @@
             android:layout_height="1dip"
             android:id="@+id/diet_separator_4"
             android:layout_below="@id/message_my_dietitian"
-            android:background="#006600"/>
+            android:background="#003300"/>
 
     </RelativeLayout>
 

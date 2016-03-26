@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -64,9 +65,11 @@ public class MainActivity extends AppCompatActivity{
     private RelativeLayout mRelativeLayout;
     private TextView footerDietitian;
     private TextView footerUsername;
+    private TextView myUsername;
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle = "";
     private String[] drawerItems;
+    private Button pickDietitian;
 
     private static final int BF_ALARM_REQUEST = 1;
     private static final int LUN_ALARM_REQUEST = 2;
@@ -92,9 +95,22 @@ public class MainActivity extends AppCompatActivity{
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.drawer_relative);
-        footerDietitian = (TextView) findViewById(R.id.drawerFooter1);
-        footerUsername = (TextView) findViewById(R.id.drawerFooter2);
-            footerUsername.setText("My Username: " + ParseUser.getCurrentUser().getUsername());
+        //footerDietitian = (TextView) findViewById(R.id.drawerFooter1);
+        myUsername = (TextView) findViewById(R.id.my_username);
+            myUsername.setText(ParseUser.getCurrentUser().getUsername());
+
+        pickDietitian = (Button) findViewById(R.id.drawerFooter1);
+
+//        pickDietitian.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Fragment fragment = new PickDietitianDialog();
+//                FragmentManager fm = getSupportFragmentManager();
+//                fm.beginTransaction()
+//                        .replace(R.id.content_frame, fragment, CURRENT_FRAGMENT_TAG)
+//                        .commit();
+//            }
+//        });
 
         /**
          * condition if currentUser is client or dietitian
@@ -102,7 +118,7 @@ public class MainActivity extends AppCompatActivity{
         if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items);
-            footerDietitian.setVisibility(View.INVISIBLE);
+            //footerDietitian.setVisibility(View.INVISIBLE);
         }
 
         else
@@ -113,7 +129,7 @@ public class MainActivity extends AppCompatActivity{
                 myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
-                        footerDietitian.setText(user.getUsername());
+                        footerDietitian.setText("My Dietitian: " + user.getUsername());
                     }
                 });
             }

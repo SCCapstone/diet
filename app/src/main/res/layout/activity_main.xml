@@ -18,34 +18,59 @@
         android:id="@+id/drawer_relative"
         android:layout_width="240dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        android:background="#111">
+
+        <LinearLayout
+            android:layout_width="240dp"
+            android:layout_height="90dp"
+            android:id="@+id/header_linear"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="#003300"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/user_icon"
+                android:paddingLeft="20dp"
+                android:src="@drawable/user_icon_green"/>
+
+            <TextView
+                android:id="@+id/my_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:choiceMode="singleChoice"
+                android:textSize="23sp"
+                android:textColor="#FFFFFF"
+                android:layout_toRightOf="@id/user_icon"/>
+
+        </LinearLayout>
 
         <ListView
             android:id="@+id/drawer_list"
             android:layout_width="240dp"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
+            android:layout_below="@id/header_linear"
+            android:paddingTop="5dp"
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"
             android:background="#111">
         </ListView>
 
-        <TextView
+        <Button
             android:id="@+id/drawerFooter1"
             android:layout_width="240dp"
             android:layout_height="50dp"
-            android:paddingLeft="10dp"
-            android:text="You have not picked a dietitian yet"
-            android:textColor="#FFFFFF"
-            android:layout_alignParentBottom="true"/>
-
-        <TextView
-            android:id="@+id/drawerFooter2"
-            android:layout_width="240dp"
-            android:layout_height="30dp"
-            android:paddingLeft="15dp"
-            android:textColor="#FFFFFF"
+            android:hint="Click here to pick your Dietitian!"
+            android:textSize="14sp"
+            android:textColorHint="#FFFFFF"
+            android:gravity="center"
+            android:background="#003300"
+            android:clickable="true"
             android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>

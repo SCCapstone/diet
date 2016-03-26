@@ -70,6 +70,9 @@
 
     <!-- Settings strings -->
     <string name="password_text">Change Password</string>
+    <string name="warn_dialog_title">Are you sure you want to remove your Dietitian?</string>
+    <string name="warn_dialog_message">Your Dietitian will no longer be able to access your entries.</string>
+
     <string name="pick_diet_text">Pick My Dietitian</string>
     <string name="rem_diet_text">Remove My Dietitian</string>
     <string name="msg_diet_text">Send Message To My Dietitian</string>
@@ -83,8 +86,8 @@
     <string name="new_password_text">Enter new password:</string>
     <string name="new_password_tip">(Password cannot be blank)</string>
     <string name="password_edittext">New password</string>
-    <string name="password_submit">Submit</string>
-    <string name="password_cancel">Cancel</string>
+    <string name="submit_text">Submit</string>
+    <string name="cancel_text">Cancel</string>
     <string name="new_email_text">Enter new email:</string>
     <string name="email_edittext">Click here</string>
     <string name="email_submit">SUBMIT</string>

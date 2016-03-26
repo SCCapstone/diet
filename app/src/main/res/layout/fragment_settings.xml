@@ -2,12 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FF000000">
+    android:background="#111">
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#111">
+        android:layout_height="fill_parent">
 
         <TextView
             android:layout_width="fill_parent"
@@ -21,24 +20,23 @@
             android:gravity="left|center_vertical"
             android:paddingLeft="10dp"
             android:textStyle="bold"
-            android:background="#006600" />
+            android:background="#003300"/>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
             android:id="@+id/separator_1"
             android:layout_below="@id/group_1"
-            android:background="#006600"/>
+            android:background="#003300"/>
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
             android:id="@+id/password_change"
             android:hint="@string/password_text"
-            android:textColor="#FFFF"
+            android:textColorHint="#cccccc"
             android:background="#111"
-            android:textColorHint="#FFFF"
-            android:textSize="25sp"
+            android:textSize="22sp"
             android:layout_below="@id/separator_1"
             android:gravity="left|center_vertical"
             android:paddingLeft="20dp"
@@ -49,7 +47,7 @@
             android:layout_height="1dip"
             android:id="@+id/separator_2"
             android:layout_below="@id/password_change"
-            android:background="#006600"/>
+            android:background="#003300"/>
 <!--
         <Button
             android:layout_width="fill_parent"
@@ -77,12 +75,11 @@
             android:layout_height="75dp"
             android:id="@+id/my_dietitian"
             android:hint="@string/my_dietitian_text"
-            android:textColorHint="#FFFF"
+            android:textColorHint="#cccccc"
             android:background="#111"
-            android:textSize="25sp"
+            android:textSize="22sp"
             android:gravity="left|center_vertical"
             android:layout_below="@id/separator_2"
-            android:textColor="#FFFF"
             android:paddingLeft="20dp"
             android:clickable="true" />
 
@@ -91,7 +88,7 @@
             android:layout_height="1dip"
             android:id="@+id/separator_4"
             android:layout_below="@id/my_dietitian"
-            android:background="#006600"/>
+            android:background="#003300"/>
 
         <TextView
             android:layout_width="fill_parent"
@@ -106,7 +103,7 @@
             android:gravity="left|center_vertical"
             android:paddingLeft="10dp"
             android:textStyle="bold"
-            android:background="#006600"
+            android:background="#003300"
             android:allowUndo="false" />
 
         <View
@@ -114,7 +111,7 @@
             android:layout_height="1dip"
             android:id="@+id/separator_5"
             android:layout_below="@id/group_2"
-            android:background="#006600"/>
+            android:background="#003300"/>
 
     </RelativeLayout>
 
