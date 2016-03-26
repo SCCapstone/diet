@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity{
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.drawer_relative);
-        //footerDietitian = (TextView) findViewById(R.id.drawerFooter1);
+        footerDietitian = (TextView) findViewById(R.id.drawerFooter1);
         myUsername = (TextView) findViewById(R.id.my_username);
             myUsername.setText(ParseUser.getCurrentUser().getUsername());
 
@@ -118,6 +119,16 @@ public class MainActivity extends AppCompatActivity{
         if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
         {
             drawerItems = getResources().getStringArray(R.array.main_drawer_items);
+            ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
+            if(myDietitian != null){
+                myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        footerDietitian.setHint("My Dietitian: " + user.getUsername());
+                        footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
+                    }
+                });
+            }
             //footerDietitian.setVisibility(View.INVISIBLE);
         }
 
