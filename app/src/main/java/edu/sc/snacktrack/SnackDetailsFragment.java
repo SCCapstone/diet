@@ -275,7 +275,6 @@ public class SnackDetailsFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
-
     public void takePhoto() {
         try {
             File imageFile = fileCache.createTempFile("SnackPhoto", ".jpg");
@@ -339,25 +338,27 @@ public class SnackDetailsFragment extends Fragment {
 //     @Override
 //       public void onBackPressed() {
 //
-//                    public void onClick(DialogInterface arg0, int arg1) {
-//                        WelcomeActivity.super.onBackPressed();
-//                    }
-//                }).create().show();
-  //  }
-
-
-
-
+////        new Builder(this)
+////                .setTitle("Really Exit?")
+////                .setMessage("Are you sure you want to exit?")
+////                .setNegativeButton(android.R.string.no, null)
+////                .setPositiveButton(android.R.string.yes, new OnClickListener() {
+////
+////                    public void onClick(DialogInterface arg0, int arg1) {
+////                        WelcomeActivity.super.onBackPressed();
+////                    }
+////                }).create().show();
+//      }
 
 
     /**
      * Cancels the current toast and displays a new toast.
      *
-     * @param text The text to display
+     * @param text   The text to display
      * @param length The length to display the toast
      */
-    private void updateToast(String text, int length){
-        if(toast != null){
+    private void updateToast(String text, int length) {
+        if (toast != null) {
             toast.cancel();
         }
 
