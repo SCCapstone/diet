@@ -40,6 +40,8 @@ public class SnackList{
      */
     private ParseUser targetUser;
 
+    private boolean isUpdating;
+
     /**
      * UpdateListener interface.
      *
@@ -67,6 +69,7 @@ public class SnackList{
     private SnackList(){
         snacks = new ArrayList<>();
         updateListeners = new ArrayList<>();
+        isUpdating = false;
     }
 
     /**
@@ -139,6 +142,7 @@ public class SnackList{
      * Notifies all UpdateListeners that a long-running update has started.
      */
     private void notifyUpdateStart(){
+        isUpdating = true;
         for(UpdateListener listener : updateListeners){
             listener.onSnackListUpdateStart();
         }
@@ -151,6 +155,8 @@ public class SnackList{
         for(UpdateListener listener : updateListeners){
             listener.onSnackListUpdateComplete();
         }
+
+        isUpdating = false;
     }
 
     /**
@@ -239,25 +245,25 @@ public class SnackList{
             }
         });
     }
-    public void LoadMoreData(Integer currentCount){
-        notifyUpdateStart();
-        ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
-        query.orderByDescending("createdAt");
-        query.whereEqualTo("owner", targetUser);
-        query.setLimit(10);
-        query.setSkip(currentCount);
-        query.findInBackground(new FindCallback<SnackEntry>() {
-            @Override
-            public void done(List<SnackEntry> moreSnacks, ParseException e) {
-                if (e == null) {
-                    //snacks.clear();
-                    snacks.addAll(moreSnacks);
-                }else{
 
+    public void loadMoreData(Integer currentCount){
+        if(!isUpdating){
+            notifyUpdateStart();
+            ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
+            query.orderByDescending("createdAt");
+            query.whereEqualTo("owner", targetUser);
+            query.setLimit(10);
+            query.setSkip(currentCount);
+            query.findInBackground(new FindCallback<SnackEntry>() {
+                @Override
+                public void done(List<SnackEntry> moreSnacks, ParseException e) {
+                    if (e == null) {
+                        snacks.addAll(moreSnacks);
+                    }
+
+                    notifyUpdateComplete();
                 }
-
-                notifyUpdateComplete();
-            }
-        });
+            });
+        }
     }
 }
