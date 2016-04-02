@@ -18,7 +18,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:stackFromBottom="true"
-                android:transcriptMode="alwaysScroll"
+                android:transcriptMode="normal"
                 android:divider="@android:color/transparent"
                 android:focusableInTouchMode="true"
                 android:clickable="true"/>

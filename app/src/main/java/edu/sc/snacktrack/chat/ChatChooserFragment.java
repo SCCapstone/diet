@@ -148,6 +148,7 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
      */
     private void refreshChatChooserList(){
         Set<Conversations.Group> groups = Conversations.getInstance().keySet();
+        Log.d(TAG, "refreshChatChooserList");
 
         chatChooserAdapter.clear();
 
@@ -176,7 +177,7 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
                 public void done(List<Message> objects, ParseException e) {
                     if(e == null){
                         if(objects.size() > 0){
-                            int recentMessageIndex = objects.size() - 1;
+                            int recentMessageIndex = 0;
                             item.setRecentMessage(objects.get(recentMessageIndex).getMessage());
                             item.setCreatedTime(objects.get(recentMessageIndex).getCreatedAt().getTime());
                         }

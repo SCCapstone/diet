@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -27,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import edu.sc.snacktrack.R;
 import edu.sc.snacktrack.Utils;
@@ -165,7 +167,7 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        chatAdapter.clear();
+//        chatAdapter.clear();
     }
 
     @Override
@@ -181,6 +183,7 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
         messageListView = (ListView) view.findViewById(R.id.messageListView);
         messageListView.setAdapter(chatAdapter);
 //        setListLongClickListener();
+        setListViewScrollListener();
 
         messageET = (EditText) view.findViewById(R.id.toSendEditText);
         sendButton = (Button) view.findViewById(R.id.sendButton);
@@ -198,12 +201,12 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
             public void onClick(View v) {
 
                 // Make sure the user is valid
-                if(userChecked){
-                    if(!userValid){
+                if (userChecked) {
+                    if (!userValid) {
                         updateToast("This user is not valid.", Toast.LENGTH_SHORT);
                         return;
                     }
-                } else{
+                } else {
                     updateToast("Please wait before doing that", Toast.LENGTH_SHORT);
                     validateUserInfo();
                     return;
@@ -238,6 +241,44 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
                         sendButton.setEnabled(true);
                     }
                 });
+            }
+        });
+    }
+
+    private void setListViewScrollListener(){
+        messageListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                final int threshold = 1;
+
+                if (scrollState == SCROLL_STATE_IDLE) {
+                    if (messageListView.getFirstVisiblePosition() <= threshold) {
+                        Conversations.getInstance().loadMore(group, new FindCallback<Message>() {
+                            @Override
+                            public void done(List<Message> messages, ParseException e) {
+                                if(e == null){
+                                    ListIterator<Message> it = messages.listIterator(0);
+                                    int previousFirstIndex = messageListView.getFirstVisiblePosition();
+
+                                    while(it.hasNext()){
+                                        chatAdapter.addEnd(new ChatItem(it.next()));
+                                    }
+                                    chatAdapter.notifyDataSetChanged();
+
+                                    // Restore the list view's scroll position
+                                    View v = messageListView.getChildAt(0);
+                                    int top = (v == null) ? 0 : (v.getTop() - messageListView.getPaddingTop());
+                                    messageListView.setSelectionFromTop(previousFirstIndex + messages.size(), top);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
             }
         });
     }
@@ -343,9 +384,10 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
             @Override
             public void done(List<Message> messages, ParseException e) {
                 if(e == null){
+                    ListIterator<Message> it = messages.listIterator(messages.size());
                     chatAdapter.clear();
-                    for(Message message : messages){
-                        chatAdapter.add(new ChatItem(message));
+                    while(it.hasPrevious()){
+                        chatAdapter.add(new ChatItem(it.previous()));
                     }
                     chatAdapter.notifyDataSetChanged();
                 }
@@ -356,8 +398,8 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
     @Override
     public void onConversationsGroupUpdate(Conversations.Group updatedGroup, Message... newMessages) {
         if(updatedGroup.equals(this.group)){
-            for(Message message : newMessages){
-                chatAdapter.add(new ChatItem(message));
+            for(int i = newMessages.length - 1; i >= 0; --i){
+                chatAdapter.add(new ChatItem(newMessages[i]));
             }
             chatAdapter.notifyDataSetChanged();
         }
