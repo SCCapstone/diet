@@ -109,4 +109,13 @@
 
     <string name="edit_item">Edit</string>
     <string name="save_button">Save</string>
+
+    <string name="previous_entries_help_title">
+        Welcome to SnackTrack!
+    </string>
+    <string name="previous_entries_help_message">
+        It looks like you don\'t have any snack entries yet. This screen is where you will see all
+        of your entries once you add some. To add your first entry, tap the add (+)
+        button at the top right of the screen.
+    </string>
 </resources>
