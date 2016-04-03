@@ -98,7 +98,6 @@ public class SnackDetailsFragment extends Fragment {
                 if (!(oldDescription.equals(descriptionEditText.getText().toString()))) {
                     snackEntry.put("description", descriptionEditText.getText().toString());
                 }
-                mealTypeSpinner.setEnabled(false);
                 snackEntry.saveInBackground(new SaveCallback() {
                     public void done(ParseException e) {
                         progressOverlay.setVisibility(View.GONE);
@@ -114,7 +113,9 @@ public class SnackDetailsFragment extends Fragment {
                 });
                 myMenu.findItem(R.id.edit_item).setVisible(true);
                 saveButton.setVisibility(View.GONE);
-                imageView.setEnabled(true);
+
+                mealTypeSpinner.setEnabled(false);
+                imageView.setEnabled(false);
                 descriptionEditText.setEnabled(false);
                 //endhere
             }
