@@ -10,15 +10,18 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/chatWithDietitianButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:text="Message My Dietitian"/>
+
+        <Button
             android:id="@+id/newChatButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:text="Start new chat"
-            android:layout_alignParentBottom="true"/>
+
+            android:text="Start new chat"/>
 
         <ListView android:id="@+id/chatChooserListView"
             android:layout_width="match_parent"
