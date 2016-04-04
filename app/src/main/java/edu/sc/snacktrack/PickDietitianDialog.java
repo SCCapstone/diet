@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -51,13 +52,13 @@ public class PickDietitianDialog extends DialogFragment implements DietitianList
     @Override
     public void onDietitianListUpdateComplete() {
         adapter.notifyDataSetChanged();
-        progressOverlay.setVisibility(View.GONE);
+//        progressOverlay.setVisibility(View.GONE);
     }
 
     @Override
     public void onDietitianListUpdateStart() {
         Log.d(TAG, "onDietitianListUpdateStart");
-        progressOverlay.setVisibility(View.VISIBLE);
+//        progressOverlay.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -66,19 +67,17 @@ public class PickDietitianDialog extends DialogFragment implements DietitianList
         adapter = new DietitianListAdapter(getContext());
         DietitianList.getInstance().registerUpdateListener(adapter);
         DietitianList.getInstance().registerUpdateListener(this);
+        DietitianList.getInstance().refresh(null);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
-//        getActivity().setTitle("Pick Your Dietitian");
+        getActivity().setTitle("Pick Your Dietitian");
         View view = inflater.inflate(R.layout.fragment_mydietitian_dialog, container, false);
-//        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-//        progressOverlay = view.findViewById(R.id.progressOverlay);
-//        ((TextView) progressOverlay.findViewById(R.id.progressMessage)).setText(
-//                "Accessing SnackTrack Database..."
-//        );
+        DietitianList.getInstance().refresh(null);
 
         listview = (ListView) view.findViewById(R.id.dietitian_list);
         listview.setAdapter(adapter);
@@ -91,85 +90,41 @@ public class PickDietitianDialog extends DialogFragment implements DietitianList
                 userSel = DietitianList.getInstance().get(position);
                 objectId = DietitianList.getInstance().get(position).getObjectId();
 
-                AlertDialog.Builder aBuilder = new AlertDialog.Builder(view.getContext());
-                aBuilder.setTitle("Confirmation");
-                aBuilder.setIcon(R.mipmap.ic_launcher);
-                aBuilder.setMessage("Are you sure you want to add \"" + userSel.getUsername() + "\" and let them see your entries?");
-                aBuilder.setCancelable(false);
-                aBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dietitianSearch(objectId);
-                        SettingsFragment settingsFragment = new SettingsFragment();
-                        getFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).addToBackStack(null).commit();
-                        dialog.dismiss();
-                    }
-                });
+                if(objectId == ParseUser.getCurrentUser().getObjectId())
+                    Toast.makeText(cont, "You can't pick yourself!",Toast.LENGTH_LONG).show();
 
-                aBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                else {
+                    AlertDialog.Builder aBuilder = new AlertDialog.Builder(view.getContext());
+                    aBuilder.setTitle("Confirmation");
+                    aBuilder.setIcon(R.mipmap.ic_launcher);
+                    aBuilder.setMessage("Are you sure you want to add \"" + userSel.getUsername() + "\" and let them see your entries?");
+                    aBuilder.setCancelable(false);
+                    aBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dietitianSearch(objectId);
+                            dismiss();
+                            getFragmentManager().popBackStackImmediate();
+                            dialog.dismiss();
+                        }
+                    });
 
-                AlertDialog aDiag = aBuilder.create();
-                aDiag.show();
+                    aBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog aDiag = aBuilder.create();
+                    aDiag.show();
+                }
+
             }
         });
 
         return view;
     }
-
-//    @Override
-//    public Dialog onCreateDialog(Bundle savedInstanceState) {
-//        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_mydietitian_dialog, null);
-////        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-//
-//        listview = (ListView) view.findViewById(R.id.dietitian_list);
-//        listview.setAdapter(adapter);
-//
-//        Log.i("Testing", Integer.toString(DietitianList.getInstance().size()));
-//        AlertDialog.Builder aBuilder = new AlertDialog.Builder(view.getContext());
-//
-//
-//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                userSel = DietitianList.getInstance().get(position);
-//                objectId = DietitianList.getInstance().get(position).getObjectId();
-//
-//                AlertDialog.Builder aBuilder = new AlertDialog.Builder(view.getContext());
-//                aBuilder.setTitle("Confirmation");
-////                aBuilder.setView(view);
-//                aBuilder.setIcon(R.mipmap.ic_launcher);
-//                aBuilder.setMessage("Are you sure you want to add \"" + userSel.getUsername() + "\" and let them see your entries?");
-//                aBuilder.setCancelable(false);
-//                aBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dietitianSearch(objectId);
-//                        SettingsFragment settingsFragment = new SettingsFragment();
-//                        getFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).addToBackStack(null).commit();
-//                        dialog.dismiss();
-//                    }
-//                });
-//
-//                aBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//
-//                AlertDialog aDiag = aBuilder.create();
-//                aDiag.show();
-//            }
-//        });
-//
-//        return aBuilder.create();
-//    }
 
     private void dietitianSearch(final String userId) {
         ParseQuery<ParseUser> query = ParseQuery.getQuery("_User");

@@ -70,7 +70,7 @@
             android:id="@+id/diet_separator_3"
             android:layout_below="@id/remove_my_dietitian"
             android:background="#003300"/>
-
+<!--
         <Button
             android:layout_width="fill_parent"
             android:layout_height="75dp"
@@ -91,7 +91,7 @@
             android:id="@+id/diet_separator_4"
             android:layout_below="@id/message_my_dietitian"
             android:background="#003300"/>
-
+-->
     </RelativeLayout>
 
 </FrameLayout>

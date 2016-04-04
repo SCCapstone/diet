@@ -53,6 +53,7 @@ public class RemoveDietitianDialog extends DialogFragment {
             public void onClick(View v) {
                 removeDietitian(myDietitian);
                 dismiss();
+                getFragmentManager().popBackStackImmediate();
             }
         });
 
