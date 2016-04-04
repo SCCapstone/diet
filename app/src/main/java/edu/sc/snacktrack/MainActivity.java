@@ -111,51 +111,8 @@ public class MainActivity extends AppCompatActivity{
          * condition if currentUser is client or dietitian
          */
         updateDietitianStatus();
-//        if(ParseUser.getCurrentUser().getBoolean("isDietitian") == true)
-//        {
-//            drawerItems = getResources().getStringArray(R.array.main_drawer_items);
-//            ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
-//            if(myDietitian != null){
-//                myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
-//                    @Override
-//                    public void done(ParseUser user, ParseException e) {
-//                        footerDietitian.setClickable(false);
-//                        footerDietitian.setHint("My Dietitian: " + user.getUsername());
-//                        footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
-//                    }
-//                });
-//            }
-//
-//            else {
-//                footerDietitian.setClickable(true);
-//                footerDietitian.setHint("Click here to pick your Dietitian!");
-//                footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
-//            }
-//        }
-//
-//        else
-//        {
-//            drawerItems = getResources().getStringArray(R.array.main_drawer_items_2);
-//            ParseUser myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
-//            if(myDietitian != null){
-//                myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
-//                    @Override
-//                    public void done(ParseUser user, ParseException e) {
-//                        footerDietitian.setClickable(false);
-//                        footerDietitian.setHint("My Dietitian: " + user.getUsername());
-//                        footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
-//                    }
-//                });
-//            }
-//
-//            else {
-//                footerDietitian.setClickable(true);
-//                footerDietitian.setHint("Click here to pick your Dietitian!");
-//                footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
-//            }
-//        }
 
-        //drawerItems = getResources().getStringArray(R.array.main_drawer_items);
+        //drawerItems = getResources().getStringArray(R.array.main_drawer_item
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -230,8 +187,8 @@ public class MainActivity extends AppCompatActivity{
             }
 
             else {
-                footerDietitian.setClickable(true);
-                footerDietitian.setHint("Click here to pick your Dietitian!");
+                footerDietitian.setClickable(false);
+                footerDietitian.setHint("Go to Settings to pick your Dietitian!");
                 footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
             }
         }
@@ -252,8 +209,8 @@ public class MainActivity extends AppCompatActivity{
             }
 
             else {
-                footerDietitian.setClickable(true);
-                footerDietitian.setHint("Click here to pick your Dietitian!");
+                footerDietitian.setClickable(false);
+                footerDietitian.setHint("Go to Settings to pick your Dietitian!");
                 footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
             }
         }
