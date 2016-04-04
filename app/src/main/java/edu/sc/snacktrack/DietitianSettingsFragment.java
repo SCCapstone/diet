@@ -35,23 +35,23 @@ public class DietitianSettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_dietitian_settings, container, false);
         final Button pickDietitian = (Button) view.findViewById(R.id.pick_dietitian);
         Button removeDietitian = (Button) view.findViewById(R.id.remove_my_dietitian);
-        Button msgDietitian = (Button) view.findViewById(R.id.message_my_dietitian);
+//        Button msgDietitian = (Button) view.findViewById(R.id.message_my_dietitian);
 
-//        pickDietitian.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//                Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
-//
-//                if(previousFrag != null)
-//                    transaction.remove(previousFrag);
-//
-//                transaction.addToBackStack(null);
-//
-//                DialogFragment pickDietitianDialog = new PickDietitianDialog();
-//                pickDietitianDialog.show(transaction, "dialog");
-//            }
-//        });
+        pickDietitian.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                Fragment previousFrag = getFragmentManager().findFragmentByTag("dialog");
+
+                if(previousFrag != null)
+                    transaction.remove(previousFrag);
+
+                transaction.addToBackStack(null);
+
+                DialogFragment pickDietitianDialog = new PickDietitianDialog();
+                pickDietitianDialog.show(transaction, "dialog");
+            }
+        });
 
         removeDietitian.setOnClickListener(new View.OnClickListener() {
             @Override

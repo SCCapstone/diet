@@ -74,6 +74,7 @@
     <string name="warn_dialog_message">Your Dietitian will no longer be able to access your entries.</string>
 
     <string name="pick_diet_text">Pick My Dietitian</string>
+    <string name="dietitian_picker">Choose your Dietitian from the list!</string>
     <string name="rem_diet_text">Remove My Dietitian</string>
     <string name="msg_diet_text">Send Message To My Dietitian</string>
     <string name="change_password_text">Change Account Password</string>

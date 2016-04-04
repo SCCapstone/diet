@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity{
     private ListView mDrawerList;
     private RelativeLayout mRelativeLayout;
     private TextView footerDietitian;
-    private TextView footerUsername;
     private TextView myUsername;
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle = "";
