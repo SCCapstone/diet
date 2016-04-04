@@ -54,7 +54,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
     private TextView descriptionTextView;
     private ImageView imageView;
     private Spinner mealTypeSpinner;
-    private Spinner mealLocationSpinner;
+  //  private Spinner mealLocationSpinner;
 
     private View progressOverlay;
 
@@ -62,6 +62,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 
     private static final int DESCRIPTION_CHANGE_CODE = 1;
 //    private static final int CAMERA_REQUEST_CODE = 2;
+    private static final int BARCODE_SCAN_REQUEST = 3;
 
     private static final int PREVIEW_WIDTH = 100;
     private static final int PREVIEW_HEIGHT = 100;
@@ -84,7 +85,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 
 
         mealTypeSpinner = (Spinner) findViewById(R.id.meal_type_spinner);
-        mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
+      //  mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
 
         // Set up the meal type spinner
         mealTypeSpinner.setAdapter(ArrayAdapter.createFromResource(
@@ -197,6 +198,51 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
                     descriptionTextView.setText(newText);
                 }
             }
+        } else if(requestCode == IntentIntegrator.REQUEST_CODE){
+            IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            String scanContent = null;
+            String scanFormat = null;
+            if(scanningResult != null){
+                scanContent = scanningResult.getContents();
+                scanFormat = scanningResult.getFormatName();
+            }
+            if (scanContent != null) {
+//            formatTxt.setText("FORMAT: " + scanFormat);
+                contentTxt.setText("CONTENT: " + scanContent);
+                Log.d("scanContent", scanContent);
+            /*
+            try {
+                contentTxt.setText(httpGet(scanContent));
+            }catch(Exception e) {
+                Log.e("httpget", scanContent);
+            }
+            barcodeContent = scanContent;
+            */
+                try {
+                    String brand = "Brand";
+                    String scannerInfo = new RetrieveFeedTask().execute(scanContent).get();
+                    Integer nameBegin = scannerInfo.lastIndexOf("name") + 7;
+                    Integer nameEnd = scannerInfo.indexOf("attributes") - 8;
+                    String productName = scannerInfo.substring(nameBegin, nameEnd);
+                    //brand name if statement currently causes an exception, not sure why
+                /*
+                if(scannerInfo.toLowerCase().contains(brand.toLowerCase())) {
+                    Integer brandBegin = scannerInfo.lastIndexOf("Brand") + 7;
+                    Integer brandEnd = scannerInfo.indexOf(",") - 2;
+                    productName = productName.concat(scannerInfo.substring(brandBegin, brandEnd));
+                }
+                */
+                    contentTxt.setText(productName);
+                }catch(Exception e) {
+                    Log.e("httpget", scanContent);
+                }
+                barcodeContent = scanContent;
+            }
+            else{
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "No scan data received!", Toast.LENGTH_SHORT);
+                toast.show();
+            }
         }
 
 //        This (hacky) case is no longer needed since the camera intent is now handled in MainActivity
@@ -240,46 +286,6 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 //                // Image capture failed.
 //            }
 //        }
-        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (scanningResult != null) {
-            String scanContent = scanningResult.getContents();
-            String scanFormat = scanningResult.getFormatName();
-//            formatTxt.setText("FORMAT: " + scanFormat);
-            contentTxt.setText("CONTENT: " + scanContent);
-            Log.d("scanContent", scanContent);
-            /*
-            try {
-                contentTxt.setText(httpGet(scanContent));
-            }catch(Exception e) {
-                Log.e("httpget", scanContent);
-            }
-            barcodeContent = scanContent;
-            */
-            try {
-                String brand = "Brand";
-                String scannerInfo = new RetrieveFeedTask().execute(scanContent).get();
-                Integer nameBegin = scannerInfo.lastIndexOf("name") + 7;
-                Integer nameEnd = scannerInfo.indexOf("attributes") - 8;
-                String productName = scannerInfo.substring(nameBegin, nameEnd);
-                //brand name if statement currently causes an exception, not sure why
-                /*
-                if(scannerInfo.toLowerCase().contains(brand.toLowerCase())) {
-                    Integer brandBegin = scannerInfo.lastIndexOf("Brand") + 7;
-                    Integer brandEnd = scannerInfo.indexOf(",") - 2;
-                    productName = productName.concat(scannerInfo.substring(brandBegin, brandEnd));
-                }
-                */
-                contentTxt.setText(productName);
-            }catch(Exception e) {
-                Log.e("httpget", scanContent);
-            }
-            barcodeContent = scanContent;
-        }
-        else{
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    "No scan data received!", Toast.LENGTH_SHORT);
-            toast.show();
-        }
     }
 
     /**

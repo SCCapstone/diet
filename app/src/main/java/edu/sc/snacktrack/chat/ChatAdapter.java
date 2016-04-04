@@ -78,12 +78,21 @@ public class ChatAdapter extends BaseAdapter {
 //    }
 
     /**
-     * Adds a ChatItem to this adapter.
+     * Adds a ChatItem to the beginning of this adapter.
      *
      * @param item the ChatItem to add
      */
     public void add(ChatItem item){
         items.add(item);
+    }
+
+    /**
+     * Adds a ChatItem to the end of this adapter.
+     *
+     * @param item the item it add
+     */
+    public void addEnd(ChatItem item){
+        items.add(0, item);
     }
 
     /**
@@ -163,9 +172,9 @@ public class ChatAdapter extends BaseAdapter {
         messageHolder.toTextView.setText(message.getToUsername());
 
 
-        // Adjust the text views gravity to distinguish between the current the user and the
-        // user he's chatting with. The current user's items will be right aligned in the row and
-        // the other user's will be left aligned in the row.
+        // Adjust the text view's gravity, padding, and color to distinguish between the current
+        // the user and the user he's chatting with. The current user's items will be right aligned
+        // in the row and the other user's will be left aligned in the row.
         int paddingPx = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 50, resources.getDisplayMetrics()
         );
@@ -180,7 +189,6 @@ public class ChatAdapter extends BaseAdapter {
             messageHolder.messageTextView.setBackgroundColor(resources.getColor(R.color.chat_other_user));
             messageHolder.messageTextView.setTextColor(resources.getColor(R.color.chat_other_user_text));
         }
-
 
         return row;
     }

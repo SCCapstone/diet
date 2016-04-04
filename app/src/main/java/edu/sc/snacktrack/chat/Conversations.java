@@ -6,16 +6,19 @@ import android.util.Log;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * This singleton class holds and manages messages for the current user.
@@ -27,6 +30,8 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
     private volatile boolean isUpdating;
     private volatile ParseUser lastUpdateUser;
     private volatile List<UpdateListener> updateListeners;
+
+    public static final String PINNED_MESSAGES_LABEL = "pinnedMessages";
 
     /**
      * UpdateListener interface.
@@ -142,7 +147,7 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
      * @param callback The callback to invoke upon completion.
      */
     public void getConversation(final Group group, final FindCallback<Message> callback){
-        List<Message> conv = instance.get(group);
+        List<Message> conv = this.get(group);
         if(conv == null){
             Iterator<ParseUser> it = group.iterator();
             ParseUser user1;
@@ -159,7 +164,7 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
                 user2 = null;
             }
 
-            fetchMessages(user1, user2, new FindCallback<Message>() {
+            fetchMessages(user1, user2, 10, 0, new FindCallback<Message>() {
                 @Override
                 public void done(List<Message> messages, ParseException e) {
                     if (e == null) {
@@ -170,6 +175,49 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
             });
         } else{
             callback.done(conv, null);
+        }
+    }
+
+    public void loadMore(final Group group, final FindCallback<Message> callback){
+        final List<Message> conv = this.get(group);
+        if(!isUpdating) {
+            if (conv == null) {
+                getConversation(group, callback);
+            } else {
+                Iterator<ParseUser> it = group.iterator();
+                ParseUser user1;
+                ParseUser user2;
+
+                if (it.hasNext()) {
+                    user1 = it.next();
+                } else {
+                    user1 = null;
+                }
+                if (it.hasNext()) {
+                    user2 = it.next();
+                } else {
+                    user2 = null;
+                }
+
+                fetchMessages(user1, user2, 10, conv.size(), new FindCallback<Message>() {
+                    @Override
+                    public void done(List<Message> messages, ParseException e) {
+                        if (e == null) {
+//                            ListIterator<Message> it = messages.listIterator(messages.size());
+//                            while (it.hasPrevious()) {
+//                                conv.add(it.previous());
+//                            }
+                            conv.addAll(messages);
+                        }
+                        callback.done(messages, e);
+                    }
+                });
+            }
+        } else if(callback != null){
+            callback.done(null, new ParseException(
+                    ParseException.OTHER_CAUSE,
+                    "Cannot load more messages - updating already in progress."
+            ));
         }
     }
 
@@ -188,7 +236,7 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
                         public void done(List<Message> messages, ParseException e) {
                             if(e == null){
                                 if(!hasMessage(fetchedMessage)){
-                                    messages.add(fetchedMessage);
+                                    messages.add(0, fetchedMessage);
                                     notifyGroupUpdate(group, fetchedMessage);
                                 }
                             }
@@ -225,9 +273,13 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
      * @param user2 The second user
      * @param callback The callback to invoke upon completion.
      */
-    private static void fetchMessages(ParseUser user1, ParseUser user2, final FindCallback<Message> callback){
+    private void fetchMessages(ParseUser user1, ParseUser user2, int limit, int skip, final FindCallback<Message> callback) {
         List<ParseQuery<Message>> orQueries = new ArrayList<>();
         ParseQuery<Message> oredQuery;
+
+        isUpdating = true;
+
+        Log.d("Conversations", "Skip is " + skip);
 
         orQueries.add(ParseQuery.getQuery(Message.class)
                         .whereEqualTo(Message.FROM_KEY, user1)
@@ -239,27 +291,30 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
         );
         oredQuery = ParseQuery.or(orQueries);
         oredQuery.include(Message.FROM_KEY).include(Message.TO_KEY);
-        oredQuery.orderByAscending("createdAt");
+        oredQuery.orderByDescending("createdAt");
+        oredQuery.setLimit(limit);
+        oredQuery.setSkip(skip);
         oredQuery.findInBackground(new FindCallback<Message>() {
             @Override
             public void done(List<Message> messages, ParseException e) {
-                if(e == null){
-                    if(messages.size() > 0){
+                if (e == null) {
+                    if (messages.size() > 0) {
                         ParseUser fromUser = messages.get(0).getFromUser();
                         ParseUser toUser = messages.get(0).getToUser();
                         // Null users not allowed
-                        if(fromUser == null || toUser == null){
+                        if (fromUser == null || toUser == null) {
                             messages.clear();
                         }
                     }
                     callback.done(messages, e);
+                    isUpdating = false;
                 }
             }
         });
     }
 
     /**
-     * Fetches all conversations for the current user.
+     * Refreshes the conversations for the current user. Up to 100 messages are fetched.
      *
      * @param callback The callback to invoke upon completion.
      */
@@ -278,12 +333,15 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
 
         oredQuery = ParseQuery.or(orQueries);
         oredQuery.include(Message.FROM_KEY).include(Message.TO_KEY);
-        oredQuery.orderByAscending("createdAt");
+        oredQuery.orderByDescending("createdAt");
+        oredQuery.setLimit(100);
         oredQuery.findInBackground(new FindCallback<Message>() {
             @Override
             public void done(List<Message> messages, ParseException e) {
                 if(e == null){
-                    getInstance().clear();
+                    Conversations.this.clear();
+
+                    ParseObject.pinAllInBackground(PINNED_MESSAGES_LABEL, messages);
 
                     for(Message message : messages){
                         Group group = new Group(message.getFromUser(), message.getToUser());
@@ -291,11 +349,13 @@ public class Conversations extends HashMap<Conversations.Group, List<Message>>{
                         // If the size is less than 2, the from user and to user are equal, which
                         // is not allowed.
                         if(group.size() < 2){
+                            message.unpinInBackground(PINNED_MESSAGES_LABEL);
                             continue;
                         }
 
                         // Null members are not allowed
                         if(group.hasNullMember()){
+                            message.unpinInBackground(PINNED_MESSAGES_LABEL);
                             continue;
                         }
 

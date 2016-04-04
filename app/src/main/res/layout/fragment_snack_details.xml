@@ -45,7 +45,7 @@
                 android:layout_below="@+id/imageView"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:background="#55ffffff"
+                android:background="#cdffffff"
                 android:padding="10dp">
 
                 <TextView
@@ -58,7 +58,8 @@
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/meal_type_spinner" />
+                    android:id="@+id/meal_type_spinner"
+                                        />
 
                 <!--<Spinner-->
                     <!--android:layout_width="wrap_content"-->
@@ -86,7 +87,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="20dp"
-                android:background="#55ffffff"
+                android:background="#cdffffff"
                 android:padding="10dp">
 
                 <TextView
@@ -105,7 +106,8 @@
                     android:id="@+id/descriptionEditTextView"
                     android:scrollbars="vertical"
                     android:minHeight="100dp"
-                    />
+                    android:textColor="@drawable/default_color_selector"
+                                      />
 
             </LinearLayout>
 

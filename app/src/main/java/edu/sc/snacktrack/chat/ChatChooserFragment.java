@@ -17,7 +17,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -41,6 +43,7 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
 
     private View progressOverlay;
     private Button newChatButton;
+    private Button dietitianChatButton;
     private ListView chatChooserListView;
 
     private volatile boolean startingChat = false;
@@ -105,6 +108,7 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
         View view = inflater.inflate(R.layout.fragment_chat_chooser, container, false);
         newChatButton = (Button) view.findViewById(R.id.newChatButton);
         chatChooserListView = (ListView) view.findViewById(R.id.chatChooserListView);
+        dietitianChatButton = (Button) view.findViewById(R.id.chatWithDietitianButton);
 
         progressOverlay = view.findViewById(R.id.progressOverlay);
 
@@ -129,6 +133,13 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
             }
         });
 
+        dietitianChatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChatWithDietitian();
+            }
+        });
+
         return view;
     }
 
@@ -148,6 +159,7 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
      */
     private void refreshChatChooserList(){
         Set<Conversations.Group> groups = Conversations.getInstance().keySet();
+        Log.d(TAG, "refreshChatChooserList");
 
         chatChooserAdapter.clear();
 
@@ -174,9 +186,13 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
             Conversations.getInstance().getConversation(group, new FindCallback<Message>() {
                 @Override
                 public void done(List<Message> objects, ParseException e) {
-                    int recentMessageIndex = objects.size() - 1;
-                    item.setRecentMessage(objects.get(recentMessageIndex).getMessage());
-                    item.setCreatedTime(objects.get(recentMessageIndex).getCreatedAt().getTime());
+                    if(e == null){
+                        if(objects.size() > 0){
+                            int recentMessageIndex = 0;
+                            item.setRecentMessage(objects.get(recentMessageIndex).getMessage());
+                            item.setCreatedTime(objects.get(recentMessageIndex).getCreatedAt().getTime());
+                        }
+                    }
                 }
             });
             chatChooserAdapter.addItem(item);
@@ -241,6 +257,42 @@ public class ChatChooserFragment extends Fragment implements Conversations.Updat
             chatIntent.putExtra(ChatActivity.OTHER_USER_ID_KEY, userId);
             startActivity(chatIntent);
             startingChat = false;
+        }
+    }
+
+    private void startChatWithDietitian(){
+        if(startingChat){
+            updateToast("Chat already starting", Toast.LENGTH_SHORT);
+            return;
+        }
+
+        ParseUser dietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
+
+        if(dietitian != null){
+            if(dietitian.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())){
+                updateToast("You can't chat with yourself", Toast.LENGTH_SHORT);
+                return;
+            }
+
+            startingChat = true;
+            progressOverlay.setVisibility(View.VISIBLE);
+
+            dietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser fetchedDietitian, ParseException e) {
+                    if(e == null){
+                        Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
+                        chatIntent.putExtra(ChatActivity.OTHER_USER_ID_KEY, fetchedDietitian.getObjectId());
+                        chatIntent.putExtra(ChatActivity.OTHER_USER_NAME_KEY, fetchedDietitian.getUsername());
+                        startActivity(chatIntent);
+                    }
+
+                    progressOverlay.setVisibility(View.GONE);
+                    startingChat = false;
+                }
+            });
+        } else{
+            updateToast("You have not chosen a dietitian", Toast.LENGTH_SHORT);
         }
     }
 

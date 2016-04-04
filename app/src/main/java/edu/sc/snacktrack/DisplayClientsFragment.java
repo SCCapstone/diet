@@ -73,8 +73,10 @@ public class DisplayClientsFragment extends Fragment implements ClientList.Updat
                         if (e == null) {
                             SnackList.getInstance().setUser(object);
                             SnackList.getInstance().refresh(null);
-                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment);
-                            transaction.commit();
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.content_frame, fragment)
+                                    .addToBackStack(null)
+                                    .commit();
                         }
                     }
                 });
@@ -93,5 +95,10 @@ public class DisplayClientsFragment extends Fragment implements ClientList.Updat
         ClientList.getInstance().unregisterUpdateListener(adapter);
         ClientList.getInstance().unregisterUpdateListener(this);
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set title
+        getActivity().setTitle("My Clients");
+    }
 }

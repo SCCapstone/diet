@@ -223,9 +223,14 @@ public class ImageLoader {
                 // Decode with inSampleSize
                 BitmapFactory.Options o2 = new BitmapFactory.Options();
                 o2.inSampleSize = scale;
-                FileInputStream stream2 = new FileInputStream(file);
-                Bitmap bitmap = BitmapFactory.decodeStream(stream2, null, o2);
-                stream2.close();
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), o2);
+
+                // BitmapFactory.decodeFile() will return null if the file is corrupt (that is,
+                // incomplete). The file may be corrupt if a previous async task was interrupted
+                // (cancelled) while writing it. In this case, we return null.
+                if(bitmap == null){
+                    return null;
+                }
 
                 // Rotate the bitmap based on the image file's EXIF data
                 // This is a quick fix and likely not the most efficient solution, as two bitmaps must

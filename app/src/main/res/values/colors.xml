@@ -6,4 +6,6 @@
     <color name="chat_other_user">#FFFFFFFF</color>
     <color name="chat_current_user_text">#FFFFFFFF</color>
     <color name="chat_other_user_text">#FF006400</color>
+    <color name="disabled_color">#5b5f54</color>
+    <color name="enabled_color">#000000</color>
 </resources>

@@ -17,13 +17,13 @@
 <!--android:scaleType="center"-->
     <!--android:background="#000000"-->
     />
-<TextView
-    android:id="@+id/name"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBottom="@+id/pic"
-    android:textSize="25sp"
-   />
+<!--<TextView-->
+    <!--android:id="@+id/name"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignBottom="@+id/pic"-->
+    <!--android:textSize="25sp"-->
+   <!--/>-->
     <View
         android:id="@+id/textBackground"
         android:layout_width="match_parent"
