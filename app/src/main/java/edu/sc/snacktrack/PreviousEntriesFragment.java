@@ -35,7 +35,10 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
     @Override
     public void onSnackListUpdateComplete() {
         adapter.notifyDataSetChanged();
-        progressOverlay.setVisibility(View.GONE);
+
+        if(progressOverlay != null){
+            progressOverlay.setVisibility(View.GONE);
+        }
 
         // Show the help message if appropriate.
         // That is, if we haven't already showed it for the current user this session and the
@@ -48,7 +51,9 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
     @Override
     public void onSnackListUpdateStart() {
         Log.d(TAG, "onSnackListUpdateStart");
-        progressOverlay.setVisibility(View.VISIBLE);
+        if(progressOverlay != null){
+            progressOverlay.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
