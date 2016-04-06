@@ -221,7 +221,6 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 //            formatTxt.setText("FORMAT: " + scanFormat);
 //                contentTxt.setText("CONTENT: " + scanContent);
                 //detailsTxt.setText("DETAILS");
-                Log.d("scanContent", scanContent);
             /*
             try {
                 contentTxt.setText(httpGet(scanContent));
@@ -237,7 +236,6 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
                     int nameBegin = scannerInfo.lastIndexOf("name") + 7;
                     int nameEnd = scannerInfo.indexOf("attributes") - 8;
                     final String productName = scannerInfo.substring(nameBegin, nameEnd);
-                    Log.d("productName", productName);
                     //brand name if statement currently causes an exception, not sure why
 /*
                 if(scannerInfo.toLowerCase().contains(brand.toLowerCase())) {
@@ -253,13 +251,12 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
                     nameBegin = scannerInfo.lastIndexOf("attributes") + 16;
                     nameEnd = scannerInfo.indexOf("images") - 8;
                     String productDetails = scannerInfo.substring(nameBegin, nameEnd);
-                    Log.d("productDetails", productDetails);
                     //detailsTxt.setText(productDetails);
 //                    contentTxt.setText(productName);
                     contentText.setText(productName);
                     detailsText.setText(productDetails);
                 } catch (Exception e) {
-                    Log.e("httpget", scanContent);
+                    e.printStackTrace();
                 }
                 barcodeContent = scanContent;
             } else {
