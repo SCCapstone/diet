@@ -92,6 +92,7 @@
     <string name="new_email_text">Enter new email:</string>
     <string name="email_edittext">Click here</string>
     <string name="email_submit">SUBMIT</string>
+    <string name="scan_data_hint">Barcode Data</string>
 
     <string name="search_text">Search dietitians:</string>
     <string name="search_edittext">Dietitian\'s username</string>

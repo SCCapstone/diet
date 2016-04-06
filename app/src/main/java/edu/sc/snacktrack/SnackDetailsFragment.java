@@ -49,6 +49,8 @@ public class SnackDetailsFragment extends Fragment {
     private ImageView imageView;
     // private TextView descriptionTextView;
     private EditText descriptionEditText;
+    private TextView contentText;
+    private TextView detailsText;
     private String oldMealType;
     private String oldDescription;
     //private TextView mealTypeTextView;
@@ -82,6 +84,8 @@ public class SnackDetailsFragment extends Fragment {
         imageView = (ImageView) view.findViewById(R.id.imageView);
         //descriptionTextView = (TextView) view.findViewById(R.id.descriptionTextView);
         descriptionEditText = (EditText) view.findViewById(R.id.descriptionEditTextView);
+        contentText = (TextView) view.findViewById(R.id.scan_content);
+        detailsText = (TextView) view.findViewById(R.id.scan_details);
         //descriptionEditText.setTextColor();
         saveButton = (Button) view.findViewById(R.id.save_button);
         saveButton.setVisibility(View.GONE);
@@ -91,13 +95,11 @@ public class SnackDetailsFragment extends Fragment {
             public void onClick(View v) {
                 final ParseObject snackEntry = ParseObject.createWithoutData("SnackEntry", objectId);
 
-                if (!(oldMealType.equals(mealTypeSpinner.getSelectedItem().toString()))) ;
-                {
-                    snackEntry.put("mealType", mealTypeSpinner.getSelectedItem().toString());
-                }
-                if (!(oldDescription.equals(descriptionEditText.getText().toString()))) {
-                    snackEntry.put("description", descriptionEditText.getText().toString());
-                }
+                snackEntry.put("mealType", mealTypeSpinner.getSelectedItem().toString());
+                snackEntry.put("description", descriptionEditText.getText().toString());
+                //snackEntry.put("scanDetails", detailsText.getText().toString());
+                //snackEntry.put("scanContent", contentText.getText().toString());
+
                 snackEntry.saveInBackground(new SaveCallback() {
                     public void done(ParseException e) {
                         progressOverlay.setVisibility(View.GONE);
@@ -163,9 +165,15 @@ public class SnackDetailsFragment extends Fragment {
                     String photoURL = snackEntry.getPhoto().getUrl();
                     String description = snackEntry.getDescription();
                     String mealType = snackEntry.getMealType();
+                    String scanDetails = snackEntry.getScanDetails();
+                    String scanContent = snackEntry.getScanContent();
 
                             ImageLoader.getInstance(getContext()).displayImage(photoURL, imageView);
                     descriptionEditText.setText(description != null ? description : "No description");
+                    Log.d("descriptionEditText", descriptionEditText.getText().toString());
+                    detailsText.setText(scanDetails);
+                    contentText.setText(scanContent);
+
                     // mealTypeTextView.setText(mealType != null ? mealType : "No meal type");
                     if (mealType != null) {
                         mealTypeSpinner.setSelection(((ArrayAdapter) mealTypeSpinner.getAdapter()).getPosition(mealType));

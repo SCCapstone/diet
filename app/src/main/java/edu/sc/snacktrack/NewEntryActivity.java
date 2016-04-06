@@ -68,6 +68,8 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
     private static final int PREVIEW_HEIGHT = 100;
 
     private static final String STATE_DESCRIPTION_STRING = "descriptionString";
+    private static final String STATE_SCAN_CONTENT_STRING = "scanContentString";
+    private static final String STATE_SCAN_DETAILS_STRING = "scanDetailsString";
     private static final String STATE_SAVING = "saving";
 
     public static final String PHOTO_FILE_KEY = "photo";
@@ -78,11 +80,22 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 
     private boolean saving = false;
 
+    private Button scanBtn;
+    //private TextView formatTxt, contentTxt;
+    private TextView contentText;
+    private TextView detailsText;
+
+    //private TextView detailsTxt;
+    private String barcodeContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_entry);
 
+
+        contentText = (TextView) findViewById(R.id.scan_content);
+        detailsText = (TextView) findViewById(R.id.scan_details);
 
         mealTypeSpinner = (Spinner) findViewById(R.id.meal_type_spinner);
       //  mealLocationSpinner = (Spinner) findViewById(R.id.meal_location_spinner);
@@ -123,6 +136,8 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 //            String currentPhotoPath, newPhotoPath;
 
             descriptionTextView.setText(savedInstanceState.getString(STATE_DESCRIPTION_STRING, ""));
+            contentText.setText(savedInstanceState.getString(STATE_SCAN_CONTENT_STRING, ""));
+            detailsText.setText(savedInstanceState.getString(STATE_SCAN_DETAILS_STRING, ""));
 
             this.saving = savedInstanceState.getBoolean(STATE_SAVING, false);
 
@@ -155,7 +170,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 
         scanBtn = (Button)findViewById(R.id.scan_button);
 //        formatTxt = (TextView)findViewById(R.id.scan_format);
-        contentTxt = (TextView)findViewById(R.id.scan_content);
+//        contentTxt = (TextView)findViewById(R.id.scan_content);
         scanBtn.setOnClickListener(this);
     }
 
@@ -198,17 +213,14 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
                     descriptionTextView.setText(newText);
                 }
             }
-        } else if(requestCode == IntentIntegrator.REQUEST_CODE){
+        } else if(requestCode == IntentIntegrator.REQUEST_CODE) {
             IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-            String scanContent = null;
-            String scanFormat = null;
-            if(scanningResult != null){
-                scanContent = scanningResult.getContents();
-                scanFormat = scanningResult.getFormatName();
-            }
-            if (scanContent != null) {
+            if (scanningResult != null) {
+                String scanContent = scanningResult.getContents();
+                String scanFormat = scanningResult.getFormatName();
 //            formatTxt.setText("FORMAT: " + scanFormat);
-                contentTxt.setText("CONTENT: " + scanContent);
+//                contentTxt.setText("CONTENT: " + scanContent);
+                //detailsTxt.setText("DETAILS");
                 Log.d("scanContent", scanContent);
             /*
             try {
@@ -219,26 +231,38 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             barcodeContent = scanContent;
             */
                 try {
+                    int commaIndex = 3;
                     String brand = "Brand";
                     String scannerInfo = new RetrieveFeedTask().execute(scanContent).get();
-                    Integer nameBegin = scannerInfo.lastIndexOf("name") + 7;
-                    Integer nameEnd = scannerInfo.indexOf("attributes") - 8;
-                    String productName = scannerInfo.substring(nameBegin, nameEnd);
+                    int nameBegin = scannerInfo.lastIndexOf("name") + 7;
+                    int nameEnd = scannerInfo.indexOf("attributes") - 8;
+                    final String productName = scannerInfo.substring(nameBegin, nameEnd);
+                    Log.d("productName", productName);
                     //brand name if statement currently causes an exception, not sure why
-                /*
+/*
                 if(scannerInfo.toLowerCase().contains(brand.toLowerCase())) {
+                    commaIndex++;
                     Integer brandBegin = scannerInfo.lastIndexOf("Brand") + 7;
-                    Integer brandEnd = scannerInfo.indexOf(",") - 2;
-                    productName = productName.concat(scannerInfo.substring(brandBegin, brandEnd));
+                    int brandEnd = scannerInfo.indexOf(",", 0);
+                    while (commaIndex-- > 0 && brandEnd != -1)
+                        brandEnd = scannerInfo.indexOf(",", brandEnd+1);
+                    brandEnd = brandEnd - 3;
+                    productName = productName.concat("\r\n" + scannerInfo.substring(brandBegin, brandEnd));
                 }
-                */
-                    contentTxt.setText(productName);
-                }catch(Exception e) {
+*/
+                    nameBegin = scannerInfo.lastIndexOf("attributes") + 16;
+                    nameEnd = scannerInfo.indexOf("images") - 8;
+                    String productDetails = scannerInfo.substring(nameBegin, nameEnd);
+                    Log.d("productDetails", productDetails);
+                    //detailsTxt.setText(productDetails);
+//                    contentTxt.setText(productName);
+                    contentText.setText(productName);
+                    detailsText.setText(productDetails);
+                } catch (Exception e) {
                     Log.e("httpget", scanContent);
                 }
                 barcodeContent = scanContent;
-            }
-            else{
+            } else {
                 Toast toast = Toast.makeText(getApplicationContext(),
                         "No scan data received!", Toast.LENGTH_SHORT);
                 toast.show();
@@ -314,12 +338,17 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
     private void saveEntry(){
         String description;
         String mealType;
+        String scanDetails;
+        String scanContent;
 
         final SnackEntry entry = new SnackEntry();
         final ParseFile parseFile = new ParseFile(currentImageFile);
 
         description = descriptionTextView.getText().toString();
         mealType = mealTypeSpinner.getSelectedItem().toString();
+        //scanDetails = detailsTxt.getText().toString();
+        scanContent = contentText.getText().toString();
+        scanDetails = detailsText.getText().toString();
 
         saving = true;
         setWidgetsEnabled(false);
@@ -328,6 +357,20 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         if(description != null && !description.trim().equals("")){
             entry.setDescription(descriptionTextView.getText().toString());
         }
+
+        //if(scanDetails != null && !scanDetails.trim().equals("")){
+       //     entry.setScanDetails(detailsTxt.getText().toString());
+        //}
+
+        if(scanContent != null && !scanContent.trim().equals("")){
+            entry.setScanContent(contentText.getText().toString());
+            Log.d("contentText1", contentText.getText().toString());
+        }
+        if(scanDetails != null && !scanDetails.trim().equals("")){
+            entry.setScanDetails(detailsText.getText().toString());
+            Log.d("detailsText1", detailsText.getText().toString());
+        }
+//        Log.d("scanContent", scanContent);
 
 //        if(mealType != null && !mealType.trim().equals(getResources().getString(R.string.default_spinner_item))){
         if(mealType != null){
@@ -397,6 +440,8 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         super.onSaveInstanceState(outState);
 
         outState.putString(STATE_DESCRIPTION_STRING, descriptionTextView.getText().toString());
+        outState.putString(STATE_SCAN_CONTENT_STRING, contentText.getText().toString());
+        outState.putString(STATE_SCAN_DETAILS_STRING, detailsText.getText().toString());
 //        if(currentImageFile != null){
 //            outState.putString(STATE_CURRENT_PHOTO_PATH, currentImageFile.getAbsolutePath());
 //        }
@@ -520,10 +565,6 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             super.onCancelled();
         }
     }
-    private Button scanBtn;
-    //private TextView formatTxt, contentTxt;
-    private TextView contentTxt;
-    private String barcodeContent;
 
 //old way of httpGet
 /*
