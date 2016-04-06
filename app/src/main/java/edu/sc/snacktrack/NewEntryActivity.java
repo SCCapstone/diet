@@ -422,6 +422,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         imageView.setEnabled(enabled);
         mealTypeSpinner.setEnabled(enabled);
         descriptionTextView.setEnabled(enabled);
+        scanBtn.setEnabled(enabled);
     }
 
     @Override
