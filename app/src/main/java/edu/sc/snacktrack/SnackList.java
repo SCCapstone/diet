@@ -215,6 +215,37 @@ public class SnackList{
         }
     }
 
+    public void editSnack(final SnackEntry toEdit, final SaveCallback callback){
+        toEdit.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                notifyUpdateComplete();
+                callback.done(e);
+            }
+        });
+    }
+
+    public void editSnack(final SnackEntry toEdit, final ParseFile newPhoto, final SaveCallback callback){
+        newPhoto.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null){
+                    toEdit.setPhoto(newPhoto);
+                    toEdit.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            callback.done(e);
+                            notifyUpdateComplete();
+                        }
+                    });
+                } else{
+                    callback.done(e);
+
+                }
+            }
+        });
+    }
+
     /**
      * Refreshes the SnackList. That is, queries Parse for the current user's SnackEntrys and
      * repopulates the SnackList with the result. If the query fails, the SnackList remains

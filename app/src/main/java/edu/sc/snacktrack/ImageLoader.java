@@ -73,6 +73,27 @@ public class ImageLoader {
     /**
      * Displays an image at a specified url in a specified ImageView.
      *
+     * @param file The image file to display
+     * @param imageView The image view to hold the image.
+     */
+    public void displayImage(File file, ImageView imageView){
+        if(cancelPotentialWork(file.getAbsolutePath(), imageView)){
+            Bitmap bitmap = memoryCache.get(file.getAbsolutePath());
+
+            if(bitmap != null){
+                imageView.setImageBitmap(bitmap);
+            } else{
+                final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+                final AsyncDrawable asyncDrawable = new AsyncDrawable(context.getResources(), null, task);
+                imageView.setImageDrawable(asyncDrawable);
+                task.execute("file", file.getAbsolutePath());
+            }
+        }
+    }
+
+    /**
+     * Displays an image at a specified url in a specified ImageView.
+     *
      * @param url The url pointing to an image.
      * @param imageView The image view to hold the image.
      */
@@ -144,6 +165,94 @@ public class ImageLoader {
     }
 
     /**
+     * Decodes image and scales it to reduce memory consumption.
+     *
+     * @param file The file to load from.
+     * @param SCALE_WIDTH The width to scale the bitmap to.
+     * @param SCALE_HEIGHT The height to scale the bitmap to.
+     * @return The Bitmap decoded from the specified file. null if an exception occurs.
+     */
+    private static Bitmap decodeFile(File file, @Nullable final Integer SCALE_WIDTH,
+                              @Nullable final Integer SCALE_HEIGHT) {
+        try {
+            // Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            FileInputStream stream1 = new FileInputStream(file);
+            BitmapFactory.decodeStream(stream1, null, o);
+            stream1.close();
+
+            // Find the correct scale value. It should be the power of 2.
+            final int REQUIRED_SIZE;
+            final int DEFAULT_REQUIRED_SIZE = 100;
+            final boolean SCALE_WIDTH_VALID = SCALE_WIDTH != null && SCALE_WIDTH > 0;
+            final boolean SCALE_HEIGHT_VALID = SCALE_HEIGHT != null && SCALE_HEIGHT > 0;
+
+            if(!SCALE_WIDTH_VALID && !SCALE_HEIGHT_VALID){
+                // Case 1: Both the width and height are invalid
+                // Use the default required size.
+
+                REQUIRED_SIZE = DEFAULT_REQUIRED_SIZE;
+            } else if(!SCALE_WIDTH_VALID && SCALE_HEIGHT_VALID){
+                // Case 2: Only the height is valid.
+                // Use the height as the required size.
+
+                REQUIRED_SIZE = SCALE_HEIGHT;
+            } else if(SCALE_WIDTH_VALID && !SCALE_HEIGHT_VALID){
+                // Case 3: Only the width is valid.
+                // Use the width as the required size.
+
+                REQUIRED_SIZE = SCALE_WIDTH;
+            } else{
+                // Case 4: Both the width and height are valid.
+                // Use the largest of the two as the required size.
+
+                REQUIRED_SIZE = Math.max(SCALE_WIDTH, SCALE_HEIGHT);
+            }
+
+            int width_tmp = o.outWidth, height_tmp = o.outHeight;
+            int scale = 1;
+            while (true) {
+                if (width_tmp / 2 < REQUIRED_SIZE
+                        || height_tmp / 2 < REQUIRED_SIZE)
+                    break;
+                width_tmp /= 2;
+                height_tmp /= 2;
+                scale *= 2;
+            }
+
+            // Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), o2);
+
+            // BitmapFactory.decodeFile() will return null if the file is corrupt (that is,
+            // incomplete). The file may be corrupt if a previous async task was interrupted
+            // (cancelled) while writing it. In this case, we return null.
+            if(bitmap == null){
+                return null;
+            }
+
+            // Rotate the bitmap based on the image file's EXIF data
+            // This is a quick fix and likely not the most efficient solution, as two bitmaps must
+            // be simultaneously loaded into memory.
+            int rotation = Utils.getExifRotation(file);
+            Matrix matrix = new Matrix();
+            matrix.preRotate(rotation);
+
+            // Return a bitmap with the correct rotation applied.
+            return Bitmap.createBitmap(
+                    bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true
+            );
+
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
      * AsyncTask for loading an image from url into an ImageView
      */
     class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
@@ -161,94 +270,6 @@ public class ImageLoader {
             scaleWidth = imageViewLayoutParams.width;
             scaleHeight = imageViewLayoutParams.height;
 
-        }
-
-        /**
-         * Decodes image and scales it to reduce memory consumption.
-         *
-         * @param file The file to load from.
-         * @param SCALE_WIDTH The width to scale the bitmap to.
-         * @param SCALE_HEIGHT The height to scale the bitmap to.
-         * @return The Bitmap decoded from the specified file. null if an exception occurs.
-         */
-        private Bitmap decodeFile(File file, @Nullable final Integer SCALE_WIDTH,
-                                  @Nullable final Integer SCALE_HEIGHT) {
-            try {
-                // Decode image size
-                BitmapFactory.Options o = new BitmapFactory.Options();
-                o.inJustDecodeBounds = true;
-                FileInputStream stream1 = new FileInputStream(file);
-                BitmapFactory.decodeStream(stream1, null, o);
-                stream1.close();
-
-                // Find the correct scale value. It should be the power of 2.
-                final int REQUIRED_SIZE;
-                final int DEFAULT_REQUIRED_SIZE = 100;
-                final boolean SCALE_WIDTH_VALID = SCALE_WIDTH != null && SCALE_WIDTH > 0;
-                final boolean SCALE_HEIGHT_VALID = SCALE_HEIGHT != null && SCALE_HEIGHT > 0;
-
-                if(!SCALE_WIDTH_VALID && !SCALE_HEIGHT_VALID){
-                    // Case 1: Both the width and height are invalid
-                    // Use the default required size.
-
-                    REQUIRED_SIZE = DEFAULT_REQUIRED_SIZE;
-                } else if(!SCALE_WIDTH_VALID && SCALE_HEIGHT_VALID){
-                    // Case 2: Only the height is valid.
-                    // Use the height as the required size.
-
-                    REQUIRED_SIZE = SCALE_HEIGHT;
-                } else if(SCALE_WIDTH_VALID && !SCALE_HEIGHT_VALID){
-                    // Case 3: Only the width is valid.
-                    // Use the width as the required size.
-
-                    REQUIRED_SIZE = SCALE_WIDTH;
-                } else{
-                    // Case 4: Both the width and height are valid.
-                    // Use the largest of the two as the required size.
-
-                    REQUIRED_SIZE = Math.max(SCALE_WIDTH, SCALE_HEIGHT);
-                }
-
-                int width_tmp = o.outWidth, height_tmp = o.outHeight;
-                int scale = 1;
-                while (true) {
-                    if (width_tmp / 2 < REQUIRED_SIZE
-                            || height_tmp / 2 < REQUIRED_SIZE)
-                        break;
-                    width_tmp /= 2;
-                    height_tmp /= 2;
-                    scale *= 2;
-                }
-
-                // Decode with inSampleSize
-                BitmapFactory.Options o2 = new BitmapFactory.Options();
-                o2.inSampleSize = scale;
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), o2);
-
-                // BitmapFactory.decodeFile() will return null if the file is corrupt (that is,
-                // incomplete). The file may be corrupt if a previous async task was interrupted
-                // (cancelled) while writing it. In this case, we return null.
-                if(bitmap == null){
-                    return null;
-                }
-
-                // Rotate the bitmap based on the image file's EXIF data
-                // This is a quick fix and likely not the most efficient solution, as two bitmaps must
-                // be simultaneously loaded into memory.
-                int rotation = Utils.getExifRotation(file);
-                Matrix matrix = new Matrix();
-                matrix.preRotate(rotation);
-
-                // Return a bitmap with the correct rotation applied.
-                return Bitmap.createBitmap(
-                        bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true
-                );
-
-            } catch (FileNotFoundException e) {
-                return null;
-            } catch (IOException e) {
-                return null;
-            }
         }
 
 
@@ -297,8 +318,14 @@ public class ImageLoader {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-            url = params[0];
-            Bitmap bitmap = getBitmap(url, scaleWidth, scaleHeight);
+            Bitmap bitmap = null;
+            if(params.length == 1){
+                url = params[0];
+                bitmap = getBitmap(url, scaleWidth, scaleHeight);
+            } else if(params.length == 2 && params[0].equals("file")){
+                url = params[1];
+                bitmap = decodeFile(new File(params[1]), scaleWidth, scaleHeight);
+            }
             return bitmap;
         }
 

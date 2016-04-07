@@ -128,7 +128,7 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String objectId = SnackList.getInstance().get(position).getObjectId();
                 Bundle arguments = new Bundle();
-                arguments.putString(SnackDetailsFragment.OBJECT_ID_KEY, objectId);
+                arguments.putInt(SnackDetailsFragment.SNACK_POSITION_KEY, position);
                 SnackDetailsFragment snackDetailsFragment = new SnackDetailsFragment();
                 snackDetailsFragment.setArguments(arguments);
                 getFragmentManager().beginTransaction()

@@ -88,6 +88,8 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
     //private TextView detailsTxt;
     private String barcodeContent;
 
+    private FileCache fileCache;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,6 +174,8 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 //        formatTxt = (TextView)findViewById(R.id.scan_format);
 //        contentTxt = (TextView)findViewById(R.id.scan_content);
         scanBtn.setOnClickListener(this);
+
+        fileCache = new FileCache(this);
     }
 
 //    /**
@@ -382,6 +386,8 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             public void done(ParseException e) {
                 if(e == null){
                     setResult(RESULT_OK);
+                    // Rename the uploaded image file to correct cache name.
+                    currentImageFile.renameTo(fileCache.getFile(parseFile.getUrl()));
                     finish();
                 } else{
                     updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);

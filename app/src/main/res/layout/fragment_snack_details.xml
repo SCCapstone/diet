@@ -97,15 +97,14 @@
 
 
                 <EditText
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:hint="@string/edit_description_hint"
                     android:id="@+id/descriptionEditTextView"
                     android:scrollbars="vertical"
                     android:minHeight="100dp"
-                    android:textColor="@drawable/default_color_selector"
-                                      />
+                    android:textColor="@drawable/default_color_selector" />
 
             </LinearLayout>
 
@@ -132,6 +131,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="#000000"
                     android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:hint="@string/no_barcode_data"
                     android:id="@+id/scan_content"
                     />
 

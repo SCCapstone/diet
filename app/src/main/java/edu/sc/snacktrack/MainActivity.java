@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity{
                 }
                 break;
             default:
-                updateToast("Something's not right", Toast.LENGTH_LONG);
+                super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
