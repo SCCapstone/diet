@@ -116,11 +116,29 @@ public class SnackDetailsFragment extends Fragment {
                     });
                 } else {
                     ParseFile newPhoto = new ParseFile(newImageFile);
+                    ParseFile oldPhoto = snackEntry.getPhoto();
+                    final File oldImageFile;
+                    if(oldPhoto != null){
+                        oldImageFile = fileCache.getFile(snackEntry.getPhoto().getUrl());
+                    } else{
+                        oldImageFile = null;
+                    }
+
                     SnackList.getInstance().editSnack(snackEntry, newPhoto, new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
                                 updateToast("Update successful", Toast.LENGTH_SHORT);
+
+                                // Delete old image file if necessary
+                                if(oldImageFile != null && oldImageFile.exists()){
+                                    oldImageFile.delete();
+                                }
+
+                                // Cache the new image
+                                newImageFile.renameTo(fileCache.getFile(snackEntry.getPhoto().getUrl()));
+
+
                             } else {
                                 updateToast("Update failed", Toast.LENGTH_SHORT);
                                 Log.e(TAG, e.getMessage());
