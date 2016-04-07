@@ -1,6 +1,7 @@
 package edu.sc.snacktrack;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,6 +31,14 @@ public class LoginExistingFragment extends Fragment {
     private Button logInButton;
 
     private Toast toast;
+
+    private Context context;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -143,7 +152,7 @@ public class LoginExistingFragment extends Fragment {
     }
 
     private void startMainActivity(){
-        Intent intent = new Intent(getActivity(), MainActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         startActivity(intent);
         getActivity().finish();
     }

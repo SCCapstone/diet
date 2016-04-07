@@ -1,5 +1,7 @@
 package edu.sc.snacktrack;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -46,6 +48,14 @@ public class NewAccountFragment extends Fragment {
     private Toast toast;
 
     private UsernameErrorStatusUpdater usernameErrorStatusUpdater;
+
+    private Context context;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     @Nullable
     @Override
@@ -394,7 +404,7 @@ public class NewAccountFragment extends Fragment {
     }
 
     private void startMainActivity(){
-        Intent intent = new Intent(getActivity(), MainActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         startActivity(intent);
         getActivity().finish();
     }
