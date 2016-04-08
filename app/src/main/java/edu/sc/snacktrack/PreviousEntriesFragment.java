@@ -2,6 +2,7 @@ package edu.sc.snacktrack;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -126,15 +127,19 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String objectId = SnackList.getInstance().get(position).getObjectId();
-                Bundle arguments = new Bundle();
-                arguments.putInt(SnackDetailsFragment.SNACK_POSITION_KEY, position);
-                SnackDetailsFragment snackDetailsFragment = new SnackDetailsFragment();
-                snackDetailsFragment.setArguments(arguments);
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, snackDetailsFragment)
-                        .addToBackStack(null)
-                        .commit();
+//                String objectId = SnackList.getInstance().get(position).getObjectId();
+//                Bundle arguments = new Bundle();
+//                arguments.putInt(SnackDetailsActivity.SNACK_POSITION_KEY, position);
+//                SnackDetailsActivity snackDetailsFragment = new SnackDetailsActivity();
+//                snackDetailsFragment.setArguments(arguments);
+//                getFragmentManager().beginTransaction()
+//                        .replace(R.id.content_frame, snackDetailsFragment)
+//                        .addToBackStack(null)
+//                        .commit();
+
+                Intent detailsIntent = new Intent(getContext(), SnackDetailsActivity.class);
+                detailsIntent.putExtra(SnackDetailsActivity.SNACK_POSITION_KEY, position);
+                startActivity(detailsIntent);
             }
         });
 

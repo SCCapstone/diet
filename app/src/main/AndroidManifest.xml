@@ -91,6 +91,11 @@
         <activity
             android:name=".chat.ChatActivity">
         </activity>
+        <activity
+            android:name=".SnackDetailsActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_snack_details">
+        </activity>
         <receiver
             android:name=".ReminderReceiver"
             android:process=":remote">
