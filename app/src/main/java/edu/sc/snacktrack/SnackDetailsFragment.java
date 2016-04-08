@@ -185,7 +185,9 @@ public class SnackDetailsFragment extends Fragment {
         setEditModeEnabled(false);
 
         // Display snack details
-        ImageLoader.getInstance(getContext()).displayImage(snackEntry.getPhoto().getUrl(), imageView);
+        if(snackEntry.getPhoto() != null){
+            ImageLoader.getInstance(getContext()).displayImage(snackEntry.getPhoto().getUrl(), imageView);
+        }
         descriptionEditText.setText(snackEntry.getDescription());
         mealTypeSpinner.setSelection(((ArrayAdapter) mealTypeSpinner.getAdapter()).getPosition(snackEntry.getMealType()));
         scanDetailsText.setText(snackEntry.getScanDetails());

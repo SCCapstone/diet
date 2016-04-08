@@ -6,29 +6,31 @@
     android:background="#60000000">
 
 
-<ImageView
-    android:id="@+id/pic"
-    android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:scaleType="centerCrop"
-    />
-<!--android:scaleType="fitXY"-->
-    <!--android:layout_height="wrap_content"-->
-<!--android:scaleType="center"-->
-    <!--android:background="#000000"-->
-    />
-<!--<TextView-->
-    <!--android:id="@+id/name"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_alignBottom="@+id/pic"-->
-    <!--android:textSize="25sp"-->
-   <!--/>-->
+    <FrameLayout
+        android:id="@+id/picWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/pic"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop" />
+        <TextView
+            android:id="@+id/picTextOverlay"
+            android:textSize="15pt"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:textColor="@android:color/black"
+            android:background="#50ffffff"
+            android:gravity="center_horizontal|center_vertical"
+            android:visibility="gone"/>
+    </FrameLayout>
+
     <View
         android:id="@+id/textBackground"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:layout_alignBottom="@+id/pic"
+        android:layout_alignBottom="@+id/picWrapper"
         android:alpha="0.7"
         android:background="#111" />
 
@@ -39,7 +41,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_alignBottom="@+id/textBackground"
-        android:textSize="20sp"
-        />
+        android:textSize="20sp" />
 
 </RelativeLayout>

@@ -540,6 +540,11 @@ public class MainActivity extends AppCompatActivity{
 //                overridePendingTransition(R.animator.animation, R.animator.animation2);
 
                 dispatchPictureIntent();
+                break;
+            case R.id.action_new_text_only:
+                Intent intent = new Intent(this, NewEntryActivity.class);
+                startActivityForResult(intent, NEW_ENTRY_REQUEST);
+                break;
         }
 
         return super.onOptionsItemSelected(item);

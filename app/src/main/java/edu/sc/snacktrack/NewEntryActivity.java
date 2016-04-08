@@ -150,7 +150,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 //            newImageFile = newPhotoPath == null ? null : new File(newPhotoPath);
         }
 
-        // Get the snack photo and display the preview
+        // Get the snack photo and display the preview if there is one
         currentImageFile = (File) getIntent().getSerializableExtra(PHOTO_FILE_KEY);
         if(currentImageFile != null){
             loadPhotoPreview(currentImageFile);
@@ -343,7 +343,12 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         String scanContent;
 
         final SnackEntry entry = new SnackEntry();
-        final ParseFile parseFile = new ParseFile(currentImageFile);
+        final ParseFile parseFile;
+        if(currentImageFile != null){
+            parseFile = new ParseFile(currentImageFile);
+        } else{
+            parseFile = null;
+        }
 
         description = descriptionTextView.getText().toString();
         mealType = mealTypeSpinner.getSelectedItem().toString();
@@ -381,23 +386,42 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         entry.setOwner(ParseUser.getCurrentUser());
         entry.setACL(new ParseACL(ParseUser.getCurrentUser()));
 
-        SnackList.getInstance().addSnack(entry, parseFile, new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e == null){
-                    setResult(RESULT_OK);
-                    // Rename the uploaded image file to correct cache name.
-                    currentImageFile.renameTo(fileCache.getFile(parseFile.getUrl()));
-                    finish();
-                } else{
-                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                }
+        if(parseFile != null){
+            SnackList.getInstance().addSnack(entry, parseFile, new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(e == null){
+                        setResult(RESULT_OK);
+                        // Rename the uploaded image file to correct cache name.
+                        currentImageFile.renameTo(fileCache.getFile(parseFile.getUrl()));
+                        finish();
+                    } else{
+                        updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                    }
 
-                progressOverlay.setVisibility(View.GONE);
-                NewEntryActivity.this.saving = false;
-                setWidgetsEnabled(true);
-            }
-        });
+                    progressOverlay.setVisibility(View.GONE);
+                    NewEntryActivity.this.saving = false;
+                    setWidgetsEnabled(true);
+                }
+            });
+        } else{
+            SnackList.getInstance().addSnack(entry, new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(e == null){
+                        setResult(RESULT_OK);
+                        finish();
+                    } else{
+                        updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                    }
+
+                    progressOverlay.setVisibility(View.GONE);
+                    NewEntryActivity.this.saving = false;
+                    setWidgetsEnabled(true);
+                }
+            });
+        }
+
     }
 
     /**

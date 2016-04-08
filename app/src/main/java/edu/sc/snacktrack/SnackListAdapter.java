@@ -9,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseFile;
+
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,7 +42,7 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
     }
 
     public class ViewHolder {
-        TextView name;
+        TextView textOverlay;
         TextView date;
         ImageView photo;
     }
@@ -71,6 +73,7 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
             holder.date = (TextView) view.findViewById(R.id.date);
             // Locate the ImageView in listview_item.xml
             holder.photo = (ImageView) view.findViewById(R.id.pic);
+            holder.textOverlay = (TextView) view.findViewById(R.id.picTextOverlay);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
@@ -86,9 +89,19 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
 
         holder.date.setText(formatDate);
 
-        // Set the results into ImageView
-        ImageLoader.getInstance(context).displayImage(SnackList.getInstance().get(position).getPhoto().getUrl(),
-                holder.photo);
+        // Display the image if there is one. Otherwise, say there's no image.
+        ParseFile photo = SnackList.getInstance().get(position).getPhoto();
+        if(photo != null){
+            holder.photo.setVisibility(View.VISIBLE);
+            holder.textOverlay.setVisibility(View.GONE);
+            ImageLoader.getInstance(context).displayImage(photo.getUrl(), holder.photo);
+            holder.textOverlay.setText("");
+        } else{
+            holder.photo.setVisibility(View.GONE);
+            holder.textOverlay.setVisibility(View.VISIBLE);
+            holder.photo.setImageDrawable(null);
+            holder.textOverlay.setText("text only entry");
+        }
 
         return view;
     }

@@ -5,4 +5,7 @@
         android:title="New"
         app:showAsAction="always"
         android:icon="@drawable/ic_add_white_24dp"/>
+    <item android:id="@+id/action_new_text_only"
+        android:title="Text only entry"
+        app:showAsAction="never"/>
 </menu>
