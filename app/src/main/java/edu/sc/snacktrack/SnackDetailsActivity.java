@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -266,6 +267,41 @@ public class SnackDetailsActivity extends AppCompatActivity {
         }
     }
 
+    private void deleteEntry(){
+        if(progressOverlay != null)
+            progressOverlay.setVisibility(View.VISIBLE);
+
+        SnackList.getInstance().deleteSnack(snackPosition, snackEntry, new DeleteCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null){
+                    updateToast("Entry deleted", Toast.LENGTH_SHORT);
+
+                    // Attempt to delete entry's cached image
+                    if(snackEntry != null){
+                        ParseFile parseFile = snackEntry.getPhoto();
+                        if(parseFile != null){
+                            String url = parseFile.getUrl();
+                            if(url != null){
+                                if(fileCache.getFile(url).delete()){
+                                    Log.d(TAG, "deleteEntry() successfully deleted entry's cached image");
+                                } else{
+                                    Log.d(TAG, "deleteEntry() failed to delete entry's cached image");
+                                }
+                            }
+                        }
+                    }
+                    finish();
+                } else{
+                    updateToast("Unable to delete entry", Toast.LENGTH_SHORT);
+                }
+
+                if(progressOverlay != null)
+                    progressOverlay.setVisibility(View.GONE);
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         super.onCreateOptionsMenu(menu);
@@ -287,6 +323,9 @@ public class SnackDetailsActivity extends AppCompatActivity {
             case R.id.edit_item:
                 setEditModeEnabled(true);
                 item.setVisible(false);
+                return true;
+            case R.id.delete_item:
+                new ConfirmDeleteDialog().show(getSupportFragmentManager(), null);
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -343,6 +382,32 @@ public class SnackDetailsActivity extends AppCompatActivity {
                             activity.loadEntry();
                             activity.setEditModeEnabled(false);
                             activity.editButton.setVisible(true);
+                            dismiss();
+                        }
+                    })
+                    .setNegativeButton("No, wait!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    })
+                    .create();
+        }
+    }
+
+    public static class ConfirmDeleteDialog extends DialogFragment{
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("Really obliterate this entry?")
+                    .setMessage("There is no undo!")
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SnackDetailsActivity activity = (SnackDetailsActivity) getActivity();
+                            activity.deleteEntry();
                             dismiss();
                         }
                     })

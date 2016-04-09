@@ -3,6 +3,7 @@ package edu.sc.snacktrack;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -215,6 +216,12 @@ public class SnackList{
         }
     }
 
+    /**
+     * Edits specified snack entry.
+     *
+     * @param toEdit The snack entry to edit.
+     * @param callback The callback to invoke after completion.
+     */
     public void editSnack(final SnackEntry toEdit, final SaveCallback callback){
         toEdit.saveInBackground(new SaveCallback() {
             @Override
@@ -225,6 +232,13 @@ public class SnackList{
         });
     }
 
+    /**
+     * Edits a snack entry that includes a new image.
+     *
+     * @param toEdit The snack entry to edit.
+     * @param newPhoto The snack entry's new image.
+     * @param callback The callback to invoke after completion.
+     */
     public void editSnack(final SnackEntry toEdit, final ParseFile newPhoto, final SaveCallback callback){
         newPhoto.saveInBackground(new SaveCallback() {
             @Override
@@ -244,6 +258,31 @@ public class SnackList{
                 }
             }
         });
+    }
+
+    /**
+     * Deletes a snack entry.
+     *
+     * @param position Position of the snack entry to delete
+     * @param failsafe The failsafe's object id must match the snack entry at the specified position.
+     * @param callback The callback to invoke after completion.
+     */
+    public void deleteSnack(final int position, final SnackEntry failsafe, final DeleteCallback callback){
+        SnackEntry toDelete = get(position);
+        if(!toDelete.getObjectId().equals(failsafe.getObjectId())){
+            callback.done(new ParseException(ParseException.OTHER_CAUSE, "Invalid delete"));
+        } else{
+            get(position).deleteInBackground(new DeleteCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(e == null){
+                        snacks.remove(position);
+                        notifyUpdateComplete();
+                    }
+                    callback.done(e);
+                }
+            });
+        }
     }
 
     /**

@@ -114,6 +114,7 @@
 
 
     <string name="edit_item">Edit</string>
+    <string name="delete_item">Delete</string>
     <string name="save_button">Save</string>
 
     <string name="previous_entries_help_title">
