@@ -306,11 +306,18 @@ public class SnackDetailsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu){
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_edit_snack_details, menu);
+
+        MenuItem deleteButton = menu.findItem(R.id.delete_item);
+
         editButton = menu.findItem(R.id.edit_item);
 
-        // If this entry doesn't belong to the current user, don't show the edit button.
+        // If this entry doesn't belong to the current user, don't show the edit button
+        // or the delete button.
         // OR if edit mode is already enabled, don't show show the edit button.
-        if(editMode || !ParseUser.getCurrentUser().getObjectId().equals(snackEntry.getOwner().getObjectId())){
+        if(!ParseUser.getCurrentUser().getObjectId().equals(snackEntry.getOwner().getObjectId())){
+            editButton.setVisible(false);
+            deleteButton.setVisible(false);
+        } else if(editMode){
             editButton.setVisible(false);
         }
 
