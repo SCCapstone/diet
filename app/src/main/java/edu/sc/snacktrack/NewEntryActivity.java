@@ -528,7 +528,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
-                    .setTitle("Really discard this entry?")
+                    .setTitle("Discard this entry?")
                     .setIcon(R.mipmap.ic_launcher)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override

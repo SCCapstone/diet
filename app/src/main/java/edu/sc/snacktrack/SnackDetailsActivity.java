@@ -379,7 +379,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
-                    .setTitle("Really discard your changes?")
+                    .setTitle("Discard your changes?")
                     .setIcon(R.mipmap.ic_launcher)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
@@ -407,8 +407,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
             return new AlertDialog.Builder(getActivity())
-                    .setTitle("Really obliterate this entry?")
-                    .setMessage("There is no undo!")
+                    .setTitle("Obliterate this entry?")
                     .setIcon(R.mipmap.ic_launcher)
                     .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                         @Override
