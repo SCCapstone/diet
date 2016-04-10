@@ -413,6 +413,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
                 @Override
                 public void done(ParseException e) {
                     if(e == null){
+                        ParseUser.getCurrentUser().put("lastActiveAt", entry.getCreatedAt());
                         setResult(RESULT_OK);
                         finish();
                     } else{

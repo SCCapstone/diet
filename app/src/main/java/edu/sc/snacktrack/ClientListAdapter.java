@@ -83,8 +83,16 @@ public class ClientListAdapter extends BaseAdapter implements ClientList.UpdateL
         }
         ParseUser user = ClientList.getInstance().get(position);
         holder.name.setText(user.getUsername());
-        String lastUpdate = "Last Entry Date: " + getLatestEntryData(user);
-        holder.date.setText(lastUpdate);
+        //String lastUpdate = "Last Entry Date: " + getLatestEntryData(user);
+        //holder.date.setText(lastUpdate);
+
+        holder.date.setText("Last active at: ");
+        if(user.getDate("lastActiveAt") != null){
+            holder.date.append(SimpleDateFormat.getInstance().format(user.getDate("lastActiveAt")));
+        } else{
+            holder.date.append("Unknown");
+        }
+
         return view;
     }
 
