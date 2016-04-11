@@ -189,6 +189,8 @@ public class SnackDetailsActivity extends AppCompatActivity {
     }
 
     private void saveEntry() {
+        final File newImageFile = this.newImageFile;
+
         setEditModeEnabled(false);
         progressOverlay.setVisibility(View.VISIBLE);
 
