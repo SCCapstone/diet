@@ -5,6 +5,24 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="ImageViewerTheme" parent = "Theme.AppCompat">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:actionBarStyle">@style/TransparentBlackActionBar</item>
+
+        <!-- for compatibility -->
+        <item name="windowActionBarOverlay">true</item>
+        <item name="actionBarStyle">@style/TransparentBlackActionBar</item>
+    </style>
+
+    <color name="TransparentBlack">#A0000000</color>
+
+    <style name="TransparentBlackActionBar" parent="Widget.AppCompat.ActionBar.Solid">
+        <item name="android:background">@color/TransparentBlack</item>
+
+        <!-- for compatibility -->
+        <item name="background">@color/TransparentBlack</item>
+    </style>
+
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash</item>
     </style>

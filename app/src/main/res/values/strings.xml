@@ -68,6 +68,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">WELCOME TO \nSNACKTRACK</string>
     <string name="title_activity_snack_details">Snack Details</string>
+    <string name="title_activity_image_viewer">Image Viewer</string>
 
     <!-- Settings strings -->
     <string name="password_text">Change Password</string>

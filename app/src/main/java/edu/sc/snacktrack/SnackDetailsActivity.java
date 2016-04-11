@@ -108,7 +108,18 @@ public class SnackDetailsActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto();
+                if(editMode){
+                    takePhoto();
+                } else if(snackEntry.getPhoto() != null){
+                    // Show full sized image
+                    Intent intent = new Intent(SnackDetailsActivity.this, ImageViewerActivity.class);
+                    intent.putExtra(ImageViewerActivity.FILE_PATH_KEY, fileCache.getFile(
+                            snackEntry.getPhoto().getUrl()
+                    ).getAbsolutePath());
+                    startActivity(intent);
+                } else{
+                    updateToast("No photo to view.", Toast.LENGTH_SHORT);
+                }
             }
         });
 
@@ -179,7 +190,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
     }
 
     private void setEditModeEnabled(boolean enabled){
-        imageView.setEnabled(enabled);
+        //imageView.setEnabled(enabled);
         descriptionEditText.setEnabled(enabled);
         mealTypeSpinner.setEnabled(enabled);
         scanContentText.setEnabled(enabled);

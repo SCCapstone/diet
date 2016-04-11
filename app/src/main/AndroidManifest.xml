@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.sc.snacktrack" >
+    package="edu.sc.snacktrack">
 
     <!-- Parse -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -8,16 +8,20 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- Parse -->
 
+
     <!-- Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <!-- Camera -->
 
+
     <!-- Reminders -->
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Reminders -->
+
 
     <!-- PARSE PUSH -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -31,18 +35,18 @@
     -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
+    <permission
+        android:name="edu.sc.snacktrack.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
 
-    <permission android:protectionLevel="signature"
-        android:name="edu.sc.snacktrack.permission.C2D_MESSAGE" />
     <uses-permission android:name="edu.sc.snacktrack.permission.C2D_MESSAGE" />
     <!-- PARSE PUSH -->
-
     <application
         android:name=".SnackTrackApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
 
         <!-- Parse Application ID and Client Key -->
         <meta-data
@@ -56,7 +60,7 @@
         <activity
             android:name=".SplashScreen"
             android:label="@string/app_name"
-            android:theme="@style/SplashTheme" >
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -66,47 +70,48 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:windowSoftInputMode="stateHidden|adjustResize">
-        </activity>
+            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login" >
-        </activity>
+            android:label="@string/title_activity_login"></activity>
         <activity
             android:name=".NewEntryActivity"
             android:label="@string/title_activity_new_entry"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:parentActivityName=".MainActivity">
-        </activity>
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <activity
             android:name=".EditDescriptionActivity"
             android:label="@string/title_activity_edit_description"
-            android:windowSoftInputMode="stateVisible|adjustResize">
-        </activity>
+            android:windowSoftInputMode="stateVisible|adjustResize"></activity>
         <activity
             android:name=".ReminderAlarm"
             android:launchMode="singleInstance"
-            android:theme="@style/TransparentCompat">
-        </activity>
-        <activity
-            android:name=".chat.ChatActivity">
-        </activity>
+            android:theme="@style/TransparentCompat"></activity>
+        <activity android:name=".chat.ChatActivity"></activity>
         <activity
             android:name=".SnackDetailsActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:label="@string/title_activity_snack_details">
-        </activity>
+            android:label="@string/title_activity_snack_details"
+            android:windowSoftInputMode="stateHidden"></activity>
+
+        <activity
+            android:name=".ImageViewerActivity"
+            android:theme="@style/ImageViewerTheme"
+            android:label="@string/title_activity_image_viewer"/>
+
+
         <receiver
             android:name=".ReminderReceiver"
             android:process=":remote">
             <intent-filter>
-                <action android:name="edu.sc.snacktrack.broadcast.ALARM"/>
+                <action android:name="edu.sc.snacktrack.broadcast.ALARM" />
             </intent-filter>
         </receiver>
 
         <!-- PARSE PUSH -->
         <service android:name="com.parse.PushService" />
-        <receiver android:name="edu.sc.snacktrack.PushBroadcastReceiver"
+
+        <receiver
+            android:name=".PushBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
@@ -114,7 +119,8 @@
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.parse.GcmBroadcastReceiver"
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -126,4 +132,5 @@
         <!-- PARSE PUSH -->
 
     </application>
+
 </manifest>
