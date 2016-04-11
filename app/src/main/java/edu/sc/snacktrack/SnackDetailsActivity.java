@@ -46,6 +46,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
     private static final String STATE_SCAN_CONTENT_TEXT = "stateScanContentText";
     private static final String STATE_SCAN_DETAILS_TEXT = "stateScanDetailsText";
     private static final String STATE_NEW_IMAGE_FILE = "stateNewImageFile";
+    private static final String STATE_CURRENT_IMAGE_FILE = "stateLastNewImageFile";
     private static final String STATE_EDIT_MODE = "stateEditMode";
 
     private ImageView imageView;
@@ -63,6 +64,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
     private SnackEntry snackEntry;
     private int snackPosition;
 
+    private File currentImageFile;
     private File newImageFile;
 
     private boolean editMode = false;
@@ -145,10 +147,11 @@ public class SnackDetailsActivity extends AppCompatActivity {
     private void loadEntrySavedState(Bundle savedInstanceState){
         editMode = savedInstanceState.getBoolean(STATE_EDIT_MODE);
         newImageFile = (File) savedInstanceState.getSerializable(STATE_NEW_IMAGE_FILE);
+        currentImageFile = (File) savedInstanceState.getSerializable(STATE_CURRENT_IMAGE_FILE);
 
         if(editMode){
-            if(newImageFile != null){
-                ImageLoader.getInstance(this).displayImage(newImageFile, imageView);
+            if(currentImageFile != null){
+                ImageLoader.getInstance(this).displayImage(currentImageFile, imageView);
             } else if(snackEntry.getPhoto() != null){
                 ImageLoader.getInstance(this).displayImage(snackEntry.getPhoto().getUrl(), imageView);
             }
@@ -167,6 +170,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(STATE_NEW_IMAGE_FILE, newImageFile);
+        outState.putSerializable(STATE_CURRENT_IMAGE_FILE, currentImageFile);
         outState.putString(STATE_DESCRIPTION_ET, descriptionEditText.getText().toString());
         outState.putString(STATE_SCAN_CONTENT_TEXT, scanContentText.getText().toString());
         outState.putString(STATE_SCAN_DETAILS_TEXT, scanDetailsText.getText().toString());
@@ -185,11 +189,12 @@ public class SnackDetailsActivity extends AppCompatActivity {
 
         if(!enabled){
             newImageFile = null;
+            currentImageFile = null;
         }
     }
 
     private void saveEntry() {
-        final File newImageFile = this.newImageFile;
+        final File currentImageFile = this.currentImageFile;
 
         setEditModeEnabled(false);
         progressOverlay.setVisibility(View.VISIBLE);
@@ -204,7 +209,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
         snackEntry.setScanContent(newScanContent);
         snackEntry.setScanDetails(newScanDetails);
 
-        if (newImageFile == null) {
+        if (currentImageFile == null) {
             SnackList.getInstance().editSnack(snackEntry, new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -220,7 +225,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
                 }
             });
         } else {
-            ParseFile newPhoto = new ParseFile(newImageFile);
+            ParseFile newPhoto = new ParseFile(currentImageFile);
             ParseFile oldPhoto = snackEntry.getPhoto();
             final File oldImageFile;
             if (oldPhoto != null) {
@@ -241,7 +246,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
                         }
 
                         // Cache the new image
-                        newImageFile.renameTo(fileCache.getFile(snackEntry.getPhoto().getUrl()));
+                        currentImageFile.renameTo(fileCache.getFile(snackEntry.getPhoto().getUrl()));
 
 
                     } else {
@@ -350,6 +355,7 @@ public class SnackDetailsActivity extends AppCompatActivity {
         switch (requestCode) {
             case PHOTO_UPDATE:
                 if (resultCode == Activity.RESULT_OK) {
+                    currentImageFile = newImageFile;
                     ImageLoader.getInstance(this).displayImage(newImageFile, imageView);
                 } else {
                     // Attempt to delete the empty image file
