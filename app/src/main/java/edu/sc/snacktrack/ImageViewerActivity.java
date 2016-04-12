@@ -34,6 +34,69 @@ public class ImageViewerActivity extends AppCompatActivity{
     private ImageView imageView;
     private Bitmap bitmap;
 
+    private static final int MAX_SIZE = 2048;
+
+    private int calculateSampleSize(BitmapFactory.Options options, final int maxWidth, final int maxHeight){
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > maxHeight || width > maxWidth) {
+            while ((height / inSampleSize) > MAX_SIZE
+                    && (width / inSampleSize) > MAX_SIZE) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    private void decodeFileAndDisplay(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String filePath = getIntent().getStringExtra(FILE_PATH_KEY);
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(filePath, options);
+
+                options.inSampleSize = calculateSampleSize(options, MAX_SIZE, MAX_SIZE);
+                options.inJustDecodeBounds = false;
+
+                // Load the bitmap
+                Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
+
+                // Rotate based on exif data
+                int rotation;
+                try{
+                    rotation = Utils.getExifRotation(filePath);
+                } catch(IOException e){
+                    rotation = 0;
+                }
+                Matrix matrix = new Matrix();
+                matrix.preRotate(rotation);
+
+                // Get bitmap with the correct rotation applied.
+                ImageViewerActivity.this.bitmap = Bitmap.createBitmap(
+                        bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true
+                );
+
+                // Display the image
+                ImageViewerActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.setAlpha(0f);
+                        imageView.setImageBitmap(ImageViewerActivity.this.bitmap);
+                        imageView.animate()
+                                .alpha(1f)
+                                .setDuration(500);
+                    }
+                });
+            }
+        }).start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +106,9 @@ public class ImageViewerActivity extends AppCompatActivity{
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-
         imageView = (ImageView) findViewById(R.id.imageView);
+
+        // Hide/show the action bar when the image is tapped.
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,42 +129,7 @@ public class ImageViewerActivity extends AppCompatActivity{
         }
 
         if(bitmap == null){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String filePath = getIntent().getStringExtra(FILE_PATH_KEY);
-
-                    // Load full size bitmap
-                    Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-
-                    // Rotate based on exif data
-                    int rotation;
-                    try{
-                        rotation = Utils.getExifRotation(filePath);
-                    } catch(IOException e){
-                        rotation = 0;
-                    }
-                    Matrix matrix = new Matrix();
-                    matrix.preRotate(rotation);
-
-                    // Get bitmap with the correct rotation applied.
-                    ImageViewerActivity.this.bitmap = Bitmap.createBitmap(
-                            bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true
-                    );
-
-                    // Display the image
-                    ImageViewerActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            imageView.setAlpha(0f);
-                            imageView.setImageBitmap(ImageViewerActivity.this.bitmap);
-                            imageView.animate()
-                                    .alpha(1f)
-                                    .setDuration(500);
-                        }
-                    });
-                }
-            }).start();
+            decodeFileAndDisplay();
         } else{
             imageView.setImageBitmap(bitmap);
         }
