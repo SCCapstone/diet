@@ -253,7 +253,6 @@ public class MainActivity extends AppCompatActivity{
             installation.saveInBackground();
         }
 
-        SnackList.getInstance().setUser(ParseUser.getCurrentUser());
         if(SnackList.getInstance().size() == 0){
             SnackList.getInstance().refresh(new FindCallback<SnackEntry>() {
                 @Override
