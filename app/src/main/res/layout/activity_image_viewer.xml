@@ -5,9 +5,11 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <edu.sc.snacktrack.ZoomableImageView
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <include layout="@layout/progress_overlay"/>
 
 </FrameLayout>

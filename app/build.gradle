@@ -51,6 +51,10 @@ dependencies {
     // Optional -- UI testing with UI Automator
     // Note: This project cannot (currently) use UI Acutomator as it requires minSdkVersion >= 18.
     // androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v15:2.1.1'
+
+    // For displaying big images
+    // see https://github.com/davemorrissey/subsampling-scale-image-view
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
 }
 
 dependencies{
