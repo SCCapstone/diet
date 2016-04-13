@@ -345,9 +345,12 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         String mealType;
         String scanDetails;
         String scanContent;
+        ParseUser myDietitian;
+        ParseACL acl;
 
         final SnackEntry entry = new SnackEntry();
         final ParseFile parseFile;
+
         if(currentImageFile != null){
             parseFile = new ParseFile(currentImageFile);
         } else{
@@ -356,9 +359,10 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 
         description = descriptionTextView.getText().toString();
         mealType = mealTypeSpinner.getSelectedItem().toString();
-        //scanDetails = detailsTxt.getText().toString();
         scanContent = contentText.getText().toString();
         scanDetails = detailsText.getText().toString();
+        myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
+        acl = new ParseACL(ParseUser.getCurrentUser());
 
         saving = true;
         setWidgetsEnabled(false);
@@ -368,27 +372,26 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             entry.setDescription(descriptionTextView.getText().toString());
         }
 
-        //if(scanDetails != null && !scanDetails.trim().equals("")){
-       //     entry.setScanDetails(detailsTxt.getText().toString());
-        //}
-
         if(scanContent != null && !scanContent.trim().equals("")){
             entry.setScanContent(contentText.getText().toString());
             Log.d("contentText1", contentText.getText().toString());
         }
+
         if(scanDetails != null && !scanDetails.trim().equals("")){
             entry.setScanDetails(detailsText.getText().toString());
             Log.d("detailsText1", detailsText.getText().toString());
         }
-//        Log.d("scanContent", scanContent);
 
-//        if(mealType != null && !mealType.trim().equals(getResources().getString(R.string.default_spinner_item))){
         if(mealType != null){
             entry.setTypeOfMeal(mealTypeSpinner.getSelectedItem().toString());
         }
 
+        if(myDietitian != null){
+            acl.setReadAccess(myDietitian, true);
+        }
+
         entry.setOwner(ParseUser.getCurrentUser());
-        entry.setACL(new ParseACL(ParseUser.getCurrentUser()));
+        entry.setACL(acl);
 
         if(parseFile != null){
             SnackList.getInstance().addSnack(entry, parseFile, new SaveCallback() {
