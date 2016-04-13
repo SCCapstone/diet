@@ -1,5 +1,7 @@
 # SnackTrack
 
+**Website:** [**http://sccapstone.github.io/diet/**](http://sccapstone.github.io/diet/)
+
 SnackTrack is an Android application that connects dietitians and their patients. SnackTrack's primary goal is to assist with 24 hour diet recalls. During these recalls, the patient is required to recite everything he or she has consumed within the past 24 hours. SnackTrack provides a place for patients to take pictures and keep notes of what they eat throughout the day.
 
 There are two types of users in SnackTrack: patients and dietitians. Patients can choose their dietitian, which gives the dietitian access to view the patient's snack entries.
