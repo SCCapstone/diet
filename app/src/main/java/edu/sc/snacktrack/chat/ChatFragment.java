@@ -50,7 +50,7 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
 
     private ChatAdapter chatAdapter;
 
-    private Activity myActivity;
+    private Context context;
 
     private Toast toast;
 
@@ -147,7 +147,7 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.myActivity = (Activity) context;
+        this.context = context;
     }
 
     @Override
@@ -420,11 +420,15 @@ public class ChatFragment extends Fragment implements Conversations.UpdateListen
         if(toast != null){
             toast.cancel();
         }
-        toast = Toast.makeText(
-                getContext(),
-                text,
-                length
-        );
+
+        if(context != null){
+            toast = Toast.makeText(
+                    context,
+                    text,
+                    length
+            );
+        }
+
         toast.show();
     }
 }
