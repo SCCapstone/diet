@@ -357,12 +357,12 @@ public class NewAccountFragment extends Fragment {
         String selection = (String) rb.getText();
 
         if(selection.equals("Dietitian")) {
-            Log.i("Testing","isDietitian = true");
+            Log.i("Testing", "isDietitian = true");
             return "true";
         }
 
         else {
-            Log.i("Testing","isDietitian = false");
+            Log.i("Testing", "isDietitian = false");
             return "false";
         }
     }
@@ -395,12 +395,15 @@ public class NewAccountFragment extends Fragment {
         if(toast != null){
             toast.cancel();
         }
-        toast = Toast.makeText(
-                getContext(),
-                text,
-                length
-        );
-        toast.show();
+
+        if(context != null){
+            toast = Toast.makeText(
+                    context,
+                    text,
+                    length
+            );
+            toast.show();
+        }
     }
 
     private void startMainActivity(){

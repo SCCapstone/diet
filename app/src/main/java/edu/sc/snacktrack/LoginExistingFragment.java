@@ -106,12 +106,14 @@ public class LoginExistingFragment extends Fragment {
             toast.cancel();
         }
 
-        toast = Toast.makeText(
-                getContext(),
-                text,
-                length
-        );
-        toast.show();
+        if(context != null){
+            toast = Toast.makeText(
+                    context,
+                    text,
+                    length
+            );
+            toast.show();
+        }
     }
 
     /**
