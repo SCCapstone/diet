@@ -160,12 +160,6 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             loadPhotoPreview(currentImageFile);
         }
 
-        // If saving is in progress, show the progress overlay and disable widgets.
-        if(saving){
-            progressOverlay.setVisibility(View.VISIBLE);
-            setWidgetsEnabled(false);
-        }
-
 //        // Initialize the file cache
 //        this.fileCache = new FileCache(this);
 //
@@ -178,6 +172,12 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
 //        formatTxt = (TextView)findViewById(R.id.scan_format);
 //        contentTxt = (TextView)findViewById(R.id.scan_content);
         scanBtn.setOnClickListener(this);
+
+        // If saving is in progress, show the progress overlay and disable widgets.
+        if(saving){
+            progressOverlay.setVisibility(View.VISIBLE);
+            setWidgetsEnabled(false);
+        }
 
         fileCache = new FileCache(this);
     }

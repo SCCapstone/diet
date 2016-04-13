@@ -207,6 +207,8 @@ public class SnackList{
                     if (e == null) {
                         entry.setPhoto(photo);
                         addSnack(entry, callback);
+                    } else if(callback != null){
+                        callback.done(e);
                     }
                 }
             });
