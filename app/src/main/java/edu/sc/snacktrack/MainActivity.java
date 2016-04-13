@@ -179,9 +179,11 @@ public class MainActivity extends AppCompatActivity{
                 myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
-                        footerDietitian.setClickable(false);
-                        footerDietitian.setHint("My Dietitian: " + user.getUsername());
-                        footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
+                        if(e == null){
+                            footerDietitian.setClickable(false);
+                            footerDietitian.setHint("My Dietitian: " + user.getUsername());
+                            footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
+                        }
                     }
                 });
             }
@@ -201,9 +203,11 @@ public class MainActivity extends AppCompatActivity{
                 myDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
-                        footerDietitian.setClickable(false);
-                        footerDietitian.setHint("My Dietitian: " + user.getUsername());
-                        footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
+                        if(e == null){
+                            footerDietitian.setClickable(false);
+                            footerDietitian.setHint("My Dietitian: " + user.getUsername());
+                            footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
+                        }
                     }
                 });
             }
