@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Refresh Account"
-        android:textStyle="bold"
-        android:textColor="#cccccc"
-        android:textSize="25sp"
-        android:background="#003300"
-        android:gravity="center"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp" />
+    <LinearLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="#003300"
-        android:padding="5dp"
-        android:text="@string/refresh_account_instructions"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Refresh Account"
+            android:textStyle="bold"
+            android:textColor="#cccccc"
+            android:textSize="25sp"
+            android:background="#003300"
+            android:gravity="center"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:indeterminate="false"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:progress="0"
-        android:max="100"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#003300"
+            android:padding="5dp"
+            android:text="@string/refresh_account_instructions"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/refresh_account"
-        android:text="Refresh Account"/>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:indeterminate="false"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progress="0"
+            android:max="100"/>
 
-</LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/refresh_account"
+            android:text="Refresh Account"/>
+    </LinearLayout>
+</ScrollView>
