@@ -40,8 +40,6 @@ public class RefreshAccountDialog extends DialogFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_refresh_account_dialog, container);
-        getDialog().getWindow().setTitle("Refresh Account");
-
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         Button button = (Button) view.findViewById(R.id.refresh_account);
@@ -75,11 +73,14 @@ public class RefreshAccountDialog extends DialogFragment{
         protected ParseException doInBackground(RefreshAccountDialog... params) {
             fragment = params[0];
 
+
             ParseQuery<SnackEntry> snackQuery = new ParseQuery<>(SnackEntry.class);
             snackQuery.whereEqualTo("owner", ParseUser.getCurrentUser());
 
             try{
                 List<SnackEntry> entries = snackQuery.find();
+                int progress = 0;
+                final int maxProgress = entries.size() * 3;
 
                 for(int i = 0; i < entries.size(); ++i){
                     Log.d("RefreshAccountDialog", ""+i);
@@ -89,16 +90,18 @@ public class RefreshAccountDialog extends DialogFragment{
                     List<ParseRole> roles;
                     roleQuery.whereEqualTo("name", "role_" + ParseUser.getCurrentUser().getObjectId());
                     roles = roleQuery.find();
+                    publishProgress(++progress, maxProgress);
                     if(roles.size() != 0){
                         roles.get(0).delete();
                     }
                     ParseRole role = new ParseRole("role_" + ParseUser.getCurrentUser().getObjectId());
                     role.setACL(acl);
                     role.save();
+                    publishProgress(++progress, maxProgress);
                     acl.setRoleReadAccess(role, true);
-                    publishProgress(i+1, entries.size());
                     entry.setACL(acl);
                     entry.save();
+                    publishProgress(++progress, maxProgress);
                 }
             } catch(ParseException e){
                 return e;
@@ -142,13 +145,17 @@ public class RefreshAccountDialog extends DialogFragment{
                     ).show();
                 }
 
-            } else if(fragment != null && fragment.context != null){
-                Toast.makeText(
-                        fragment.context,
-                        "Account refreshed!",
-                        Toast.LENGTH_LONG
-                ).show();
-                fragment.dismiss();
+            } else{
+                if(fragment != null && fragment.context != null){
+                    Toast.makeText(
+                            fragment.context,
+                            "Account refreshed!",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+                if(fragment != null){
+                    fragment.dismiss();
+                }
             }
         }
     }
