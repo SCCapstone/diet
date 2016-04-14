@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class RefreshAccountDialog extends DialogFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_refresh_account_dialog, container);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         Button button = (Button) view.findViewById(R.id.refresh_account);
