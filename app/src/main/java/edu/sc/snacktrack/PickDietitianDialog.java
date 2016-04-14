@@ -16,11 +16,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
@@ -136,6 +139,7 @@ public class PickDietitianDialog extends DialogFragment implements DietitianList
                     if (!objects.isEmpty()) {
                         ParseUser result = objects.get(0);
                         ParseUser.getCurrentUser().put("myDietitian", result);
+                        ParseUser.getCurrentUser().saveInBackground();
                         giveAccess(result);
                     } else
                         Toast.makeText(cont, "User not found", Toast.LENGTH_LONG).show();
@@ -147,29 +151,64 @@ public class PickDietitianDialog extends DialogFragment implements DietitianList
 
     private void giveAccess(final ParseUser targetUser) {
 
-        final ParseACL entryACL = new ParseACL();
-
-        ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
-        query.whereEqualTo("owner", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<SnackEntry>() {
-
+        ParseQuery<ParseRole> query = ParseRole.getQuery();
+        query.whereEqualTo("name", "role_" + ParseUser.getCurrentUser().getObjectId());
+        query.findInBackground(new FindCallback<ParseRole>() {
             @Override
-            public void done(List<SnackEntry> refreshedSnacks, ParseException e) {
-                if (e == null) {
-                    entryACL.setReadAccess(targetUser, true);
-                    entryACL.setWriteAccess(targetUser, false);
-                    entryACL.setReadAccess(ParseUser.getCurrentUser(), true);
-                    entryACL.setWriteAccess(ParseUser.getCurrentUser(), true);
-
-                    for (ParseObject entry : refreshedSnacks) {
-                        entry.setACL(entryACL);
-                        entry.saveInBackground();
+            public void done(List<ParseRole> objects, ParseException e) {
+                if(e == null){
+                    ParseRole role;
+                    if(objects.size() == 0){
+                        role = new ParseRole("role_" + ParseUser.getCurrentUser().getObjectId());
+                    } else{
+                        role = objects.get(0);
                     }
-
-                    Toast.makeText(cont, "Successfully granted " + targetUser.getUsername().toString() + " access!", Toast.LENGTH_LONG).show();
-                } else
-                    Toast.makeText(cont, "Something went wrong when fetching SnackList...", Toast.LENGTH_LONG).show();
+                    role.getUsers().add(targetUser);
+                    role.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if(e == null){
+                                Toast.makeText(
+                                        cont,
+                                        "Successfully granted " + targetUser.getUsername() + " access!",
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            } else{
+                                Toast.makeText(
+                                        cont,
+                                        "Failed to grant " + targetUser.getUsername() + " access",
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                        }
+                    });
+                }
             }
         });
+
+//        final ParseACL entryACL = new ParseACL();
+//
+//        ParseQuery<SnackEntry> query = ParseQuery.getQuery(SnackEntry.class);
+//        query.whereEqualTo("owner", ParseUser.getCurrentUser());
+//        query.findInBackground(new FindCallback<SnackEntry>() {
+//
+//            @Override
+//            public void done(List<SnackEntry> refreshedSnacks, ParseException e) {
+//                if (e == null) {
+//                    entryACL.setReadAccess(targetUser, true);
+//                    entryACL.setWriteAccess(targetUser, false);
+//                    entryACL.setReadAccess(ParseUser.getCurrentUser(), true);
+//                    entryACL.setWriteAccess(ParseUser.getCurrentUser(), true);
+//
+//                    for (ParseObject entry : refreshedSnacks) {
+//                        entry.setACL(entryACL);
+//                        entry.saveInBackground();
+//                    }
+//
+//                    Toast.makeText(cont, "Successfully granted " + targetUser.getUsername().toString() + " access!", Toast.LENGTH_LONG).show();
+//                } else
+//                    Toast.makeText(cont, "Something went wrong when fetching SnackList...", Toast.LENGTH_LONG).show();
+//            }
+//        });
     }
 }

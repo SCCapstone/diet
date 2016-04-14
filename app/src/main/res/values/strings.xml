@@ -126,4 +126,10 @@
         of your entries once you add some. To add your first entry, tap the add (+)
         button at the top right of the screen.
     </string>
+
+    <string name="refresh_account_instructions">
+        If SnackTrack\'s database structure ever changes and/or your dietitian cannot see your
+        entries, you may need to refresh your account. You can do that here. You will keep all
+        of your existing entries, but you will need to rechoose your dietitian.
+    </string>
 </resources>

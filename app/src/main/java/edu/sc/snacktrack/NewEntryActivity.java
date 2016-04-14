@@ -28,6 +28,8 @@ import android.widget.Toast;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -345,7 +347,6 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         String mealType;
         String scanDetails;
         String scanContent;
-        ParseUser myDietitian;
         ParseACL acl;
 
         final SnackEntry entry = new SnackEntry();
@@ -361,8 +362,8 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
         mealType = mealTypeSpinner.getSelectedItem().toString();
         scanContent = contentText.getText().toString();
         scanDetails = detailsText.getText().toString();
-        myDietitian = ParseUser.getCurrentUser().getParseUser("myDietitian");
         acl = new ParseACL(ParseUser.getCurrentUser());
+        acl.setRoleReadAccess("role_" + ParseUser.getCurrentUser().getObjectId(), true);
 
         saving = true;
         setWidgetsEnabled(false);
@@ -386,9 +387,9 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
             entry.setTypeOfMeal(mealTypeSpinner.getSelectedItem().toString());
         }
 
-        if(myDietitian != null){
-            acl.setReadAccess(myDietitian, true);
-        }
+//        if(myDietitian != null){
+//            acl.setReadAccess(myDietitian, true);
+//        }
 
         entry.setOwner(ParseUser.getCurrentUser());
         entry.setACL(acl);

@@ -21,9 +21,12 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 public class NewAccountFragment extends Fragment {
@@ -130,7 +133,7 @@ public class NewAccountFragment extends Fragment {
 
                 // Finally, check if a radio button was selected
                 if(isSelected(selectionInvalidReason)) {
-                    ParseUser newUser = new ParseUser();
+                    final ParseUser newUser = new ParseUser();
                     newUser.setUsername(username);
                     newUser.setPassword(password);
 
@@ -147,7 +150,18 @@ public class NewAccountFragment extends Fragment {
                         public void done(ParseException e) {
                             if (e == null) {
                                 // Sign up was successful
-                                startMainActivity();
+                                ParseRole role = new ParseRole("role_" + newUser.getObjectId());
+                                role.setACL(new ParseACL(newUser));
+                                role.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        if(e == null){
+                                            startMainActivity();
+                                        } else{
+                                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+                                        }
+                                    }
+                                });
                             } else {
                                 updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                             }

@@ -11,6 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
+import java.util.List;
+
 /**
  * Created by spitzfor on 1/25/2016.
  */
@@ -36,6 +42,8 @@ public class SettingsFragment extends Fragment {
         Button passwordButton = (Button) view.findViewById(R.id.password_change);
         //Button emailButton = (Button) view.findViewById(R.id.email_change);
         Button myDietitianButton = (Button) view.findViewById(R.id.my_dietitian);
+
+        Button refreshAccountButton = (Button) view.findViewById(R.id.refresh_account);
 
         passwordButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -95,6 +103,14 @@ public class SettingsFragment extends Fragment {
 //                DietitianList.getInstance().refresh(null);
 //                DisplayDietitiansFragment dispDietFrag = new DisplayDietitiansFragment();
 //                getFragmentManager().beginTransaction().replace(R.id.content_frame, dispDietFrag).addToBackStack(null).commit();
+            }
+        });
+
+        refreshAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RefreshAccountDialog fragment = new RefreshAccountDialog();
+                fragment.show(getFragmentManager(), "refreshAccount");
             }
         });
 

@@ -89,6 +89,26 @@
             android:id="@+id/separator_4"
             android:layout_below="@id/my_dietitian"
             android:background="#003300"/>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="75dp"
+            android:id="@+id/refresh_account"
+            android:hint="Refresh Account"
+            android:textColorHint="#cccccc"
+            android:background="#111"
+            android:textSize="22sp"
+            android:gravity="left|center_vertical"
+            android:layout_below="@id/separator_4"
+            android:paddingLeft="20dp"
+            android:clickable="true" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:id="@+id/separator_5"
+            android:layout_below="@id/refresh_account"
+            android:background="#003300"/>
 <!--
         <TextView
             android:layout_width="fill_parent"
