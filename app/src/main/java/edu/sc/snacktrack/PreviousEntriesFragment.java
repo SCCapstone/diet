@@ -43,8 +43,11 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
 
         // Show the help message if appropriate.
         // That is, if we haven't already showed it for the current user this session and the
-        // current user has zero entries.
-        if(lastShowedHelpFor != ParseUser.getCurrentUser() && !showingHelp && SnackList.getInstance().size() == 0){
+        // current user has zero entries. Only show the help message if the SnackList is pointing
+        // at the current user.
+        if(lastShowedHelpFor != ParseUser.getCurrentUser()
+                && !showingHelp && SnackList.getInstance().size() == 0
+                && ParseUser.getCurrentUser().equals(SnackList.getInstance().getUser())){
             showHelpMessage();
         }
     }
