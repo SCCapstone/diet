@@ -48,7 +48,12 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
         if(lastShowedHelpFor != ParseUser.getCurrentUser()
                 && !showingHelp && SnackList.getInstance().size() == 0
                 && ParseUser.getCurrentUser().equals(SnackList.getInstance().getUser())){
-            showHelpMessage();
+            try{
+                showHelpMessage();
+            } catch(IllegalStateException ignored){
+                // In the case that onSaveInstanceState has been already been called, we ignore
+                // the exception.
+            }
         }
     }
 
