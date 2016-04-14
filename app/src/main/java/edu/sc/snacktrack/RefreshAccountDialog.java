@@ -82,26 +82,27 @@ public class RefreshAccountDialog extends DialogFragment{
             try{
                 List<SnackEntry> entries = snackQuery.find();
                 int progress = 0;
-                final int maxProgress = entries.size() * 3;
+                final int maxProgress = entries.size() * 1;
 
+                // Recreate the read access role for this user.
+                ParseQuery<ParseRole> roleQuery = ParseRole.getQuery();
+                List<ParseRole> roles = roleQuery.find();
+                ParseRole role = new ParseRole("role_" + ParseUser.getCurrentUser().getObjectId());
+                if(roles.size() != 0){
+                    roles.get(0).delete();
+                }
+                role.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                role.save();
+
+                // Create the ACL for all entries.
+                ParseACL entryACL = new ParseACL(ParseUser.getCurrentUser());
+                entryACL.setRoleReadAccess(role, true);
+
+                // Set the correct ACL for all entries.
                 for(int i = 0; i < entries.size(); ++i){
                     Log.d("RefreshAccountDialog", ""+i);
                     SnackEntry entry = entries.get(i);
-                    ParseACL acl = new ParseACL(ParseUser.getCurrentUser());
-                    ParseQuery<ParseRole> roleQuery = ParseRole.getQuery();
-                    List<ParseRole> roles;
-                    roleQuery.whereEqualTo("name", "role_" + ParseUser.getCurrentUser().getObjectId());
-                    roles = roleQuery.find();
-                    publishProgress(++progress, maxProgress);
-                    if(roles.size() != 0){
-                        roles.get(0).delete();
-                    }
-                    ParseRole role = new ParseRole("role_" + ParseUser.getCurrentUser().getObjectId());
-                    role.setACL(acl);
-                    role.save();
-                    publishProgress(++progress, maxProgress);
-                    acl.setRoleReadAccess(role, true);
-                    entry.setACL(acl);
+                    entry.setACL(entryACL);
                     entry.save();
                     publishProgress(++progress, maxProgress);
                 }
@@ -109,6 +110,7 @@ public class RefreshAccountDialog extends DialogFragment{
                 return e;
             }
 
+            // Remove the (now invalid) pointer to this user's dietitian.
             ParseUser.getCurrentUser().remove("myDietitian");
             try {
                 ParseUser.getCurrentUser().save();
