@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseException;
 import com.parse.ParseFile;
 
 import java.text.Format;
@@ -32,7 +33,7 @@ public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateLis
     }
 
     @Override
-    public void onSnackListUpdateComplete() {
+    public void onSnackListUpdateComplete(ParseException e) {
         notifyDataSetChanged();
     }
 

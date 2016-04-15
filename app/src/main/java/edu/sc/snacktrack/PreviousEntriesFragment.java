@@ -1,6 +1,8 @@
 package edu.sc.snacktrack;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.ParseException;
 import com.parse.ParseUser;
 
 public class PreviousEntriesFragment extends Fragment implements SnackList.UpdateListener{
@@ -33,8 +36,27 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
     private static ParseUser lastShowedHelpFor = null;
     private static boolean showingHelp = false;
 
+    private Activity myActivity;
+
     @Override
-    public void onSnackListUpdateComplete() {
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        myActivity = (Activity) context;
+        myActivity = (Activity) context;
+    }
+
+    @Override
+    public void onSnackListUpdateComplete(ParseException e) {
+        // Start the login activity if the session token is invalid.
+        if(e != null && e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+            if(myActivity != null){
+                Intent startLoginIntent = new Intent(myActivity, LoginActivity.class);
+                ParseUser.logOutInBackground();
+                myActivity.finish();
+                startActivity(startLoginIntent);
+            }
+        }
+
         adapter.notifyDataSetChanged();
 
         if(progressOverlay != null){

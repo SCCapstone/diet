@@ -53,7 +53,7 @@ public class SnackList{
         /**
          * Called for each registered UpdateListener when an update completes.
          */
-        void onSnackListUpdateComplete();
+        void onSnackListUpdateComplete(ParseException e);
 
         /**
          * Called for each registered UpdateListener when an update starts. Only called for
@@ -152,9 +152,9 @@ public class SnackList{
     /**
      * Notifies all UpdateListeners that an update has completed.
      */
-    private void notifyUpdateComplete(){
+    private void notifyUpdateComplete(ParseException e){
         for(UpdateListener listener : updateListeners){
-            listener.onSnackListUpdateComplete();
+            listener.onSnackListUpdateComplete(e);
         }
 
         isUpdating = false;
@@ -175,7 +175,7 @@ public class SnackList{
                     if(e == null){
                         snacks.add(0, entry);
                     }
-                    notifyUpdateComplete();
+                    notifyUpdateComplete(e);
 
                     if(callback != null){
                         callback.done(e);
@@ -184,7 +184,7 @@ public class SnackList{
             });
         } else if(!snacks.contains(entry)){
             snacks.add(0, entry);
-            notifyUpdateComplete();
+            notifyUpdateComplete(null);
             if(callback != null){
                 callback.done(null);
             }
@@ -228,7 +228,7 @@ public class SnackList{
         toEdit.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                notifyUpdateComplete();
+                notifyUpdateComplete(e);
                 callback.done(e);
             }
         });
@@ -251,7 +251,7 @@ public class SnackList{
                         @Override
                         public void done(ParseException e) {
                             callback.done(e);
-                            notifyUpdateComplete();
+                            notifyUpdateComplete(e);
                         }
                     });
                 } else{
@@ -279,7 +279,7 @@ public class SnackList{
                 public void done(ParseException e) {
                     if(e == null){
                         snacks.remove(position);
-                        notifyUpdateComplete();
+                        notifyUpdateComplete(e);
                     }
                     callback.done(e);
                 }
@@ -313,7 +313,7 @@ public class SnackList{
                 if (callback != null) {
                     callback.done(refreshedSnacks, e);
                 }
-                notifyUpdateComplete();
+                notifyUpdateComplete(e);
             }
         });
     }
@@ -333,7 +333,7 @@ public class SnackList{
                         snacks.addAll(moreSnacks);
                     }
 
-                    notifyUpdateComplete();
+                    notifyUpdateComplete(e);
                 }
             });
         }
