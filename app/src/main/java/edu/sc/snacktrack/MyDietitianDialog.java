@@ -153,11 +153,20 @@ public class MyDietitianDialog extends DialogFragment {
                         entry.saveInBackground();
                     }
 
-                    Toast.makeText(cont, "Successfully granted " + targetUser.getUsername().toString() + " access!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            cont,
+                            "Successfully granted dietitian " + targetUser.getUsername() + " access!",
+                            Toast.LENGTH_LONG
+                    ).show();
                 }
 
                 else
-                    Toast.makeText(cont, "Something went wrong when fetching SnackList...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            cont,
+                            "Failed to grant access to dietitian " + targetUser.getUsername()
+                                    + " (" + e.getMessage() + ")",
+                            Toast.LENGTH_LONG
+                    ).show();
             }
         });
     }

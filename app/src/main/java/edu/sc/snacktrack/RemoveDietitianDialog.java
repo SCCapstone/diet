@@ -98,12 +98,19 @@ public class RemoveDietitianDialog extends DialogFragment {
                             } else{
                                 Toast.makeText(
                                         cont,
-                                        "Failed to remove " + targetUser.getUsername(),
+                                        "Failed to remove dietitian" + targetUser.getUsername(),
                                         Toast.LENGTH_LONG
                                 ).show();
                             }
                         }
                     });
+                } else{
+                    Toast.makeText(
+                            cont,
+                            "Failed to remove dietitian " + targetUser.getUsername()
+                            + " (" + e.getMessage() + ")",
+                            Toast.LENGTH_LONG
+                    ).show();
                 }
             }
         });
