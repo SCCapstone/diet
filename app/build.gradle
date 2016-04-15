@@ -55,6 +55,9 @@ dependencies {
     // For displaying big images
     // see https://github.com/davemorrissey/subsampling-scale-image-view
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
+
+    // For writing csv files
+    compile 'com.opencsv:opencsv:3.7'
 }
 
 dependencies{
