@@ -8,4 +8,11 @@
     <item android:id="@+id/action_new_text_only"
         android:title="Text only entry"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_export_csv"
+        android:title="Export to CSV"
+        app:showAsAction="never"/>
+    <item android:id="@+id/action_browse_exports"
+        android:title="Browse exports"
+        app:showAsAction="never"/>
+
 </menu>

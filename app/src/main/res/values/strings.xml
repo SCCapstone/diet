@@ -132,4 +132,9 @@
         entries, you may need to refresh your account. You can do that here. You will keep all
         of your existing entries, but you will need to rechoose your dietitian.
     </string>
+
+    <string name="browse_exports_instructions">
+        You can use a file explorer app to navigate to your exports folder. Your exports may be
+        found in this folder:\n\n
+    </string>
 </resources>

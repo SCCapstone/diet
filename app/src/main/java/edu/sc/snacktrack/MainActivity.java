@@ -2,6 +2,8 @@ package edu.sc.snacktrack;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -547,6 +551,21 @@ public class MainActivity extends AppCompatActivity{
             case R.id.action_new_text_only:
                 Intent intent = new Intent(this, NewEntryActivity.class);
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
+                break;
+            case R.id.action_export_csv:
+                SnackExporter.export(ParseUser.getCurrentUser(), SnackExporter.EXPORT_EVERYTHING, new SnackExporter.Callback() {
+                    @Override
+                    public void callback(File file) {
+                        if (file != null) {
+                            updateToast("CSV exported to " + file.getPath(), Toast.LENGTH_LONG);
+                        } else {
+                            updateToast("CSV export failed!", Toast.LENGTH_LONG);
+                        }
+                    }
+                });
+                break;
+            case R.id.action_browse_exports:
+                new BrowseExportsDialog().show(getSupportFragmentManager(), null);
                 break;
         }
 
