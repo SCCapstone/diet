@@ -402,6 +402,7 @@ public class NewEntryActivity extends AppCompatActivity implements OnClickListen
                 public void done(ParseException e) {
                     if(e == null){
                         ParseUser.getCurrentUser().put("lastActiveAt", entry.getCreatedAt());
+                        ParseUser.getCurrentUser().saveInBackground();
                         setResult(RESULT_OK);
                         finish();
                     } else{
