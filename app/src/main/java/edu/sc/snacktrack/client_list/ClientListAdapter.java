@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.client_list;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,15 +8,15 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import edu.sc.snacktrack.R;
+import edu.sc.snacktrack.snacks.SnackEntry;
 
 /**
  * Created by spitzfor on 2/16/2016.

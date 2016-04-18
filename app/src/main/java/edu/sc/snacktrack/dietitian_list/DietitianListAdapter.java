@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.dietitian_list;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import edu.sc.snacktrack.R;
 
 /**
  * Created by spitzfor on 3/22/2016.

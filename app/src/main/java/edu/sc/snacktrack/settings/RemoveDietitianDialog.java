@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.settings;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,15 +11,15 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
-import com.parse.ParseACL;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.List;
+
+import edu.sc.snacktrack.R;
 
 /**
  * Created by spitzfor on 3/26/2016.

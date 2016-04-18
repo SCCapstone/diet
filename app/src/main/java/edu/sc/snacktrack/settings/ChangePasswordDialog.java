@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.settings;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -19,6 +19,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.parse.ParseUser;
+
+import edu.sc.snacktrack.LoginActivity;
+import edu.sc.snacktrack.R;
+import edu.sc.snacktrack.Utils;
 
 public class ChangePasswordDialog extends DialogFragment {
 

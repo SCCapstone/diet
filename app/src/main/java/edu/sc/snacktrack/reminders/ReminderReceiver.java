@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.reminders;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +12,8 @@ import com.parse.ParseUser;
 
 import java.util.Calendar;
 import java.util.List;
+
+import edu.sc.snacktrack.snacks.SnackEntry;
 
 /**
  * Created by spitzfor on 2/23/2016.

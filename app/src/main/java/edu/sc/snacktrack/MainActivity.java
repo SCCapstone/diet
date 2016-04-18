@@ -2,8 +2,6 @@ package edu.sc.snacktrack;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -47,6 +43,13 @@ import java.util.List;
 import edu.sc.snacktrack.chat.ChatActivity;
 import edu.sc.snacktrack.chat.ChatChooserFragment;
 import edu.sc.snacktrack.chat.Conversations;
+import edu.sc.snacktrack.client_list.ClientList;
+import edu.sc.snacktrack.client_list.DisplayClientsFragment;
+import edu.sc.snacktrack.reminders.ReminderReceiver;
+import edu.sc.snacktrack.settings.DietitianSettingsFragment;
+import edu.sc.snacktrack.settings.SettingsFragment;
+import edu.sc.snacktrack.snacks.SnackEntry;
+import edu.sc.snacktrack.snacks.SnackList;
 
 public class MainActivity extends AppCompatActivity{
 

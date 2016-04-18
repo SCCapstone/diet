@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.client_list;
 
 /**
  * Created by spitzfor on 2/16/2016.

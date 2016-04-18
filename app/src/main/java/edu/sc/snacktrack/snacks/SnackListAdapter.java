@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.snacks;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,6 +15,9 @@ import com.parse.ParseFile;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import edu.sc.snacktrack.ImageLoader;
+import edu.sc.snacktrack.R;
 
 
 public class SnackListAdapter extends BaseAdapter implements SnackList.UpdateListener{

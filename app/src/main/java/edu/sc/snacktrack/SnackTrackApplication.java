@@ -8,6 +8,7 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 
 import edu.sc.snacktrack.chat.Message;
+import edu.sc.snacktrack.snacks.SnackEntry;
 
 public class SnackTrackApplication extends Application{
 

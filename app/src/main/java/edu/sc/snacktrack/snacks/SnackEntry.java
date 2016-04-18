@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.snacks;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;

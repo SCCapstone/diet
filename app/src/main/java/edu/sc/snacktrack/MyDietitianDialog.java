@@ -16,6 +16,8 @@ import com.parse.ParseUser;
 
 import java.util.List;
 
+import edu.sc.snacktrack.snacks.SnackEntry;
+
 /**
  * Created by spitzfor on 2/10/2016.
  */

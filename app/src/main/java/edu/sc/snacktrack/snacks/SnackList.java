@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.snacks;
 
 import android.support.annotation.Nullable;
 import android.util.Log;

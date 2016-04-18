@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,16 +16,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseACL;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.List;
+
+import edu.sc.snacktrack.R;
+import edu.sc.snacktrack.dietitian_list.DietitianList;
+import edu.sc.snacktrack.dietitian_list.DietitianListAdapter;
 
 /**
  * Created by spitzfor on 3/25/2016.

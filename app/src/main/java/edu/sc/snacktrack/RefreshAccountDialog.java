@@ -22,6 +22,8 @@ import com.parse.ParseUser;
 
 import java.util.List;
 
+import edu.sc.snacktrack.snacks.SnackEntry;
+
 /**
  * Dialog fragment for "refreshing account.
  */

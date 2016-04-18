@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import edu.sc.snacktrack.SnackEntry;
+import edu.sc.snacktrack.snacks.SnackEntry;
 
 public class SnackExporter {
 

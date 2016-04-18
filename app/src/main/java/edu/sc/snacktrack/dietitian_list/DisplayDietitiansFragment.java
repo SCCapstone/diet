@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.dietitian_list;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,6 +23,10 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.List;
+
+import edu.sc.snacktrack.R;
+import edu.sc.snacktrack.settings.SettingsFragment;
+import edu.sc.snacktrack.snacks.SnackEntry;
 
 /**
  * Created by spitzfor on 3/22/2016.

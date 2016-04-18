@@ -24,6 +24,9 @@ import android.widget.TextView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+import edu.sc.snacktrack.snacks.SnackList;
+import edu.sc.snacktrack.snacks.SnackListAdapter;
+
 public class PreviousEntriesFragment extends Fragment implements SnackList.UpdateListener{
 
     private static final String TAG = "PreviousEntriesFragment";

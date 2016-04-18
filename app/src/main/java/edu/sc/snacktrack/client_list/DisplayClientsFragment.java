@@ -1,9 +1,8 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.client_list;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +14,10 @@ import android.widget.TextView;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+
+import edu.sc.snacktrack.PreviousEntriesFragment;
+import edu.sc.snacktrack.R;
+import edu.sc.snacktrack.snacks.SnackList;
 
 /**
  * Created by spitzfor on 2/16/2016.

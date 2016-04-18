@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.settings;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import edu.sc.snacktrack.R;
+import edu.sc.snacktrack.Utils;
 
 /**
  * Created by spitzfor on 2/1/2016.

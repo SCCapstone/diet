@@ -1,4 +1,4 @@
-package edu.sc.snacktrack;
+package edu.sc.snacktrack.settings;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,11 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-
-import java.util.List;
+import edu.sc.snacktrack.R;
+import edu.sc.snacktrack.RefreshAccountDialog;
 
 /**
  * Created by spitzfor on 1/25/2016.
