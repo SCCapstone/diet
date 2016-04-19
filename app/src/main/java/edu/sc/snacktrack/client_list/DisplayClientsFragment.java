@@ -15,7 +15,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import edu.sc.snacktrack.PreviousEntriesFragment;
+import edu.sc.snacktrack.main.existing_entries.PreviousEntriesFragment;
 import edu.sc.snacktrack.R;
 import edu.sc.snacktrack.snacks.SnackList;
 
