@@ -1,15 +1,20 @@
 package edu.sc.snacktrack.test;
 
-import edu.sc.snacktrack.SplashScreen;
+import edu.sc.snacktrack.SplashScreenActivity;
+import edu.sc.snacktrack.login.LoginActivity;
+import edu.sc.snacktrack.main.MainActivity;
+import edu.sc.snacktrack.main.new_entry.EditDescriptionActivity;
+import edu.sc.snacktrack.main.new_entry.NewEntryActivity;
+
 import com.robotium.solo.*;
 import android.test.ActivityInstrumentationTestCase2;
 
 
-public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScreen> {
+public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScreenActivity> {
   	private Solo solo;
   	
   	public SnackTrackUITest() {
-		super(SplashScreen.class);
+		super(SplashScreenActivity.class);
   	}
 
   	public void setUp() throws Exception {
@@ -25,8 +30,8 @@ public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScr
   	}
   
 	public void testRun() {
-        //Wait for activity: 'edu.sc.snacktrack.SplashScreen'
-		solo.waitForActivity(edu.sc.snacktrack.SplashScreen.class, 2000);
+        //Wait for activity: 'edu.sc.snacktrack.SplashScreenActivity'
+		solo.waitForActivity(SplashScreenActivity.class, 2000);
         //Sleep for 4870 milliseconds
 		solo.sleep(870);
         //Click on Or log in to existing account
@@ -68,8 +73,8 @@ public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScr
 		solo.sleep(1117);
         //Click on Log in
 		solo.clickOnView(solo.getView("signInButton"));
-        //Wait for activity: 'edu.sc.snacktrack.MainActivity'
-		assertTrue("edu.sc.snacktrack.MainActivity is not found!", solo.waitForActivity(edu.sc.snacktrack.MainActivity.class));
+        //Wait for activity: 'edu.sc.snacktrack.main.MainActivity'
+		assertTrue("edu.sc.snacktrack.main.MainActivity is not found!", solo.waitForActivity(MainActivity.class));
         //Sleep for 2626 milliseconds
 		solo.sleep(626);
         //Click on ImageView
@@ -90,8 +95,8 @@ public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScr
 		solo.sleep(938);
         //Click on Empty Text View
 		solo.clickOnView(solo.getView("action_new"));
-        //Wait for activity: 'edu.sc.snacktrack.NewEntryActivity'
-		assertTrue("edu.sc.snacktrack.NewEntryActivity is not found!", solo.waitForActivity(edu.sc.snacktrack.NewEntryActivity.class));
+        //Wait for activity: 'edu.sc.snacktrack.main.new_entry.NewEntryActivity'
+		assertTrue("edu.sc.snacktrack.main.new_entry.NewEntryActivity is not found!", solo.waitForActivity(NewEntryActivity.class));
         //Sleep for 1319 milliseconds
 		solo.sleep(1319);
         //Click on Select an option
@@ -112,8 +117,8 @@ public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScr
 		solo.sleep(960);
         //Click on Empty Text View
 		solo.clickOnView(solo.getView("descriptionTextView"));
-        //Wait for activity: 'edu.sc.snacktrack.EditDescriptionActivity'
-		assertTrue("edu.sc.snacktrack.EditDescriptionActivity is not found!", solo.waitForActivity(edu.sc.snacktrack.EditDescriptionActivity.class));
+        //Wait for activity: 'edu.sc.snacktrack.main.new_entry.EditDescriptionActivity'
+		assertTrue("edu.sc.snacktrack.main.new_entry.EditDescriptionActivity is not found!", solo.waitForActivity(EditDescriptionActivity.class));
         //Sleep for 9496 milliseconds
 		solo.sleep(496);
         //Enter the text: 'Living room art'
@@ -154,8 +159,8 @@ public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScr
 		solo.sleep(499);
         //Click on Empty Text View
 		solo.clickOnView(solo.getView("action_new"));
-        //Wait for activity: 'edu.sc.snacktrack.NewEntryActivity'
-		assertTrue("edu.sc.snacktrack.NewEntryActivity is not found!", solo.waitForActivity(edu.sc.snacktrack.NewEntryActivity.class));
+        //Wait for activity: 'edu.sc.snacktrack.main.new_entry.NewEntryActivity'
+		assertTrue("edu.sc.snacktrack.main.new_entry.NewEntryActivity is not found!", solo.waitForActivity(NewEntryActivity.class));
         //Sleep for 2780 milliseconds
 		solo.sleep(280);
         //Click on Done
@@ -168,7 +173,7 @@ public class SnackTrackUITest extends ActivityInstrumentationTestCase2<SplashScr
 		solo.sleep(1213);
         //Click on Log out
 		solo.clickInList(1, 0);
-        //Wait for activity: 'edu.sc.snacktrack.LoginActivity'
-		assertTrue("edu.sc.snacktrack.LoginActivity is not found!", solo.waitForActivity(edu.sc.snacktrack.LoginActivity.class));
+        //Wait for activity: 'edu.sc.snacktrack.login.LoginActivity'
+		assertTrue("edu.sc.snacktrack.login.LoginActivity is not found!", solo.waitForActivity(LoginActivity.class));
 	}
 }

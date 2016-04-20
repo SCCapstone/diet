@@ -1,18 +1,15 @@
 package edu.sc.snacktrack;
 
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.support.v4.widget.DrawerLayout;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.UiThreadTest;
 import android.test.suitebuilder.annotation.SmallTest;
-import android.view.KeyEvent;
-import android.view.Menu;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
 
-import java.util.List;
+import edu.sc.snacktrack.main.MainActivity;
 
 /**
  * Created by dowdw on 1/26/2016.

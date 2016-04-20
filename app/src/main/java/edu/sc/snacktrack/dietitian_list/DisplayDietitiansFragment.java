@@ -25,7 +25,7 @@ import com.parse.ParseUser;
 import java.util.List;
 
 import edu.sc.snacktrack.R;
-import edu.sc.snacktrack.settings.SettingsFragment;
+import edu.sc.snacktrack.main.settings.SettingsFragment;
 import edu.sc.snacktrack.snacks.SnackEntry;
 
 /**

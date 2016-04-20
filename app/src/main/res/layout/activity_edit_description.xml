@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="edu.sc.snacktrack.EditDescriptionActivity">
+    tools:context=".main.new_entry.EditDescriptionActivity">
 
     <EditText
         android:layout_width="match_parent"

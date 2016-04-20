@@ -16,7 +16,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import edu.sc.snacktrack.ImageLoader;
+import edu.sc.snacktrack.utils.ImageLoader;
 import edu.sc.snacktrack.R;
 
 
