@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity{
 
             else {
                 footerDietitian.setClickable(false);
-                footerDietitian.setHint("Go to Settings to pick your Dietitian!");
+                footerDietitian.setHint("Need a Dietitian? Go to Settings!");
                 footerDietitian.setHintTextColor(Color.parseColor("#FFFFFF"));
             }
         }

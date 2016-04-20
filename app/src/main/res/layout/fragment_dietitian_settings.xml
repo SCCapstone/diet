@@ -70,6 +70,17 @@
             android:id="@+id/diet_separator_3"
             android:layout_below="@id/remove_my_dietitian"
             android:background="#003300"/>
+
+        <TextView
+            android:id="@+id/currentDietitian"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="@string/dietitian_username_status"
+            android:textSize="20sp"
+            android:textColor="#FF6666"
+            android:gravity="center"
+            android:background="#003300"
+            android:layout_alignParentBottom="true"/>
 <!--
         <Button
             android:layout_width="fill_parent"

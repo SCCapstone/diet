@@ -7,10 +7,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.GetCallback;
@@ -26,6 +31,7 @@ public class DietitianSettingsFragment extends Fragment {
 
     public Context cont;
     private Boolean hasDietitian = false;
+    private TextView dietitianUsername;
 
     @Override
     public void onAttach(Context context) {
@@ -44,6 +50,7 @@ public class DietitianSettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_dietitian_settings, container, false);
         final Button pickDietitian = (Button) view.findViewById(R.id.pick_dietitian);
         final Button removeDietitian = (Button) view.findViewById(R.id.remove_my_dietitian);
+        dietitianUsername = (TextView) view.findViewById(R.id.currentDietitian);
 //        final Button msgDietitian = (Button) view.findViewById(R.id.message_my_dietitian);
 
 
@@ -54,12 +61,22 @@ public class DietitianSettingsFragment extends Fragment {
                     public void done(ParseUser dietitian, ParseException e) {
                         hasDietitian = true;
                         pickDietitian.setHintTextColor(Color.parseColor("#595959"));
+                        dietitianUsername.setText("");
+                        dietitianUsername.setTextColor(Color.parseColor("#FFFFFF"));
+                            String modString = "My current Dietitian is " + dietitian.getUsername();
+                            Spannable returnString = new SpannableString(modString);
+                            int col = Color.parseColor("#cccccc");
+                            returnString.setSpan(new ForegroundColorSpan(col),0,23,0);
+                            returnString.setSpan(new RelativeSizeSpan(0.8f),0,23,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            dietitianUsername.setText(returnString);
                     }
                 });
             }
 
             else {
                 removeDietitian.setHintTextColor(Color.parseColor("#595959"));
+                dietitianUsername.setText(R.string.dietitian_username_status);
+                dietitianUsername.setTextColor(Color.parseColor("#FF6666"));
             }
 
 
