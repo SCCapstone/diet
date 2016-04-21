@@ -59,16 +59,18 @@ public class DietitianSettingsFragment extends Fragment {
                 checkDietitian.fetchIfNeededInBackground(new GetCallback<ParseUser>() {
                     @Override
                     public void done(ParseUser dietitian, ParseException e) {
-                        hasDietitian = true;
-                        pickDietitian.setHintTextColor(Color.parseColor("#595959"));
-                        dietitianUsername.setText("");
-                        dietitianUsername.setTextColor(Color.parseColor("#FFFFFF"));
+                        if(e == null){
+                            hasDietitian = true;
+                            pickDietitian.setHintTextColor(Color.parseColor("#595959"));
+                            dietitianUsername.setText("");
+                            dietitianUsername.setTextColor(Color.parseColor("#FFFFFF"));
                             String modString = "My current Dietitian is " + dietitian.getUsername();
                             Spannable returnString = new SpannableString(modString);
                             int col = Color.parseColor("#cccccc");
                             returnString.setSpan(new ForegroundColorSpan(col),0,23,0);
                             returnString.setSpan(new RelativeSizeSpan(0.8f),0,23,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             dietitianUsername.setText(returnString);
+                        }
                     }
                 });
             }
