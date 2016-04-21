@@ -28,9 +28,8 @@ android:layout_height="fill_parent">
         android:layout_gravity="center_vertical"
         android:layout_below="@id/remove_dialog_text"
         android:text="@string/warn_dialog_message"
-        android:textColor="#cccccc"
-        android:textSize="14sp"
-        android:background="#262626"
+        android:textColor="#003300"
+        android:textSize="16sp"
         android:paddingLeft="20dp"
         android:paddingTop="15dp"
         android:paddingRight="20dp"
@@ -39,7 +38,6 @@ android:layout_height="fill_parent">
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#262626"
         android:orientation="horizontal"
         android:layout_below="@id/remove_dialog_message"
         android:paddingLeft="10dp"
@@ -55,7 +53,6 @@ android:layout_height="fill_parent">
             android:text="@string/cancel_text"
             android:textColor="#111"
             android:textSize="16sp"
-            android:backgroundTint="#303030"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"/>
 
@@ -67,7 +64,6 @@ android:layout_height="fill_parent">
             android:text="@string/submit_text"
             android:textColor="#111"
             android:textSize="16sp"
-            android:backgroundTint="#303030"
             android:paddingRight="30dp"
             android:paddingLeft="30dp"/>
 
