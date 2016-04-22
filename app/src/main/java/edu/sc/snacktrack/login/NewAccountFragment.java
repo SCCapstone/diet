@@ -36,6 +36,8 @@ public class NewAccountFragment extends Fragment {
 
     private static final String TAG = "NewAccountDebug";
 
+    private static final String STATE_LOGGING_IN = "stateLoggingIn";
+
     private View rootView;
 
     private EditText usernameET;
@@ -57,10 +59,21 @@ public class NewAccountFragment extends Fragment {
 
     private Context context;
 
+    private boolean loggingIn;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
+
+        loggingIn = false;
     }
 
     @Nullable
@@ -110,7 +123,15 @@ public class NewAccountFragment extends Fragment {
             }
         });
 
+        setWidgetsEnabled(!loggingIn);
+
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_LOGGING_IN, loggingIn);
     }
 
     /**
@@ -119,6 +140,7 @@ public class NewAccountFragment extends Fragment {
      */
     private void attemptSignup(){
         setWidgetsEnabled(false);
+        loggingIn = true;
 
         String username = usernameET.getText().toString();
         String password = passwordET.getText().toString();
@@ -169,6 +191,7 @@ public class NewAccountFragment extends Fragment {
                                 updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
                             }
                             setWidgetsEnabled(true);
+                            loggingIn = false;
                         }
                     });
                 }
@@ -177,6 +200,7 @@ public class NewAccountFragment extends Fragment {
                 else {
                     updateToast(selectionInvalidReason.toString(), Toast.LENGTH_LONG);
                     setWidgetsEnabled(true);
+                    loggingIn = false;
                 }
             }
 
@@ -184,6 +208,7 @@ public class NewAccountFragment extends Fragment {
             else{
                 updateToast(passwordInvalidReason.toString(), Toast.LENGTH_LONG);
                 setWidgetsEnabled(true);
+                loggingIn = false;
             }
         }
 
@@ -191,6 +216,7 @@ public class NewAccountFragment extends Fragment {
         else{
             updateToast(usernameInvalidReason.toString(), Toast.LENGTH_LONG);
             setWidgetsEnabled(true);
+            loggingIn = false;
         }
     }
 

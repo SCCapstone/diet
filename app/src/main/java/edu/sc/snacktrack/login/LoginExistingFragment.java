@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +40,16 @@ public class LoginExistingFragment extends Fragment {
 
     private Context context;
 
+    private TextWatcher passwordTextWatcher;
+
+    private boolean dummyPassMode;
+    private boolean loggingIn = false;
+
+    private static final String DUMMY_PASS = " h/%@]]()wNb";
+
+    private static final String STATE_DUMMY_PASS = "stateDummyPass";
+    private static final String STATE_LOGGING_IN = "stateLoggingIn";
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -47,7 +60,22 @@ public class LoginExistingFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setRetainInstance(true);
+
+        loggingIn = false;
+        if(ParseUser.getCurrentUser() != null){
+            dummyPassMode = true;
+        }
     }
+
+    @Override
+    public void onPause() {
+        if(passwordTextWatcher != null && passwordET != null){
+            passwordET.removeTextChangedListener(passwordTextWatcher);
+        }
+        super.onPause();
+    }
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login_existing, container, false);
@@ -95,7 +123,45 @@ public class LoginExistingFragment extends Fragment {
             }
         });
 
+        setWidgetsEnabled(!loggingIn);
+
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // If the user is already logged in, "fill in the fields"
+        if(ParseUser.getCurrentUser() != null && dummyPassMode){
+            usernameET.setText(ParseUser.getCurrentUser().getUsername());
+            passwordET.setText(DUMMY_PASS);
+            passwordTextWatcher = new TextWatcher() {
+
+                private boolean init;
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override
+                public void afterTextChanged(Editable s) {}
+
+                @Override
+                public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                    if(dummyPassMode && !init){
+                        dummyPassMode = false;
+                        passwordET.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                passwordET.setText(s.subSequence(start, start + count));
+                                passwordET.setSelection(count);
+                            }
+                        });
+                    }
+                }
+            };
+
+            passwordET.addTextChangedListener(passwordTextWatcher);
+        }
     }
 
     /**
@@ -138,22 +204,50 @@ public class LoginExistingFragment extends Fragment {
      */
     private void attemptLogIn(){
         setWidgetsEnabled(false);
+        loggingIn = true;
+        // If the user is already logged in, attempt to log them in with their current session token.
+        // Otherwise, log in normally with a username and password.
+        if(dummyPassMode){
+            if(ParseUser.getCurrentUser() != null){
+                ParseUser.becomeInBackground(ParseUser.getCurrentUser().getSessionToken(), new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        if(e == null){
+                            // Sign in successful
+                            startMainActivity();
+                        } else{
+                            if(e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+                                // If the session token is invalid, the user must retype their password
+                                // to log in (we don't really know their password).
+                                dummyPassMode = false;
+                                passwordET.setText("");
+                            }
+                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                        }
 
-        String username = usernameET.getText().toString();
-        String password = passwordET.getText().toString();
-        ParseUser.logInInBackground(username, password, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if (e == null) {
-                    // Sign in was successful
-                    startMainActivity();
-                } else {
-                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
-                }
-
-                setWidgetsEnabled(true);
+                        setWidgetsEnabled(true);
+                        loggingIn = false;
+                    }
+                });
             }
-        });
+        } else{
+            String username = usernameET.getText().toString();
+            String password = passwordET.getText().toString();
+            ParseUser.logInInBackground(username, password, new LogInCallback() {
+                @Override
+                public void done(ParseUser user, ParseException e) {
+                    if (e == null) {
+                        // Sign in was successful
+                        startMainActivity();
+                    } else {
+                        updateToast(Utils.getErrorMessage(e), Toast.LENGTH_LONG);
+                    }
+
+                    setWidgetsEnabled(true);
+                    loggingIn = false;
+                }
+            });
+        }
     }
 
     private void startMainActivity(){

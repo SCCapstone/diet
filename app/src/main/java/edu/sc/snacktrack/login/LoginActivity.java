@@ -5,6 +5,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.parse.ParseUser;
+
 import edu.sc.snacktrack.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -15,10 +17,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if(savedInstanceState == null){
-            newAccountMode();
+        if(ParseUser.getCurrentUser() == null){
+            if(savedInstanceState == null){
+                newAccountMode();
+            } else{
+                // The activity was recreated from a saved state.
+            }
         } else{
-            // The activity was recreated from a saved state.
+            if(savedInstanceState == null){
+                existingAccountMode();
+            } else{
+                // The activity was recreated from a saved state.
+            }
         }
     }
 
