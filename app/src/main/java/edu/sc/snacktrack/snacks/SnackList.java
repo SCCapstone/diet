@@ -65,12 +65,13 @@ public class SnackList{
 
     /**
      * Private constructor to prevent multiple instances. Use getInstance() to get the current
-     * instance of SnackList.
+     * instance of SnackList. The target user is initialized to the current user.
      */
     private SnackList(){
         snacks = new ArrayList<>();
         updateListeners = new ArrayList<>();
         isUpdating = false;
+        targetUser = ParseUser.getCurrentUser();
     }
 
     /**

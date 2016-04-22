@@ -101,9 +101,6 @@ public class MainActivity extends AppCompatActivity{
 
         application = (SnackTrackApplication) getApplicationContext();
 
-        // Ensure current user's SnackList is displayed first
-        SnackList.getInstance().setUser(ParseUser.getCurrentUser());
-
         // BEGIN DRAWER STUFF
         mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
