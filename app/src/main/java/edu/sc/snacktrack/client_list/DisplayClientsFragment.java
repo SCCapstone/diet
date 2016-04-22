@@ -34,13 +34,17 @@ public class DisplayClientsFragment extends Fragment implements ClientList.Updat
     @Override
     public void onClientListUpdateComplete() {
         adapter.notifyDataSetChanged();
-        progressOverlay.setVisibility(View.GONE);
+        if(progressOverlay != null){
+            progressOverlay.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onClientListUpdateStart() {
         Log.d(TAG, "onClientListUpdateStart");
-        progressOverlay.setVisibility(View.VISIBLE);
+        if(progressOverlay != null){
+            progressOverlay.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
