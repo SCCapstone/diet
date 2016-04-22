@@ -547,7 +547,7 @@ public class MainActivity extends AppCompatActivity{
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
                 break;
             case R.id.action_export_csv:
-                SnackExporter.export(ParseUser.getCurrentUser(), SnackExporter.EXPORT_EVERYTHING, new SnackExporter.Callback() {
+                SnackExporter.export(SnackList.getInstance().getUser(), SnackExporter.EXPORT_EVERYTHING, new SnackExporter.Callback() {
                     @Override
                     public void callback(File file) {
                         if (file != null) {

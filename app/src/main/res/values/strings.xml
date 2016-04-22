@@ -133,8 +133,14 @@
         of your existing entries, but you will need to rechoose your dietitian.
     </string>
 
-    <string name="browse_exports_instructions">
+    <string name="browse_my_exports_instructions">
         You can use a file explorer app to navigate to your exports folder. Your exports may be
         found in this folder:\n\n
     </string>
+
+    <string name="browse_other_exports_instructions">
+        You are currently viewing another user\'s entries. Exports you make for this user may be
+        found in this folder:\n\n
+    </string>
+
 </resources>

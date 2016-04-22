@@ -29,14 +29,14 @@ public class SnackExporter {
         void callback(File file);
     }
 
-    public static void export(ParseUser user, int mode, final Callback callback){
+    public static void export(final ParseUser user, int mode, final Callback callback){
         getSnacks(user, mode, new FindCallback<SnackEntry>() {
             @Override
             public void done(List<SnackEntry> objects, ParseException e) {
                 File file = null;
                 if(e == null){
                     try{
-                        file = generateCSV(objects);
+                        file = generateCSV(user, objects);
                     } catch(IOException ioe){
                         file = null;
                     }
@@ -48,15 +48,16 @@ public class SnackExporter {
     }
 
     /**
-     * Returns directory with path:
+     * Returns the export directory for user with path like
      *   path/to/downloads/dir/SnackTrackExports/username/
      *
+     * @param user The user
      * @return The directory
      */
-    public static File getExportDirectory(){
+    public static File getExportDirectory(ParseUser user){
         return new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                "SnackTrackExports/" + ParseUser.getCurrentUser().getUsername() + "/"
+                "SnackTrackExports/" + user.getUsername() + "/"
         );
     }
 
@@ -85,30 +86,30 @@ public class SnackExporter {
         query.findInBackground(callback);
     }
 
-    private static File getFile(){
+    private static File getFile(ParseUser user){
         final String filePrefix = "SnackTrackExport-"
                 + new SimpleDateFormat("yy-MM-dd").format(System.currentTimeMillis());
         final String extension = ".csv";
 
-        if(!getExportDirectory().exists()){
-            getExportDirectory().mkdirs();
+        if(!getExportDirectory(user).exists()){
+            getExportDirectory(user).mkdirs();
         }
 
-        File file = new File(getExportDirectory(), filePrefix + extension);
+        File file = new File(getExportDirectory(user), filePrefix + extension);
 
         // Do not overwrite existing exports
         if(file.exists()){
             int appendInt = 0;
             while(file.exists()){
-                file = new File(getExportDirectory(), filePrefix + '-' + (++appendInt) + extension);
+                file = new File(getExportDirectory(user), filePrefix + '-' + (++appendInt) + extension);
             }
         }
 
         return file;
     }
 
-    private static File generateCSV(List<SnackEntry> entries) throws IOException {
-        final File file = getFile();
+    private static File generateCSV(ParseUser user, List<SnackEntry> entries) throws IOException {
+        final File file = getFile(user);
 
         final CSVWriter writer = new CSVWriter(new FileWriter(file));
 
