@@ -88,13 +88,20 @@ public class RefreshAccountDialog extends DialogFragment{
                 final int maxProgress = entries.size() * 1;
 
                 // Recreate the read access role for this user.
-                ParseQuery<ParseRole> roleQuery = ParseRole.getQuery();
-                List<ParseRole> roles = roleQuery.find();
                 ParseRole role = new ParseRole("role_" + ParseUser.getCurrentUser().getObjectId());
+                role.setACL(new ParseACL(ParseUser.getCurrentUser()));
+
+
+                // Delete old role if it exists
+                ParseQuery<ParseRole> roleQuery = ParseRole.getQuery();
+                List<ParseRole> roles;
+                roleQuery.whereEqualTo("name", role.getName());
+                roles = roleQuery.find();
                 if(roles.size() != 0){
                     roles.get(0).delete();
                 }
-                role.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                
+                // Save new role
                 role.save();
 
                 // Create the ACL for all entries.
