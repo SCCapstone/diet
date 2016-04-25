@@ -6,18 +6,20 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 /**
- * This class represents a single snack entry with a owner, photo, meal type, and description.
+ * This class represents a single snack entry with a owner, photo, meal type, description, and
+ * scan data.
+ *
  * This class subclasses ParseObject.
  */
 @ParseClassName("SnackEntry")
 public class SnackEntry extends ParseObject{
 
-    private static final String OWNER_KEY = "owner";
-    private static final String MEAL_TYPE_KEY = "mealType";
-    private static final String DESCRIPTION_KEY = "description";
-    private static final String PHOTO_KEY = "photo";
-    private static final String SCAN_DETAILS_KEY = "scanDetails";
-    private static final String SCAN_CONTENT_KEY = "scanContent";
+    public static final String OWNER_KEY = "owner";
+    public static final String MEAL_TYPE_KEY = "mealType";
+    public static final String DESCRIPTION_KEY = "description";
+    public static final String PHOTO_KEY = "photo";
+    public static final String SCAN_DETAILS_KEY = "scanDetails";
+    public static final String SCAN_CONTENT_KEY = "scanContent";
 
     public void setOwner(ParseUser owner){
         put(OWNER_KEY, owner);
