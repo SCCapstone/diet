@@ -138,8 +138,6 @@ public class LoginExistingFragment extends Fragment {
             passwordET.setText(DUMMY_PASS);
             passwordTextWatcher = new TextWatcher() {
 
-                private boolean init;
-
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 @Override
@@ -147,7 +145,7 @@ public class LoginExistingFragment extends Fragment {
 
                 @Override
                 public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                    if(dummyPassMode && !init){
+                    if(dummyPassMode){
                         dummyPassMode = false;
                         passwordET.post(new Runnable() {
                             @Override
