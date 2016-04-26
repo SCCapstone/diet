@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,7 +46,8 @@ public class NewAccountFragment extends Fragment {
     private EditText passwordConfirmET;
 
     private TextView usernameErrorStatus;
-    private TextView passwordErrorStatus;
+    private TextView passwordMatchStatus;
+    private TextView passwordRequirementStatus;
 
     private RadioGroup rGroup;
 
@@ -60,6 +62,8 @@ public class NewAccountFragment extends Fragment {
     private Context context;
 
     private boolean loggingIn;
+
+    private static final PasswordChecker passwordChecker = new PasswordChecker();
 
     @Override
     public void onAttach(Context context) {
@@ -87,7 +91,8 @@ public class NewAccountFragment extends Fragment {
         passwordET = (EditText) view.findViewById(R.id.passwordEditText);
         passwordConfirmET = (EditText) view.findViewById(R.id.passwordConfirmEditText);
         usernameErrorStatus = (TextView) view.findViewById(R.id.usernameErrorStatus);
-        passwordErrorStatus = (TextView) view.findViewById(R.id.passwordErrorStatus);
+        passwordMatchStatus = (TextView) view.findViewById(R.id.passwordMatchStatus);
+        passwordRequirementStatus = (TextView) view.findViewById(R.id.passwordReqTextView);
         signUpButton = (Button) view.findViewById(R.id.signUpButton);
         rGroup = (RadioGroup) view.findViewById(R.id.signUpRadioGroup);
         existingAccountButton = (Button) view.findViewById(R.id.existingAccountButton);
@@ -142,82 +147,75 @@ public class NewAccountFragment extends Fragment {
         setWidgetsEnabled(false);
         loggingIn = true;
 
+        final ParseUser newUser = new ParseUser();
+
         String username = usernameET.getText().toString();
         String password = passwordET.getText().toString();
         String passwordConfirm = passwordConfirmET.getText().toString();
 
         StringBuilder usernameInvalidReason = new StringBuilder();
-        StringBuilder passwordInvalidReason = new StringBuilder();
+        StringBuilder passwordMatchReason = new StringBuilder();
         StringBuilder selectionInvalidReason = new StringBuilder();
 
-        // First check if the username is valid
-        if(isUsernameValid(username, usernameInvalidReason)){
-
-            // Next, check if the passwords are valid.
-            if(isPasswordValid(password, passwordConfirm, passwordInvalidReason)){
-
-                // Finally, check if a radio button was selected
-                if(isSelected(selectionInvalidReason)) {
-                    final ParseUser newUser = new ParseUser();
-                    newUser.setUsername(username);
-                    newUser.setPassword(password);
-
-                    String sel = isDietitian();
-
-                    if(sel.equals("true"))
-                        newUser.put("isDietitian", true);
-
-                    else
-                        newUser.put("isDietitian", false);
-
-                    newUser.signUpInBackground(new SignUpCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                // Sign up was successful
-                                ParseRole role = new ParseRole("role_" + newUser.getObjectId());
-                                role.setACL(new ParseACL(newUser));
-                                role.saveInBackground(new SaveCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        if(e == null){
-                                            startMainActivity();
-                                        } else{
-                                            updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
-                                        }
-                                    }
-                                });
-                            } else {
-                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
-                            }
-                            setWidgetsEnabled(true);
-                            loggingIn = false;
-                        }
-                    });
-                }
-
-                // If no radio buttons are selected, display the reason to the user.
-                else {
-                    updateToast(selectionInvalidReason.toString(), Toast.LENGTH_LONG);
-                    setWidgetsEnabled(true);
-                    loggingIn = false;
-                }
-            }
-
-            // If the passwords are invalid, display the reason to the user.
-            else{
-                updateToast(passwordInvalidReason.toString(), Toast.LENGTH_LONG);
-                setWidgetsEnabled(true);
-                loggingIn = false;
-            }
-        }
-
-        // If the username is invalid, display the reason to the user
-        else{
+        if(!isUsernameValid(username, usernameInvalidReason)){
             updateToast(usernameInvalidReason.toString(), Toast.LENGTH_LONG);
             setWidgetsEnabled(true);
             loggingIn = false;
+            return;
         }
+        if(!doPasswordsMatch(password, passwordConfirm, passwordMatchReason)){
+            updateToast(passwordMatchReason.toString(), Toast.LENGTH_LONG);
+            setWidgetsEnabled(true);
+            loggingIn = false;
+            return;
+        }
+        if(!passwordChecker.meetsRequirements(password)){
+            updateToast("Password does not meet requirements", Toast.LENGTH_LONG);
+            setWidgetsEnabled(true);
+            loggingIn = false;
+            return;
+        }
+        if(!isSelected(selectionInvalidReason)){
+            updateToast(selectionInvalidReason.toString(), Toast.LENGTH_LONG);
+            setWidgetsEnabled(true);
+            loggingIn = false;
+            return;
+        }
+
+        // If this line is reached, the provided credentials are valid, so we attempt sign up.
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+
+        String sel = isDietitian();
+        if(sel.equals("true"))
+            newUser.put("isDietitian", true);
+        else
+            newUser.put("isDietitian", false);
+
+        newUser.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    // Sign up was successful
+                    ParseRole role = new ParseRole("role_" + newUser.getObjectId());
+                    role.setACL(new ParseACL(newUser));
+                    role.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if(e == null){
+                                startMainActivity();
+                            } else{
+                                updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+                            }
+                        }
+                    });
+                } else {
+                    updateToast(Utils.getErrorMessage(e), Toast.LENGTH_SHORT);
+                }
+                setWidgetsEnabled(true);
+                loggingIn = false;
+            }
+        });
     }
 
     /**
@@ -341,18 +339,16 @@ public class NewAccountFragment extends Fragment {
     }
 
     /**
-     * Checks if passwords are valid.
-     *
-     * Currently this method only checks if the passwords match or if either is blank.
+     * Checks if a password and its confirmation match
      *
      * @param password The password
      * @param passwordConfirm The confirmed password
-     * @param reason When not null, this method will append the reason the password is invalid
-     *               (or "OK" if the username is valid).
-     * @return true if the passwords are valid. false otherwise.
+     * @param reason When not null, this method will append the reason the passwords do not match
+     *               (or "OK" if they do).
+     * @return true if the passwords match. false otherwise.
      */
-    private boolean isPasswordValid(String password, String passwordConfirm,
-                                    @Nullable StringBuilder reason){
+    private boolean doPasswordsMatch(String password, String passwordConfirm,
+                                     @Nullable StringBuilder reason){
         if(password.equals("")){
             if(reason != null){
                 reason.append("Password is blank");
@@ -411,21 +407,51 @@ public class NewAccountFragment extends Fragment {
     }
 
     /**
-     * Updates the passwordErrorStatus based on a reason returned by isPasswordValid().
+     * Updates the password error status. That is, displays to the user whether or not the passwords
+     * match and if the password meets the strength requirements.
      */
     private void updatePasswordErrorStatus(String password, String passwordConfirm){
-        StringBuilder reason = new StringBuilder();
-        String reasonString;
-        isPasswordValid(password, passwordConfirm, reason);
-        reasonString = reason.toString();
-
-        if(reasonString.equalsIgnoreCase("OK")){
-            passwordErrorStatus.setTextColor(Color.BLACK);
-            passwordErrorStatus.setText(reasonString);
+        StringBuilder matchProblem = new StringBuilder();
+        if(doPasswordsMatch(password, passwordConfirm, matchProblem)){
+            passwordMatchStatus.setTextColor(Color.parseColor("#006600"));
+            passwordMatchStatus.setText("Passwords match");
         } else{
-            passwordErrorStatus.setTextColor(Color.RED);
-            passwordErrorStatus.setText(reasonString);
+            passwordMatchStatus.setTextColor(Color.RED);
+            passwordMatchStatus.setText(matchProblem.toString());
         }
+
+        PasswordChecker.CheckResult checkResult = PasswordChecker.checkPassword(password);
+
+        // Color each of the requirements red (requirement not satisfied) or green (requirement
+        // satisfied).
+        passwordRequirementStatus.setText(Html.fromHtml(new StringBuilder()
+                .append(checkResult.hasMixedCase() && checkResult.hasNumbers()
+                        && checkResult.length() >= passwordChecker.getMinimumLength() ?
+                        "<font color='#006600'>Your password must: </font>" :
+                        "<font color='#ff0000'>Your password must: </font>"
+                )
+                .append(checkResult.hasMixedCase() && checkResult.hasNumbers() ?
+                        "<font color='#006600'>use </font>" :
+                        "<font color='#ff0000'>use </font>"
+                )
+                .append(checkResult.hasLowerCase() ?
+                        "<font color='#006600'>a lowercase letter, </font>" :
+                        "<font color='#ff0000'>a lowercase letter, </font>"
+                )
+                .append(checkResult.hasUpperCase() ?
+                        "<font color='#006600'>an uppercase letter, </font>" :
+                        "<font color='#ff0000'>an uppercase letter, </font>"
+                )
+                .append(checkResult.hasNumbers() ?
+                        "<font color='#006600'>a number, </font>" :
+                        "<font color='#ff0000'>a number, </font>"
+                )
+                .append(checkResult.length() >= passwordChecker.getMinimumLength() ?
+                        "<font color='#006600'>and have at least 8 characters." :
+                        "<font color='#ff0000'>and have at least 8 characters."
+                )
+                .toString()
+        ));
     }
 
     /**

@@ -143,4 +143,9 @@
         found in this folder:\n\n
     </string>
 
+     <string name="password_req_text">
+         Your password must: use a lowercase letter, an uppercase letter, a number, and have at
+         least 8 characters.
+    </string>
+
 </resources>

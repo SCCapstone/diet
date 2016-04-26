@@ -40,15 +40,12 @@
             android:inputType="textNoSuggestions" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/usernameErrorStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/usernameEditText"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
             android:textColor="#FF0000"
-            tools:text="isValid?"
-            android:singleLine="true" />
+            tools:text="isValid?" />
 
         <EditText
             android:layout_width="match_parent"
@@ -59,7 +56,6 @@
             android:layout_centerHorizontal="true"
             android:hint="@string/password_hint"
             android:layout_marginTop="10dp"
-            android:password="false"
             android:inputType="textPassword" />
 
         <EditText
@@ -67,27 +63,34 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:id="@+id/passwordConfirmEditText"
-            android:layout_below="@+id/passwordEditText"
-            android:layout_centerHorizontal="true"
             android:hint="@string/password_confirm_hint"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:layout_below="@+id/passwordEditText"
+            android:layout_alignRight="@+id/passwordMatchStatus" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/passwordReqTextView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/passwordErrorStatus"
+            android:textColor="#ff0000"
+            android:text="@string/password_req_text"
             android:layout_below="@+id/passwordConfirmEditText"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/passwordMatchStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/passwordReqTextView"
             android:textColor="#FF0000"
             tools:text="isValid?"
-            android:singleLine="true" />
+            android:minLines="2" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/radioHeaderText"
-            android:layout_below="@+id/passwordErrorStatus"
+            android:layout_below="@id/passwordMatchStatus"
             android:text="@string/radio_group_text"
             android:textColor="#808080"
             android:textSize="20sp" />
