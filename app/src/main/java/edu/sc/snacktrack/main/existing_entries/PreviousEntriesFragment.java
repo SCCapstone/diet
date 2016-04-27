@@ -111,6 +111,12 @@ public class PreviousEntriesFragment extends Fragment implements SnackList.Updat
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_previous_entries, menu);
+
+        // Hide new entry buttons if snack list is not pointing to current user
+        if(!ParseUser.getCurrentUser().getObjectId().equals(SnackList.getInstance().getUser().getObjectId())){
+            menu.findItem(R.id.action_new).setVisible(false);
+            menu.findItem(R.id.action_new_text_only).setVisible(false);
+        }
     }
     @Override
     public void onResume() {
