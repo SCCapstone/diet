@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#111">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="25dp"
+            android:id="@+id/group_1"
+            android:text="@string/email_options"
+            android:clickable="false"
+            android:longClickable="false"
+            android:textColor="#FFFF"
+            android:textSize="15sp"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="10dp"
+            android:textStyle="bold"
+            android:background="#003300"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:id="@+id/separator_1"
+            android:layout_below="@id/group_1"
+            android:background="#003300"/>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="75dp"
+            android:id="@+id/email_dietitian_button"
+            android:hint="@string/email_diet_button_text"
+            android:textColorHint="#cccccc"
+            android:background="#111"
+            android:textSize="22sp"
+            android:layout_below="@id/separator_1"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="20dp"
+            android:clickable="true" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:id="@+id/separator_2"
+            android:layout_below="@id/email_dietitian_button"
+            android:background="#003300"/>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="75dp"
+            android:id="@+id/email_entries_button"
+            android:hint="@string/email_entries_button_text"
+            android:textColorHint="#cccccc"
+            android:background="#111"
+            android:textSize="22sp"
+            android:layout_below="@id/separator_2"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="20dp"
+            android:clickable="true" />
+
+
+    </RelativeLayout>
+
+</FrameLayout>

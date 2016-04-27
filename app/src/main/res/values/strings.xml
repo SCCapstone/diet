@@ -71,6 +71,9 @@
     <string name="title_activity_image_viewer">Image Viewer</string>
 
     <!-- Settings strings -->
+    <string name="email_options">Email Options</string>
+    <string name="email_diet_button_text">Send Email to My Dietitian</string>
+    <string name="email_entries_button_text">Email my Snacks to My Dietitian</string>
     <string name="password_text">Change Password</string>
     <string name="warn_dialog_title">Are you sure you want to remove your Dietitian?</string>
     <string name="warn_dialog_message">Your Dietitian will no longer be able to access your entries.</string>
